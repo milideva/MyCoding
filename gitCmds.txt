@@ -1,7 +1,0 @@
-git add *
-# for deleted files
-git add -A
-git status -uno
-git commit
-git push
-
