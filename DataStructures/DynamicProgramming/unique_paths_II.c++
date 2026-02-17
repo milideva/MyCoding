@@ -38,35 +38,44 @@ using namespace std;
 
 class Solution {
 public:
-    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
-        int m = obstacleGrid.size();
-        int n = obstacleGrid[0].size();
-        int dp[m][n];
-        
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                
-                if (i == 0 || j == 0) {
-                    if (obstacleGrid[i][j] != 1) {
-                        if (!i && !j) dp[i][j] = 1;
-                        if (!i && j) dp[i][j] = dp[i][j-1];
-                        if (!j && i) dp[i][j] = dp[i-1][j];
-                    } else {
-                        dp[i][j] = 0;
-                    }
-                    continue;
-                }
+
+int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int r = obstacleGrid.size();
+        int c = obstacleGrid[0].size();
+
+        if (obstacleGrid[0][0] == 1 || obstacleGrid[r-1][c-1] == 1) return 0;
+
+        vector <vector <int> > gridSum(r, vector<int>(c, 0));
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                // 1. If there's an obstacle, it's unreachable (0)
                 if (obstacleGrid[i][j] == 1) {
-                    dp[i][j] = 0;
+                    gridSum[i][j] = 0;
                     continue;
                 }
-                dp[i][j]  = dp[i][j-1] + dp[i-1][j];
-                
+                // 2. Base case: The start
+                if (i == 0 && j == 0) {
+                    gridSum[i][j] = 1;
+                    continue;
+                }
+                // 3. First row: depends on the cell to the left
+                if (i == 0) {
+                    gridSum[i][j] = gridSum[i][j- 1];
+                    continue;
+                }
+                // 4. First column: depends on the cell above
+                if (j == 0) { 
+                    gridSum[i][j] = gridSum[i-1][j];
+                    continue;
+                }
+                // 5. Middle cells: sum of top and left
+                gridSum[i][j] = gridSum[i - 1][j] + gridSum[i][j - 1];
             }
         }
-        
-        return dp[m-1][n-1];
-    }
+        return gridSum[r-1][c-1];
+    }   
+
 };
 
 

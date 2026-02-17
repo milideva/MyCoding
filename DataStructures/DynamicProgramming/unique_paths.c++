@@ -95,18 +95,18 @@ public:
   // Now it's easy to convert it to a dp array without recursion
   // A bottom up approach, often with iterative
   int uniquePathsIterativeTabulation (int m, int n) {
-    int dp[m][n];
+    int gridSum[m][n];
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
         // base case : Pascal's triangle
         if (i == 0 || j == 0) {
-          dp[i][j] = 1;
+          gridSum[i][j] = 1;
           continue;
         } 
-        dp[i][j] = dp[i-1][j] + dp[i][j-1];  
+        gridSum[i][j] = gridSum[i-1][j] + gridSum[i][j-1];  
       }
     }
-    return dp[m-1][n-1];
+    return gridSum[m-1][n-1];
   }
 
 };
@@ -120,7 +120,7 @@ int main () {
   count = sol.uniquePathsRecursiveMemoized(7, 3);
   cout << "#Unique paths recursive memoized: " << count << endl;
 
-  count = sol.uniquePaths(7, 3);
+  count = sol.uniquePathsIterativeTabulation(7, 3);
   cout << "#Unique paths DP: " << count << endl;
 
   return 0;
