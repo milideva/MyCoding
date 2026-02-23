@@ -41,6 +41,42 @@ Note:
 
 using namespace std;
 
+
+/*
+
+Comparison of MyCalendarSet and MyCalendarMap:
+
+MyCalendarSet (O(log N)):
+- Uses a std::set to store intervals [start, end).
+- The set automatically keeps the intervals sorted by their start times.
+- When booking a new event, it performs a binary search (lower_bound) to find
+  the potential position for the new interval.
+- It then only needs to check for overlaps with the immediate predecessor and successor
+  intervals, making it very efficient.
+- Time complexity is O(log N) for each book() call because set operations
+  (lower_bound, insert) are logarithmic.
+
+MyCalendarMap (O(N)):
+- Uses a std::map to implement a sweep-line algorithm. The map keys are the
+  time points (start/end), and the values are the change in the number of
+  ongoing events (+1 for start, -1 for end).
+- To check for a double booking, it must iterate through the entire map to
+  calculate the cumulative number of active events at each time point.
+- If the count of active events ever exceeds 1, it indicates a double booking.
+- Time complexity is O(N) for each book() call because the canAdd() helper
+  function iterates through all N boundary points in the map.
+
+Conclusion:
+MyCalendarSet is the better approach for this problem. Its O(log N) time
+complexity is significantly more efficient than the O(N) complexity of
+MyCalendarMap, especially as the number of events grows. The sweep-line
+approach in MyCalendarMap is a powerful technique but is better suited for
+problems where you need to find the maximum number of overlaps (like "Meeting Rooms II"),
+not just detect if any overlap exists.
+
+*/
+
+
 /*
  * Time Complexity: O(log N) per book() call, where N is the number of
  * events in the calendar. This is because std::set `lower_bound` and `insert`
