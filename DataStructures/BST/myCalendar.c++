@@ -1,4 +1,5 @@
 /*
+729. My Calendar I
 
 Implement a MyCalendar class to store your events. A new event can be added if
 adding the event will not cause a double booking.
@@ -40,11 +41,16 @@ Note:
 
 using namespace std;
 
-class MyCalendar {
+/*
+ * Time Complexity: O(log N) per book() call, where N is the number of
+ * events in the calendar. This is because std::set `lower_bound` and `insert`
+ * operations both take logarithmic time.
+ */
+class MyCalendarSet {
   set <pair <int, int>> cal; // set is an ordered data structure
 
 public:
-    MyCalendar() {   
+    MyCalendarSet() {   
     }
     
   bool book(int start, int end) {
@@ -67,14 +73,34 @@ public:
   }
 };
 
+/*
+ * Time Complexity: O(N) per book() call, where N is the number of
+ * boundary points in the map. The canAdd() function iterates through all
+ * entries in the map.
+ */
 class MyCalendarMap {
   map <int, int> calMap;
 
-  bool canAdd(int maxConflicts) {
+  /*
+   * This function uses a sweep-line algorithm (or line sweep) to detect
+   * double bookings. It iterates through the time points (boundaries) in
+   * chronological order and keeps a running count of active events.
+   *
+   * For example, booking (10, 20) and then (15, 25) would create these boundaries:
+   *
+   *   +1      +1      -1      -1
+   *---|-------|-------|-------|---
+   *   10      15      20      25
+   *
+   * Sweep-line process:
+   * - At time 10, active events become 1.
+   * - At time 15, active events become 2. (count > numMeetingRooms, so this is a double booking)
+   */
+  bool canAdd(int numMeetingRooms) {
     int count = 0;
     for (auto e : calMap) {
       count += e.second;
-      if (count > maxConflicts)
+      if (count > numMeetingRooms)
         return false;
     }
     return true;
@@ -87,10 +113,11 @@ public:
     bool book(int start, int end) {
         calMap[start]++;
         calMap[end]--;
-        int maxConflicts = 1;
-        if (canAdd(maxConflicts)) {
+        int nRooms = 1;
+        if (canAdd(nRooms)) {
             return true;
         }
+        // revert the changes if we cannot add the event
         calMap[start]--;
         calMap[end]++;
         
@@ -99,7 +126,7 @@ public:
 };
 
 void test_set () {
-  MyCalendar my;
+  MyCalendarSet my;
   bool ret;
   ret = my.book(10, 20); // returns true
   cout << "Start: " << 10 << " End: " << 20 << " Booked:" << ret << endl;
