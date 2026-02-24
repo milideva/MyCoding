@@ -41,27 +41,88 @@ Note:
 #include <iostream>
 using namespace std;
 
+/*
+ * Approach: Boundary Counting (Sweep-Line Algorithm)
+ *
+ * This problem asks for the maximum number of concurrent events (the "K-booking")
+ * at any point in time after a new event is added. This is a classic application
+ * of the sweep-line algorithm, and is very similar to LeetCode problem 253,
+ * "Meeting Rooms II".
+ *
+ * How it works:
+ * 1. We use an ordered map (`calMap`) to store the "boundary points" of all events.
+ *    The map's key is the time, and the value is the change in the number of
+ *    active events at that time.
+ *
+ * 2. For each new event `book(start, end)`, we do two things:
+ *    - `calMap[start]++`: Increment the count at the start time, signifying a new event has begun.
+ *    - `calMap[end]--`: Decrement the count at the end time, signifying an event has ended.
+ *
+ * 3. After adding the new event's boundaries, we "sweep" through the timeline by
+ *    iterating through our ordered map. We keep a running count of active events (`count`).
+ *    As we iterate from one time point to the next, `count` will increase or decrease.
+ *    The maximum value that `count` reaches at any point is our answer, K.
+ *
+ * Example: book(10, 20), then book(10, 40)
+ * - After book(10, 20): calMap = { 10: 1, 20: -1 }
+ *   - Sweep:
+ *     - At t=10, count becomes 1. maxK = 1.
+ *     - At t=20, count becomes 0. maxK = 1.
+ *   - Return 1.
+ *
+ * - After book(10, 40): calMap = { 10: 2, 20: -1, 40: -1 }
+ *   - Sweep:
+ *     - At t=10, count becomes 2. maxK = 2.
+ *     - At t=20, count becomes 1. maxK = 2.
+ *     - At t=40, count becomes 0. maxK = 2.
+ *   - Return 2.
+ *
+ * Time Complexity: O(N) per `book()` call.
+ * - The map insertions/updates (`calMap[start]++`, `calMap[end]--`) each take O(log N) time.
+ * - The subsequent sweep (`calculateMaxK`) iterates through the entire map, which can
+ *   have up to 2*N entries. This takes O(N) time.
+ * - The O(N) sweep dominates, so the overall complexity is O(N) per call.
+ *   (Note: The problem constraints state N <= 400, so an N^2 solution might also pass, but this is much better).
+ *
+ * Space Complexity: O(N)
+ * - The map stores up to two boundary points for each of the N events.
+ */
 class MyCalendarThree {
+    // map key: time point, value: change in active events (+1 for start, -1 for end)
     map <int, int> calMap;
     
-    int canAdd () {
-        int count = 0;
-        int maxK = 0;
+    /*
+     * This function executes the "sweep-line" part of the algorithm.
+     * It iterates through the boundary points in chronological order, calculating
+     * the number of active events at each step and returning the maximum
+     * number found.
+     */
+    int calculateMaxK () {
+        int activeEvents = 0; // Represents the number of concurrent events at the current time
+        int maxActive = 0;    // The maximum number of concurrent events found so far
         
-        for (auto e : calMap) {
-            count += e.second;
-            maxK = max(maxK, count);
+        // Iterate through the map, which is sorted by time
+        for (auto const& [time, change] : calMap) {
+            // Update the count of active events
+            activeEvents += change;
+            // Update the maximum if the current count is greater
+            maxActive = max(maxActive, activeEvents);
         }
-        return maxK;
+        return maxActive;
     }
 public:
     MyCalendarThree() {
     }
    
     int book(int start, int end) {
+        // Mark the start of a new event
         calMap[start]++;
+        // Mark the end of an event
         calMap[end]--;
-        return canAdd();
+
+        // The K-booking is the maximum number of overlapping events found
+        // by sweeping across the entire timeline.
+        return calculateMaxK();
     }
 };
 
