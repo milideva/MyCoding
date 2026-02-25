@@ -40,16 +40,35 @@ struct TreeNode {
 */
 
 class Solution {
+private:
+    // Helper function to check if a node exists in the BST.
+    // Time complexity: O(H), where H is the height of the tree.
+    bool exists(TreeNode* root, TreeNode* node) {
+        if (!root || !node) return false;
+        TreeNode* current = root;
+        while (current) {
+            if (current->val == node->val) {
+                return true;
+            }
+            current = node->val < current->val ? current->left : current->right;
+        }
+        return false;
+    }
+
 public:
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
         if (!root || !p || !q) return nullptr;
-        if (root->val > p->val && root->val > q->val) {
-            return lowestCommonAncestor(root->left, p, q);
+
+        // A robust solution must first verify both nodes exist in the tree.
+        // If either is missing, an LCA is not defined.
+        if (!exists(root, p) || !exists(root, q)) {
+            return nullptr;
         }
-        if (root->val < p->val && root->val < q->val) {
-            return lowestCommonAncestor(root->right, p, q);
-        }
-        return root;
+
+        // The original logic is correct if both nodes exist.
+        if (root->val > p->val && root->val > q->val) return lowestCommonAncestor(root->left, p, q);
+        if (root->val < p->val && root->val < q->val) return lowestCommonAncestor(root->right, p, q);
+        return root; // This is the split point, so it's the LCA.
     }
 };
 
