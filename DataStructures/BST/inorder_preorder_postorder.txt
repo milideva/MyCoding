@@ -12,5 +12,43 @@ Types of tree traversals:
     Postorder traversal is used to delete the tree.
     Postorder traversal is also used to get the postfix expression of an expression tree.
 
+    Pseudo Code (Recursive):
+      Preorder(node):
+        if node == null: return
+        visit(node)
+        Preorder(node.left)
+        Preorder(node.right)
+
+      Inorder(node):
+        if node == null: return
+        Inorder(node.left)
+        visit(node)
+        Inorder(node.right)
+
+      Postorder(node):
+        if node == null: return
+        Postorder(node.left)
+        Postorder(node.right)
+        visit(node)
+
 * Breadth First or Level Order Traversal 
 
+    Pseudo Code (Iterative using Queue):
+      LevelOrder(root):
+        if root == null: return
+        queue q
+        q.enqueue(root)
+        while q is not empty:
+          node = q.dequeue()
+          visit(node)
+          if node.left != null: q.enqueue(node.left)
+          if node.right != null: q.enqueue(node.right)
+
+* Time Complexity:
+  O(N) for all traversals (Inorder, Preorder, Postorder, Level Order), 
+  where N is the number of nodes in the tree.
+  Reason: The algorithm visits every node exactly once.
+
+* Space Complexity:
+  DFS (Inorder, Preorder, Postorder): O(height) height of the tree (stack usage).
+  BFS (Level Order): O(width) maximum width of the tree (queue usage).
