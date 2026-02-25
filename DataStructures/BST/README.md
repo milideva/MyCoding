@@ -205,3 +205,23 @@ int main() {
     return 0;
 }
 ```
+
+
+* Core BST Concepts
+    98. Validate Binary Search Tree
+    230. Kth Smallest Element in a BST
+    235. Lowest Common Ancestor of a Binary Search Tree
+    700. Search in a Binary Search Tree
+
+* Construction and Modification
+
+    450. Delete Node in a BST
+    701. Insert into a Binary Search Tree
+    108. Convert Sorted Array to Binary Search Tree
+
+* Advanced Problems & Follow-ups
+
+    285. Inorder Successor in BST
+    272. Closest Binary Search Tree Value II
+    1382. Balance a Binary Search Tree
+
