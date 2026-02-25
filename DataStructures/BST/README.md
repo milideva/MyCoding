@@ -13,10 +13,12 @@ The height of a balanced BST is O(log n). The height of a skewed (unbalanced) BS
 
 | Operation    | Average Case Time | Worst Case Time | Space (Worst) |
 |--------------|-------------------|-----------------|---------------|
-| Search(key)  | O(log n)          | O(n)            | O(h) or O(log n) for recursive stack |
-| Insert(key)  | O(log n)          | O(n)            | O(h) or O(log n) for recursive stack |
-| Delete(key)  | O(log n)          | O(n)            | O(h) or O(log n) for recursive stack |
-| Min/Max      | O(log n)          | O(n)            | O(h) or O(log n) for recursive stack |
+| find(key)    | O(log n)          | O(n)            | O(h)          |
+| insert(key)  | O(log n)          | O(n)            | O(h)          |
+| erase(key)   | O(log n)          | O(n)            | O(h)          |
+| Min/Max      | O(log n)          | O(n)            | O(h)          |
+
+*Note on Space Complexity:* The space complexity is for the recursive call stack. `h` is O(log n) for a balanced tree (average case) and O(n) for a skewed tree (worst case). Iterative implementations use O(1) space.
 
 ## Visual Representation
 
@@ -99,18 +101,48 @@ This means you get the benefits of a balanced BST (guaranteed O(log n) operation
 int main() {
     std::set<int> bst_set;
 
-    // Insert elements (O(log n))
+    // --- Insertion (O(log n)) ---
+    // insert() takes a value.
     bst_set.insert(8);
     bst_set.insert(3);
     bst_set.insert(10);
-    bst_set.insert(1);
 
-    // Search for an element (O(log n))
+    // emplace() constructs the element in-place, which can be more efficient for complex types.
+    bst_set.emplace(1);
+
+    // Note on updating: You cannot directly change an element in a set as it would
+    // violate the sorted order. You must erase the old element and insert the new one.
+    bst_set.erase(10);
+    bst_set.insert(11);
+
+    // --- Search and Bounds (O(log n)) ---
+    // find() returns an iterator to the element, or .end() if not found.
     if (bst_set.find(3) != bst_set.end()) {
         std::cout << "Found 3" << std::endl;
     } else {
         std::cout << "Did not find 3" << std::endl;
     }
+
+    //std::lower_bound - returns iterator to first element in the given range which is EQUAL_TO or Greater than val. basically >= val.
+
+    // std::upper_bound - returns iterator to first element in the given range which is strictly Greater than val. basically > val.
+
+/* 
+    value a a a m m m s s s
+    index 0 1 2 3 4 5 6 7 8
+    bound       l     u
+    l is lower bound of m
+    u is upper bound of m
+
+    When the key b does not exist in the list, the upper and lower bound would be the first element bigger than b, which in this case is m at index 3.
+*/
+    // lower_bound() returns an iterator to the first element not less than the given key.
+    auto it_lower = bst_set.lower_bound(4); // Will point to 8
+    std::cout << "Lower bound of 4 is: " << *it_lower << std::endl;
+
+    // upper_bound() returns an iterator to the first element greater than the given key.
+    auto it_upper = bst_set.upper_bound(8); // Will point to 11
+    std::cout << "Upper bound of 8 is: " << *it_upper << std::endl;
 
     // In-order traversal (prints sorted elements)
     std::cout << "Set contents: ";
@@ -118,7 +150,7 @@ int main() {
         std::cout << key << " ";
     }
     std::cout << std::endl;
-
+    
     // Delete an element (O(log n))
     bst_set.erase(3);
 
@@ -136,15 +168,33 @@ int main() {
 int main() {
     std::map<int, std::string> bst_map;
 
-    // Insert key-value pairs (O(log n))
+    // --- Insertion and Update (O(log n)) ---
+    // operator[] is a convenient way to insert or update.
+    // If the key doesn't exist, it inserts a default-constructed value, then assigns.
     bst_map[8] = "Eight";
+
+    // insert() takes a std::pair. It will not overwrite an existing key.
     bst_map.insert({3, "Three"});
+
+    // emplace() constructs the pair in-place, avoiding a copy. More efficient.
     bst_map.emplace(10, "Ten");
 
-    // Search for a key (O(log n))
+    // To update a value, simply use operator[] again.
+    bst_map[8] = "New Eight";
+
+    // --- Search and Bounds (O(log n)) ---
+    // find() returns an iterator to the element, or .end() if not found.
     if (bst_map.find(3) != bst_map.end()) {
         std::cout << "Found key 3 with value: " << bst_map.at(3) << std::endl;
     }
+
+    // lower_bound() returns an iterator to the first element with a key not less than the given key.
+    auto it_lower = bst_map.lower_bound(9); // Will point to the pair {10, "Ten"}
+    std::cout << "Lower bound of 9 is key: " << it_lower->first << std::endl;
+
+    // upper_bound() returns an iterator to the first element with a key greater than the given key.
+    auto it_upper = bst_map.upper_bound(8); // Will point to the pair {10, "Ten"}
+    std::cout << "Upper bound of 8 is key: " << it_upper->first << std::endl;
 
     // In-order traversal by key
     std::cout << "Map contents:" << std::endl;
