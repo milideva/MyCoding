@@ -161,6 +161,35 @@ int main() {
     std::cout << "isBST_bruteforce(): " << (sol.isBST_bruteforce(root1) ? "true" : "false") << std::endl;
     std::cout << "isBST_range():      " << (sol.isBST_range(root1) ? "true" : "false") << std::endl;
     std::cout << "isBST_inorder():    " << (sol.isBST_inorder(root1) ? "true" : "false") << std::endl;
+    std::cout << std::endl;
+
+    // Test Case 4: Empty Tree
+    std::cout << "--- Test Case 4 (Empty Tree) ---" << std::endl;
+    std::cout << "isBST_range(nullptr): " << (sol.isBST_range(nullptr) ? "true" : "false") << std::endl;
+    std::cout << std::endl;
+
+    // Test Case 5: Single Node
+    TreeNode* root_single = new TreeNode(100);
+    std::cout << "--- Test Case 5 (Single Node) ---" << std::endl;
+    std::cout << "isBST_range():      " << (sol.isBST_range(root_single) ? "true" : "false") << std::endl;
+    sol.destroyTree(root_single);
+    std::cout << std::endl;
+
+    // Test Case 6: Duplicate Values (should fail strictly increasing check)
+    TreeNode* root_dup = new TreeNode(100);
+    root_dup->left = new TreeNode(100); 
+    std::cout << "--- Test Case 6 (Duplicates - should fail) ---" << std::endl;
+    std::cout << "isBST_range():      " << (sol.isBST_range(root_dup) ? "true" : "false") << std::endl;
+    sol.destroyTree(root_dup);
+    std::cout << std::endl;
+
+    // Test Case 7: INT_MAX Boundary (Verifies long long range logic)
+    TreeNode* root_limit = new TreeNode(std::numeric_limits<int>::max());
+    root_limit->left = new TreeNode(100);
+    std::cout << "--- Test Case 7 (INT_MAX Boundary) ---" << std::endl;
+    std::cout << "isBST_range():      " << (sol.isBST_range(root_limit) ? "true" : "false") << std::endl;
+    sol.destroyTree(root_limit);
+    std::cout << std::endl;
 
     // Memory for the tree is explicitly deleted.
     sol.destroyTree(root1);
