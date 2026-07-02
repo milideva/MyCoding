@@ -18,7 +18,7 @@ typedef struct node_ node_t;
 
 /*
     In a BST, successor is the smallest element in the right subtree if right exist.
-    else it is the parent.
+    else it is the closest ancestor where we took a left turn.
 */
 node_ *getSuccessor (node_ *root, int key) {
 
@@ -26,7 +26,7 @@ node_ *getSuccessor (node_ *root, int key) {
 
     if (root->key == key) {
         if (root->right == nullptr) {
-            // No successor if target is the rightmost node
+            // Successor is not in this subtree; will be determined by an ancestor
             return nullptr;
         }
         // If right subtree exists, find minimum node there (successor)
@@ -45,11 +45,15 @@ node_ *getSuccessor (node_ *root, int key) {
     return getSuccessor(root->right, key);
 }
 
+/* 
+  Finds the largest element in the left subtree if it exists; 
+  otherwise, it is the closest ancestor where we took a right turn. 
+*/
 node_t *getPredecessor (node_t *root, int key) {
     if (!root) return nullptr;
     if (root->key == key) {
         if (root->left == nullptr) {
-            // No predecessor if target is the leftmost node in this subtree
+            // Predecessor is not in this subtree; will be determined by an ancestor
             return nullptr;
         }
         // If left subtree exists, find maximum node there (predecessor)
@@ -76,6 +80,15 @@ node_t* createNode(int key) {
   return newNode;
 }
 
+// Deletes all nodes in the tree using a Post-Order Traversal (Left, Right, Root)
+void destroyTree(node_t* root) {
+    if (!root) return;
+
+    destroyTree(root->left);
+    destroyTree(root->right);
+
+    delete root;
+}
 // Function to insert a node into the BST
 node_t* insert(node_t* root, int key) {
   if (!root) {
@@ -169,5 +182,8 @@ int main() {
   succ = 60;
   pred = 50;
   test(root, target_key, succ, pred); 
+
+  destroyTree(root);
+  root = nullptr;
   return 0;
 }
