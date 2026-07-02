@@ -68,8 +68,9 @@ bool can_visit (vector<vector<char>>& grid, vector<vector<bool>>& visited, int r
 
 void count_islands_dfs (vector<vector<char>>& grid, 
                         vector<vector<bool>>& visited, int i, int j) {
-  static int row_adj[] = {-1, 0, 0, +1};
-  static int col_adj[] = {0, -1, +1, 0};
+  // These arrays help to get row and column numbers of 4 neighbors of a given cell
+  static int row_adj[] = {-1, 0, 0, 1};
+  static int col_adj[] = {0, -1, 1, 0};
   
   // We mark this node as visited and run dfs on its edges
   visited[i][j] = true;
@@ -78,19 +79,17 @@ void count_islands_dfs (vector<vector<char>>& grid,
     int row = i + row_adj[k];
     int col = j + col_adj[k];
 
-    if (can_visit(grid, visited, i, j)) {
+    // Recur for all connected neighbours
+    if (can_visit(grid, visited, row, col)) {
       count_islands_dfs(grid, visited, row, col);
     }
   }
 }
 
 int numIslands (vector<vector<char>>& grid) {
-        
   int m = grid.size();
   if (!m) return 0;
   int n = grid[0].size();
-  //vector <vector <bool>> visited;
-  //visited.assign(m, vector <bool> (n, false));
   vector<vector<bool>> visited(m, vector<bool> (n, false));
   
   
@@ -98,7 +97,9 @@ int numIslands (vector<vector<char>>& grid) {
   
   for (int i = 0; i < m; i++ ) {
     for (int j = 0; j < n; j++ ) {
-      if (can_visit(grid, visited, i, j)) {
+      // If a cell with value '1' is not yet visited, then new island found.
+      // Visit all cells in this island and increment island count.
+      if (grid[i][j] == '1' && visited[i][j] == false) {
         count_islands_dfs(grid, visited, i, j);
         count++;
       }
