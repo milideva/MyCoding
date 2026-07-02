@@ -114,6 +114,14 @@ public:
         TreeNode* prev = nullptr;
         return inOrderIsBST(root, prev);
     }
+
+    // Recursively delete the tree to prevent memory leaks.
+    void destroyTree(TreeNode* node) {
+        if (!node) return;
+        destroyTree(node->left);
+        destroyTree(node->right);
+        delete node;
+    }
 };
 
 // Main function to test the solutions.
@@ -129,7 +137,7 @@ int main() {
     root1->right->left = new TreeNode(111);
     root1->right->right = new TreeNode(170);
     root1->left->left->left = new TreeNode(10);
-    root1->left->left->right = new TreeNode(140); // Invalid: > parent's parent (100)
+    root1->left->left->right = new TreeNode(140); // Invalid: > ancestors 50 and 100
     root1->left->right->left = new TreeNode(55);
     root1->left->right->right = new TreeNode(75);
 
@@ -154,8 +162,8 @@ int main() {
     std::cout << "isBST_range():      " << (sol.isBST_range(root1) ? "true" : "false") << std::endl;
     std::cout << "isBST_inorder():    " << (sol.isBST_inorder(root1) ? "true" : "false") << std::endl;
 
-    // Note: Memory for the tree is not explicitly deleted in this simple example.
-    // In a real application, a proper cleanup function would be needed.
+    // Memory for the tree is explicitly deleted.
+    sol.destroyTree(root1);
 
     return 0;
 }
