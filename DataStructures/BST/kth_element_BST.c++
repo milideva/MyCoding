@@ -59,9 +59,7 @@ public:
     int kthSmallest(TreeNode* root, int k) {
         if (!root) return -1; // Edge case: empty tree
         int count = 0; // To keep track of the number of nodes visited
-        TreeNode* current = root;
-        
-        
+        return inOrder(root, count, k); // Call the helper and return the result
     }
 };
 
