@@ -49,17 +49,29 @@ class Solution2 {
   map <int, int> calMap;
 public:
   /*
-   * Time Complexity: O(N log N), where N is the number of intervals.
-   * - The code iterates through N+1 intervals (the original list plus the new one).
-   * - For each interval, it performs two insertions into the `std::map`.
-   * - Each map insertion takes O(log K) time, where K is the number of unique
-   *   boundary points. In the worst case, K is proportional to N.
-   * - Building the map of all boundary points therefore takes O(N log N) time.
-   * - The final sweep through the map takes O(N) time.
-   * - The dominant factor is the map construction, leading to O(N log N).
+   * LeetCode 57: Insert Interval
    *
-   * Space Complexity: O(N)
-   * - The `calMap` stores up to 2 * (N + 1) boundary points, resulting in O(N) space.
+   * Algorithm: Sweep-Line (using std::map)
+   * We use a map to store the net change in active intervals at each 
+   * boundary point. +1 for start, -1 for end. Traversing the sorted map 
+   * allows us to merge all overlapping segments.
+   *
+   * Complexity Analysis:
+   * - Time Complexity: O(N log N)
+   *   Reason: Each of the N intervals is inserted into the Red-Black Tree 
+   *   (std::map). Each insertion is O(log N).
+   * - Space Complexity: O(N)
+   *   Reason: Storing 2N boundary points in the map.
+   *
+   * Comparison:
+   * - Greedy Linear Scan (Optimized): Since the input is already sorted, 
+   *   we can solve this in O(N) time and O(1) extra space (excluding result) 
+   *   by iterating once and merging only the intervals that overlap with 
+   *   the 'newInterval'.
+   * - Brute Force: Append the new interval to the list, sort all intervals 
+   *   by start time (O(N log N)), then perform a standard O(N) merge pass. 
+   *   The sweep-line approach is essentially a variation of this but uses 
+   *   a tree to handle sorting.
    */
   vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
     vector<vector<int>> res;

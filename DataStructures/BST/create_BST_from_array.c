@@ -3,6 +3,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* 
+  LeetCode 108: Convert Sorted Array to Binary Search Tree
+
+  Algorithm: Recursive Midpoint Split
+  To ensure the BST is height-balanced, the root must be the middle element 
+  of the sorted array. We recursively apply this logic to the left and 
+  right halves of the array.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit every element in the array exactly once to create its 
+    corresponding node.
+  - Space Complexity: O(log N)
+    Reason: Since we always split at the midpoint, the tree is guaranteed 
+    to be balanced, so the recursion stack depth is O(log N).
+
+  Comparison:
+  - Brute Force: Insert elements one by one from the array into a BST. 
+    - If the array is sorted, this results in a skewed tree (linked list) 
+      taking O(N^2) total time.
+    - If you randomize the array first, it takes O(N log N).
+  - Current Approach: O(N) is the optimal theoretical lower bound because 
+    every node must be created.
+*/
+
 /* create a BST with min height, from a sorted array */
 
 

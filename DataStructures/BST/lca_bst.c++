@@ -9,15 +9,31 @@
 using namespace std;
 
 /*
+  LeetCode 235: Lowest Common Ancestor of a Binary Search Tree
 
-235. Lowest Common Ancestor of a Binary Search Tree
+  Algorithm: Iterative/Recursive Search using BST Property
+  In a BST, the LCA of nodes p and q is the node where the paths to p and 
+  q diverge. 
+  - If both p and q are smaller than current node, move to the left subtree.
+  - If both are larger, move to the right subtree.
+  - Otherwise, the current node is the LCA (one is on the left, one is on 
+    the right, or one is the current node itself).
 
-Given a binary search tree (BST), find the lowest common ancestor (LCA) node of two given nodes in the BST.
+  Complexity Analysis:
+  - Time Complexity: O(H)
+    Reason: We follow a single path from the root down to the LCA. H is 
+    the height of the tree.
+  - Space Complexity: O(H) (Recursive) or O(1) (Iterative).
 
+  Brute Force comparison:
+  - Standard Binary Tree LCA (LC 236): Does not use BST property, must 
+    traverse both subtrees. Time: O(N).
+  - BST Property Optimization: By using the values of p and q to guide the 
+    search, we skip entire subtrees, making it O(H).
+
+  Note: The implementation below includes an 'exists' check to ensure both 
+  nodes are in the tree, which is a robust engineering addition.
 */
-
-#include <iostream>
-#include <vector>
 
 struct TreeNode {
     int val;

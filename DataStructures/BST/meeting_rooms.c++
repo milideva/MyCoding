@@ -20,21 +20,33 @@ Constraints:
 */
 
 /*
- 
- https://leetcode.com/problems/meeting-rooms-ii/discuss/203658/HashMapTreeMap-resolves-Scheduling-Problem
+  LeetCode 252: Meeting Rooms
 
- Here is the idea -
+  Algorithm: Sweep-Line (using std::map)
+  We treat every start and end time as an event on a timeline. A person can 
+  attend all meetings if at any given time, the number of active meetings 
+  does not exceed 1.
 
- Load all intervals to the TreeMap, where keys are intervals'
- start/end boundaries, and values accumulate the changes at that point
- in time.
+  Complexity Analysis:
+  - Time Complexity: O(N log N)
+    Reason: We insert N intervals into the map. Each insertion takes O(log N). 
+    Traversing the map takes O(N).
+  - Space Complexity: O(N)
+    Reason: We store all N boundary points in the map.
 
- Traverse the TreeMap (in other words, sweep the timeline). If a new
- interval starts, increase the counter (k value) by 1, and the counter
- decreases by 1, if an interval has finished.
+  Alternative Approaches:
+  - Sorting (Standard): Sort the intervals by start time. A person can 
+    attend all if `intervals[i][1] <= intervals[i+1][0]` for all i.
+    - Time: O(N log N), Space: O(1) or O(log N) depending on sort.
+    - Comparison: Sorting is generally preferred for this simple check as 
+      it uses less space than a map.
 
- Calcalulate the number of the active ongoing intervals.
-
+  Brute Force Approach:
+  - Compare every pair of meetings [i, j]. Check if they overlap using:
+    `max(start_i, start_j) < min(end_i, end_j)`.
+  - Time Complexity: O(N^2).
+  - Comparison: This is significantly slower for large inputs (N=10^4). 
+    Sorting or Sweep-line is the optimized standard.
 */
 
 #include <vector>

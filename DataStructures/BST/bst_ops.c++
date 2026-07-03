@@ -2,6 +2,37 @@
 
 using namespace std;
 
+/*
+  Problem: Binary Search Tree (BST) Operations: Successor, Predecessor, Insertion
+
+  Algorithms & Complexity:
+
+  1. getSuccessor (Smallest element in right subtree or closest left-turn ancestor):
+     - Time Complexity: O(H)
+       Reason: We traverse from the root down to a leaf in the worst case. 
+       H is the height of the tree. (O(log N) balanced, O(N) skewed).
+     - Space Complexity: O(H)
+       Reason: Recursive calls on the stack.
+     - Iterative Alternative: O(1) space.
+     - Brute Force: Perform a full in-order traversal (O(N)), find the target, 
+       and take the next element.
+
+  2. getPredecessor (Largest element in left subtree or closest right-turn ancestor):
+     - Time Complexity: O(H)
+     - Space Complexity: O(H)
+     - Brute Force: Full in-order traversal (O(N)).
+
+  3. insert:
+     - Time Complexity: O(H)
+     - Space Complexity: O(H)
+     - Brute Force: N/A, standard BST property must be maintained.
+
+  Comparison:
+  - Recursive vs Iterative: Recursive is elegant but uses O(H) stack space. 
+    Iterative is O(1) space and preferred for production systems with very 
+    deep trees to avoid stack overflow.
+*/
+
 struct node_ {
     node_ *left, *right;
     int key;

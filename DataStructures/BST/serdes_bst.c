@@ -3,6 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+  Problem: BST Serialization and Deserialization
+
+  Algorithm: Pre-order DFS
+  For a general tree, we need two traversals or null markers to rebuild it. 
+  For a BST, a single Pre-order or Post-order traversal is sufficient to 
+  reconstruct the exact structure because the BST property implicitly 
+  defines the parent-child boundaries. (Note: The implementation below 
+  uses markers for simplicity).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit each node once during serialization and once 
+    during deserialization.
+  - Space Complexity: O(N)
+    Reason: Storage of the serialized string/file.
+
+  Brute Force comparison:
+  - Storing as a full 2D matrix (adjacency matrix) would take O(N^2) space. 
+  - The Pre-order traversal is the most space-efficient standard approach.
+*/
+
 /* create a BST with min height, from a sorted array */
 
 

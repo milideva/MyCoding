@@ -1,36 +1,33 @@
 /*
+  LeetCode 230: Kth Smallest Element in a BST
 
-230. Kth Smallest Element in a BST
-Medium
-Topics
-premium lock icon
-Companies
-Hint
-Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
+  Problem: Return the kth smallest value (1-indexed) in a BST.
 
- 
+  Algorithm: Iterative/Recursive In-order with Early Exit
+  In-order traversal of a BST visits nodes in increasing order. We track the 
+  number of nodes visited and return as soon as the count reaches k.
 
-Example 1:
+  Complexity Analysis:
+  - Time Complexity: O(H + k)
+    Reason: We must traverse down to the smallest element (O(H)) and then 
+    visit k elements. In the best case (k=1), it is O(H). In the worst 
+    case (k=N), it is O(N).
+  - Space Complexity: O(H)
+    Reason: Recursion stack or manual stack depth is proportional to 
+    the tree height.
 
+  Brute Force comparison:
+  - Traverse the entire tree (O(N)), store values in an array, sort the 
+    array (O(N log N)), and return the kth element.
+  - Standard In-order Brute Force: Traverse entire tree (O(N)), store 
+    in array, return result[k-1]. This is O(N) time and space.
+  - Comparison: The early-exit approach is better because it avoids visiting 
+    unnecessary nodes (N - k nodes) and uses O(H) instead of O(N) space.
 
-Input: root = [3,1,4,null,2], k = 1
-Output: 1
-Example 2:
-
-
-Input: root = [5,3,6,2,4,null,null,1], k = 3
-Output: 3
- 
-
-Constraints:
-
-The number of nodes in the tree is n.
-1 <= k <= n <= 104
-0 <= Node.val <= 104
- 
-
-Follow up: If the BST is modified often (i.e., we can do insert and delete operations) and you need to find the kth smallest frequently, how would you optimize?
-
+  Follow-up Optimization:
+  - If the tree is modified often, store the "size" of the left subtree in 
+    each node. This allows finding the kth element in O(H) time by 
+    comparing k with the left-subtree size at each step.
 */
 
 struct TreeNode {

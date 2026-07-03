@@ -1,6 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+  Problem: Predecessor and Successor in a BST
+
+  Algorithm: Recursive BST Search
+  1. If root is NULL, return.
+  2. If key is found:
+     - Predecessor is the max in left subtree.
+     - Successor is the min in right subtree.
+  3. If key is smaller than root:
+     - Update successor to current root (potential successor).
+     - Recurse left.
+  4. If key is larger than root:
+     - Update predecessor to current root (potential predecessor).
+     - Recurse right.
+
+  Complexity Analysis:
+  - Time Complexity: O(H)
+    Reason: We follow a single path from root to leaf to locate the key 
+    and its neighbors. H is tree height.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth.
+
+  Brute Force comparison:
+  - Perform a full in-order traversal (O(N)), store values in an array, 
+    and find the elements before and after the key. 
+  - The O(H) BST search is much more efficient as it skips irrelevant 
+    subtrees.
+*/
+
 struct node_ {
     int key;
     struct node_ *left;

@@ -36,21 +36,33 @@ class Solution {
 public:
   
   /*
-   * This function merges overlapping intervals using a sweep-line algorithm.
-   * The core idea is to treat the start and end points of all intervals as events
-   * on a timeline. We process these events in chronological order.
+   * LeetCode 56: Merge Intervals
    *
-   * 1. Boundary Counting: We iterate through all input intervals and use a map (`calMap`)
-   *    to store the changes at each boundary. For an interval [start, end], we
-   *    increment the count at `start` and decrement the count at `end`.
+   * Algorithm: Sweep-Line (using std::map)
+   * Treat start and end points as events. A merged interval begins when 
+   * the active interval count moves from 0 to 1, and ends when it 
+   * returns to 0.
    *
-   * 2. Sweeping the Timeline: We then iterate through the sorted map. A running `count`
-   *    tracks the number of currently active/overlapping intervals.
-   *    - When we encounter a new potential merged interval (i.e., when the `count` was 0),
-   *      we record its start time.
-   *    - We update the `count` with the value from the map.
-   *    - When the `count` drops back to 0, it signifies the end of a merged interval.
-   *      We then add the [start, end] pair to our result.
+   * Complexity Analysis:
+   * - Time Complexity: O(N log N)
+   *   Reason: Map insertions take O(log N). Sweep takes O(N).
+   * - Space Complexity: O(N)
+   *   Reason: Map storage for boundary points.
+   *
+   * Comparison:
+   * - Sorting Approach (Standard): Sort intervals by start time. Iterate 
+   *   and merge current with previous if `curr.start <= prev.end`.
+   *   - Time: O(N log N), Space: O(1) or O(log N).
+   *   - Advantage: Generally faster in practice than map due to 
+   *     cache-friendly array access.
+   *
+   * Brute Force Approach:
+   * - While there are overlapping intervals:
+   *   1. Find two overlapping intervals [a, b] and [c, d].
+   *   2. Replace them with [min(a, c), max(b, d)].
+   * - Time Complexity: O(N^2) or worse depending on finding logic.
+   * - Comparison: Quadratic time is too slow for large interval lists. 
+   *   Sweep-line/Sorting reduces this to linearithmic time.
    */
   vector<vector<int>> merge(vector<vector<int>>& intervals) {
     // If there are 0 or 1 intervals, no merging is needed.

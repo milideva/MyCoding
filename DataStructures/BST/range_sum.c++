@@ -1,16 +1,26 @@
 /*
+  LeetCode 938: Range Sum of BST
 
-  938. Range Sum of BST
+  Algorithm: Pruned DFS
+  We traverse the tree recursively. At each node, we check if its value 
+  falls within the range [low, high].
+  - If node->val < low: The entire left subtree is also < low, so skip it.
+  - If node->val > high: The entire right subtree is also > high, skip it.
+  - Otherwise: Include the current value and recurse into both subtrees.
 
-  Given the root node of a binary search tree, return the sum of values of all
-  nodes with a value in the range [low, high].
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: In the worst case (e.g., [low, high] covers all node values), 
+    we visit every node. 
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth.
 
-  Input: root = [10,5,15,3,7,null,18], low = 7, high = 15
-  Output: 32
-
-  Input: root = [10,5,15,3,7,13,18,1,null,6], low = 6, high = 10
-  Output: 23
-
+  Brute Force comparison:
+  - A general binary tree search (O(N)) would visit every node without 
+    pruning. 
+  - The pruning optimization based on BST properties significantly reduces 
+    the number of nodes visited in practice, although the theoretical 
+    worst case remains O(N).
 */
 
 #include <iostream>

@@ -5,13 +5,41 @@
 using namespace std;
 
 /*
-  The left subtree of a node contains only nodes with keys less than the
-  node's key.  The right subtree of a node contains only nodes with keys
-  greater than the node's key.  The left and right subtree each must also be a
-  binary search tree.  Each node can have up to two nodes.  There
-  must be no duplicate nodes.  A unique path exists from the root to every
-  other node.
+  Problem: Iterative In-order Traversal & BST Validation (LeetCode 94, 98)
+
+  Algorithm 1: Iterative In-order (print_inorder_without_recursion)
+  We use an explicit stack to simulate the recursion of an in-order traversal 
+  (Left, Root, Right). We push all left children to the stack, pop the top, 
+  process it, and then move to the right child.
+
+  Complexity Analysis (Iterative In-order):
+  - Time Complexity: O(N)
+    Reason: We visit every node in the tree exactly once.
+  - Space Complexity: O(H)
+    Reason: The stack stores nodes along the current path from root to leaf. 
+    In the worst case (skewed tree), H = N.
+
+  Algorithm 2: BST Validation (isBST_inorder)
+  An in-order traversal of a BST must yield node values in strictly 
+  increasing order. We use a global pointer 'gprev' to track the 
+  previously visited node.
+
+  Complexity Analysis (BST Validation):
+  - Time Complexity: O(N)
+  - Space Complexity: O(H)
+
+  Brute Force comparison:
+  - A brute force way to perform in-order traversal without a stack or 
+    recursion would involve finding the minimum element, then for each 
+    element, finding its successor (using the successor algorithm). 
+    Successor takes O(H). Total time: O(N * H), which is O(N^2) for 
+    skewed trees. The stack-based approach is much faster (O(N)).
+
+  Comparison:
+  - Recursive vs Iterative: Recursive is simpler to write but can cause 
+    stack overflow on deep trees. Iterative is more robust.
 */
+
 struct node_ {
     int key;
     struct node_ *left;

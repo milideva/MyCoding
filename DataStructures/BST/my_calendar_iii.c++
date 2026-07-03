@@ -84,10 +84,18 @@ using namespace std;
  * - The O(N) sweep dominates, so the overall complexity is O(N) per call.
  *   (Note: The problem constraints state N <= 400, so an N^2 solution might also pass, but this is much better).
  *
- * Space Complexity: O(N)
- * - The map stores up to two boundary points for each of the N events.
+ Space Complexity: O(N)
+ - The map stores up to two boundary points for each of the N events.
+
+ Brute Force comparison:
+ - Similar to Meeting Rooms II, a brute force approach would involve 
+   simulating every time point. 
+ - Since the time range is [0, 10^9], a simulation-based brute force is 
+   impossible. The sweep-line algorithm (O(N)) is the only viable approach 
+   when time coordinates are sparse but ranges are large.
  */
-class MyCalendarThree {
+ class MyCalendarThree {
+
     // map key: time point, value: change in active events (+1 for start, -1 for end)
     map <int, int> calMap;
     

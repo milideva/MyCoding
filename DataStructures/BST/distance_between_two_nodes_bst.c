@@ -2,11 +2,28 @@
 #include <stdlib.h>
 
 /*
-Given a list of unique integers nums, construct a BST from it (you need to
-insert nodes one-by-one with the given order to get the BST) and find the
-distance between two nodes node1 and node2. Distance is the number of edges
-between two nodes. If any of the given nodes does not appear in the BST, return
--1.
+  Problem: Distance between two nodes in a BST
+
+  Algorithm: LCA Property + Path Length
+  1. Find the Lowest Common Ancestor (LCA) of the two nodes.
+  2. In a BST, the LCA of n1 and n2 is the first node whose value is 
+     between n1 and n2.
+  3. Distance = distance(LCA to n1) + distance(LCA to n2).
+
+  Complexity Analysis:
+  - Time Complexity: O(H)
+    Reason: Finding the LCA in a BST takes O(H). Finding the height from 
+    LCA to each node also takes O(H). Total time is proportional to the 
+    tree height.
+  - Space Complexity: O(H)
+    Reason: Recursive calls for LCA and height calculation.
+
+  Comparison:
+  - General Binary Tree: If it weren't a BST, finding LCA would take O(N). 
+    The BST property allows us to skip entire subtrees, reducing time to O(H).
+  - Brute Force: Use BFS/DFS to find both nodes and record their full paths 
+    from the root, then find the first point of divergence. This is O(N) 
+    time and space.
 */
 
 struct node_ {

@@ -1,6 +1,26 @@
 // A C++ program to demonstrate serialization and
 // deserialization of Binary Tree
 
+/*
+  LeetCode 449: Serialize and Deserialize BST
+
+  Algorithm: DFS (Pre-order)
+  Similar to general tree serialization but optimized for BSTs. 
+  Since it's a BST, we can reconstruct the tree by just using the 
+  Pre-order sequence and a range-based boundary check (min, max).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: Each node is visited once during both processes.
+  - Space Complexity: O(N)
+    Reason: Serialization string storage. Recursion stack is O(H).
+
+  Brute Force comparison:
+  - Re-inserting elements into a BST one by one: O(N log N) on average, 
+    but O(N^2) if the tree was skewed. 
+  - Range-based reconstruction ensures O(N) regardless of tree shape.
+*/
+
 // pre-order (or post-order) is sufficient for a BST ser/deser.
 
 #include <iostream>

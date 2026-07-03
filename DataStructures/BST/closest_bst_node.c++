@@ -1,20 +1,26 @@
 /*
+  LeetCode 270: Closest Binary Search Tree Value
 
-Given a non-empty binary search tree and a target value, find the value in the
-BST that is closest to the target.
+  Problem: Find the node value in a BST closest to a given floating-point target.
 
-Note: Given target value is a floating point. You are guaranteed to have only
-one unique value in the BST that is closest to the target.
+  Algorithm: Binary Search on Tree
+  Since it's a BST, if the target is smaller than the current node's value, 
+  the closest value must either be the current node or in the left subtree. 
+  Conversely, if larger, check the right subtree.
 
-Example:
+  Complexity Analysis:
+  - Time Complexity: O(H)
+    Reason: We follow a single path from root to leaf, similar to searching in 
+     a BST. H is the tree height.
+  - Space Complexity: O(H) (Recursive) or O(1) (Iterative).
 
-Input: root = [4,2,5,1,3], target = 3.714286
-
-Output: 4
-
+  Comparison:
+  - Brute Force (In-order): Traverse the entire tree (O(N)), store in an 
+    array, and find the closest value. This is O(N) time and space.
+  - Iterative Optimization: By using a while-loop (implemented in 
+    `closestValueIterative`), we achieve O(1) auxiliary space, making it 
+    the most efficient approach for large trees.
 */
-
-
 
 #include <iostream>
 #include <vector>

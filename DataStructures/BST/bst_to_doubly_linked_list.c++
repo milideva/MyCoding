@@ -1,21 +1,30 @@
 /*
+  LeetCode 426: Convert Binary Search Tree to Sorted Doubly Linked List
 
-426. Convert Binary Search Tree to Sorted Doubly Linked List
+  Algorithm: In-order DFS (In-place)
+  We perform a standard in-order traversal (Left, Root, Right). We maintain 
+  two pointers, 'first' and 'last'. As we visit each node, we link 'last->right' 
+  to the current node and 'current->left' to 'last'. Finally, we close 
+  the circle by linking the first and last nodes.
 
-Convert a Binary Search Tree to a sorted Circular Doubly-Linked List in place.
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit each of the N nodes exactly once during the traversal.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is proportional to the tree height (H).
 
-You can think of the left and right pointers as synonymous to the predecessor
-and successor pointers in a doubly-linked list. For a circular doubly linked
-list, the predecessor of the first element is the last element, and the
-successor of the last element is the first element.
+  Comparison:
+  - Copy Approach (Brute Force): Traverse the tree, store all node values 
+    in a sorted array or list, then create N new Doubly Linked List nodes.
+    - Time: O(N), Space: O(N).
+  - In-place Approach (Current): By reusing existing TreeNode pointers (left/right 
+    becoming prev/next), we achieve O(H) space on the stack without 
+    extra heap allocation.
 
-We want to do the transformation in place. After the transformation, the left
-pointer of the tree node should point to its predecessor, and the right pointer
-should point to its successor. You should return the pointer to the smallest
-element of the linked list.
-
+  Comparison of Traversal:
+  - Standard in-order produces the sorted sequence directly. Any other 
+    traversal (Pre/Post) would require sorting the result, taking O(N log N).
 */
-
 
 #include <iostream>
 #include <vector>
