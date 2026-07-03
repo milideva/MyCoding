@@ -3,6 +3,7 @@
 #include <list>
 #include <iostream>
 #include <unordered_set>
+#include <queue>
 
 using namespace std;
  
@@ -39,7 +40,7 @@ struct TreeNode {
   TreeNode *left;
   TreeNode *right;
   TreeNode *parent;
-  TreeNode(int x) : val(x), left(NULL), right(NULL), parent(nullptr) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr), parent(nullptr) {}
 };
 
 class Solution {
@@ -47,128 +48,105 @@ public:
   TreeNode* lowestCommonAncestor (TreeNode* p, TreeNode * q) {
     unordered_set <TreeNode *> uset;
     if (!p || !q) return nullptr;
-    uset.insert(p);
-    uset.insert(q);
     
-    while (p->parent) {
-      if (uset.find(p->parent) != uset.end()) return p->parent;
-      uset.insert(p->parent);
-      p = p->parent;
+    // Path from p to root
+    TreeNode* curr = p;
+    while (curr) {
+      uset.insert(curr);
+      curr = curr->parent;
     }
-    while (q->parent) {
-      if (uset.find(q->parent) != uset.end()) return q->parent;
-      uset.insert(q->parent);
-      q = q->parent;
+    
+    // Path from q to root, first common node is LCA
+    curr = q;
+    while (curr) {
+      if (uset.find(curr) != uset.end()) return curr;
+      curr = curr->parent;
     }
+    
     return nullptr;
   }
 };
 
+// Builds a tree from a standard LeetCode-style level-order vector.
+// Use -1 (or another sentinel value) to represent null/empty nodes.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == -1) return nullptr;
 
-// Test code ######################################################################################
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // Process Left Child
+        if (i < arr.size() && arr[i] != -1) {
+            current->left = new TreeNode(arr[i]);
+            current->left->parent = current; // Instantly wire parent connection safely
+            q.push(current->left);
+        }
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != -1) {
+            current->right = new TreeNode(arr[i]);
+            current->right->parent = current; // Instantly wire parent connection safely
+            q.push(current->right);
+        }
+        i++;
+    }
+
+    return root;
 }
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (end < start) return NULL;
-
-    int mid = (start+end)/2;
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
-
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-    if (n->left) 
-      n->left->parent = n;
-    if (n->right) 
-      n->right->parent = n;
-
-    printf("TreeNode:%d left:%d right:%d parent:%d\n", n->val,
-           n->left ? n->left->val : 0,
-           n->right ? n->right->val : 0,
-           n->parent ? n->parent->val : 0);
-    return n;
+// Helper to find a node by value (useful for testing)
+TreeNode* findNode(TreeNode* root, int val) {
+    if (!root || root->val == val) return root;
+    TreeNode* left = findNode(root->left, val);
+    if (left) return left;
+    return findNode(root->right, val);
 }
 
-static void inorder (TreeNode *root)  { 
-    if (root) { 
-        inorder(root->left); 
-        printf("%d parent:%D\n", root->val, root->parent ? root->parent->val : 0); 
-        inorder(root->right); 
-    } 
+// Helper to free memory
+void destroyTree(TreeNode* root) {
+    if (!root) return;
+    destroyTree(root->left);
+    destroyTree(root->right);
+    delete root;
 }
 
-TreeNode *findNode (TreeNode *root, int val) {
+int main() {
+    Solution sol;
 
-  while (root) {
-    if (root->val == val) return root;
-    if (val < root->val)
-      root = root->left;
-    else
-      root = root->right;
-  }
-  return nullptr;
+    // Example 1: root = [3,5,1,6,2,0,8,-1,-1,7,4], p = 5, q = 1
+    vector<int> nodes1 = {3, 5, 1, 6, 2, 0, 8, -1, -1, 7, 4};
+    TreeNode* root1 = createTreeFromLevelOrder(nodes1);
+    
+    TreeNode* p1 = findNode(root1, 5);
+    TreeNode* q1 = findNode(root1, 1);
+    
+    TreeNode* lca1 = sol.lowestCommonAncestor(p1, q1);
+    cout << "Example 1: LCA of 5 and 1 is " << (lca1 ? to_string(lca1->val) : "null") << " (Expected: 3)" << endl;
+
+    // Example 2: p = 5, q = 4
+    TreeNode* p2 = findNode(root1, 5);
+    TreeNode* q2 = findNode(root1, 4);
+    TreeNode* lca2 = sol.lowestCommonAncestor(p2, q2);
+    cout << "Example 2: LCA of 5 and 4 is " << (lca2 ? to_string(lca2->val) : "null") << " (Expected: 5)" << endl;
+
+    destroyTree(root1);
+
+    // Example 3: root = [1,2], p = 1, q = 2
+    vector<int> nodes3 = {1, 2};
+    TreeNode* root3 = createTreeFromLevelOrder(nodes3);
+    TreeNode* p3 = findNode(root3, 1);
+    TreeNode* q3 = findNode(root3, 2);
+    TreeNode* lca3 = sol.lowestCommonAncestor(p3, q3);
+    cout << "Example 3: LCA of 1 and 2 is " << (lca3 ? to_string(lca3->val) : "null") << " (Expected: 1)" << endl;
+
+    destroyTree(root3);
+
+    return 0;
 }
-
-void print_inorder (TreeNode *n) {
-    printf("print_inorder: ");
-    inorder(n);
-}
-
-int main (void) {
-
-
- /* Constructed binary tree is
-             300
-             /  \
-            /    \
-           /      \
-          /        \
-         56        800
-        / \         /  \
-       /   \       /    \
-      /     \     600     1000
-     5    100    /  \      / \
-    / \     /\  500  700  /   \
-   /   \   60 233      900   2333
- -10   10
-
-  */
-
-  int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-  int end = sizeof array/ sizeof array[0];
-  
-  TreeNode *root = create_BST_from_array(array, 0, end-1);
-  print_inorder(root);  
-
-  class Solution sol;
-  
-  TreeNode *p, *q;
-  p = findNode(root, 10);
-  q = findNode(root, 60);
-
-  TreeNode *lca = sol.lowestCommonAncestor(p, q);
-  if (lca) {
-    cout << "LCA of p:" << p->val << " and q:" << q->val << " is " << lca->val << endl;
-  } else {
-    cout << "LCA of p:" << p->val << " and q:" << q->val << " not found" << endl;
-  }
-
-  p = findNode(root, -10);
-  q = findNode(root, 900);
-
-  lca = sol.lowestCommonAncestor(p, q);
-  if (lca) {
-    cout << "LCA of p:" << p->val << " and q:" << q->val << " is " << lca->val << endl;
-  } else {
-    cout << "LCA of p:" << p->val << " and q:" << q->val << " not found" << endl;
-  }
-
-  return 0;
-}
-
