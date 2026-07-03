@@ -130,5 +130,10 @@ void BFS(int startNode, vector<vector<int>>& adj, int target) {
 ### Iterative Deepening DFS (IDDFS)
 Combines the space-efficiency of DFS with the shortest-path guarantee of BFS. It performs a DFS up to a certain depth, then increases the depth limit and repeats. Useful for game trees with large branching factors.
 
-### Bidirectional BFS
-Starts two simultaneous BFS searches—one from the source and one from the target. When the two frontiers collide, the shortest path is found. This significantly reduces the search space $O(b^{d/2} + b^{d/2})$ compared to $O(b^d)$.
+---
+
+## 5. Implementation Standards in this Repo
+
+1.  **Search Prefixes**: Filenames are prefixed with `dfs_`, `bfs_`, `dsu_`, or `greedy_` to indicate the primary algorithm used (e.g., `bfs_rotting_oranges.c++`).
+2.  **Complexity Headers**: Every source file contains a detailed Time/Space analysis and comparison with brute-force approaches.
+3.  **Visual Consistency**: ASCII diagrams and detailed problem descriptions are included in all complex implementations.
