@@ -41,25 +41,34 @@ struct TreeNode {
 };
 
 class Solution {
-    int inOrder (TreeNode* node, int& count, int k) {
-        if (!node) return -1; // Base case: empty node
+    // Returns true ONLY when the k-th element is successfully found
+    bool inOrder(TreeNode* node, int& count, int k, TreeNode*& result) {
+        if (!node) return false; // Base case: cleanly means "not found"
 
-        // Traverse left subtree
-        int left = inOrder(node->left, count, k);
-        if (left != -1) return left; // If kth smallest is found in left subtree
+        // 1. Traverse left subtree
+        if (inOrder(node->left, count, k, result)) return true; // Early exit!
 
-        // Visit current node
+        // 2. Visit current node
         count++;
-        if (count == k) return node->val; // Found the kth smallest
+        if (count == k) {
+            result = node; // Capture the address of the k-th node
+            return true;   // Signal success up the call stack
+        }
 
-        // Traverse right subtree
-        return inOrder(node->right, count, k);
+        // 3. Traverse right subtree
+        return inOrder(node->right, count, k, result);
     }
 public:
     int kthSmallest(TreeNode* root, int k) {
-        if (!root) return -1; // Edge case: empty tree
-        int count = 0; // To keep track of the number of nodes visited
-        return inOrder(root, count, k); // Call the helper and return the result
+        int count = 0;
+        TreeNode* result = nullptr;
+        
+        // If true, result now points directly to the k-th node
+        if (inOrder(root, count, k, result) && result != nullptr) {
+            return result->val; 
+        }
+        // Flawed assumption, if k is out of bounds, assumes -1 is not in the tree.
+        return -1; 
     }
 };
 
