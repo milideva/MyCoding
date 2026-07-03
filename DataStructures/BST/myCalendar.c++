@@ -41,6 +41,22 @@ Note:
 
 using namespace std;
 
+/*
+   A note on C++ 
+   Both std::set and std::map in C++ are automatically sorted data structures.
+   Under the hood, both are typically implemented using a self-balancing binary search tree (usually a Red-Black Tree). 
+   Because of this, they share a few core behaviors:Sorted Order: 
+   Elements are always arranged in ascending order based on the keys.
+   Time Complexity: Lookups, insertions, and deletions all take O(log N) time.
+
+   While they are both sorted, they structure their data differently:
+   std::set stores unique single values (keys only). 
+   Example: cal stores individual intervals sorted by their start times: {{10, 20}, {15, 25}}.
+
+   std::map stores unique key-value.
+   Example: calMap maps a specific timestamp as the key, mapping to its active event counter change (the value): 
+   {10 -> +1, 20 -> -1}.
+*/
 
 /*
 
@@ -83,7 +99,8 @@ not just detect if any overlap exists.
  * operations both take logarithmic time.
  */
 class MyCalendarSet {
-  set <pair <int, int>> cal; // set is an ordered data structure
+  // Stores booked intervals as sorted, non-overlapping pairs of {start_time, end_time}
+  set <pair <int, int>> cal;
 
 public:
     MyCalendarSet() {   
@@ -115,6 +132,9 @@ public:
  * entries in the map.
  */
 class MyCalendarMap {
+  // Maps distinct timeline timestamps (keys) to their boundary count changes (values): 
+  // key is either begin or end of the event.
+  // value is count, +1 when a meeting begins, -1 when a meeting ends.
   map <int, int> calMap;
 
   /*
@@ -126,7 +146,7 @@ class MyCalendarMap {
    *
    *   +1      +1      -1      -1
    *---|-------|-------|-------|---
-   *   10      15      20      25
+   *   10      15      20      25 <---- start or end, is sorted
    *
    * Sweep-line process:
    * - At time 10, active events become 1.
