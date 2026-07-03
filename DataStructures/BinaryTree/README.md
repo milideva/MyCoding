@@ -85,5 +85,5 @@ Optimized $O(N)$ approach for building a Maximum Binary Tree (LeetCode 654).
 ---
 
 ## 6. References
-*   Stanford CS Library: [Binary Trees](http://cslibrary.stanford.edu/110/BinaryTrees.html)
+*   Programming Sharing: [Stanford Binary Trees Guide](https://programmingsharing.com/binary-trees-2aa64a82f4ab) (Cleanly formatted standard implementations)
 *   LeetCode: [Tree Explore Card](https://leetcode.com/explore/learn/card/data-structure-tree/)
