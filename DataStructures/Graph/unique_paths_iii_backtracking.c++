@@ -1,40 +1,41 @@
 /*
-On a 2-dimensional grid, there are 4 types of squares:
+  LeetCode 980: Unique Paths III
 
-    1 represents the starting square.  There is exactly one starting square.
-    2 represents the ending square.  There is exactly one ending square.
-    0 represents empty squares we can walk over.
-    -1 represents obstacles that we cannot walk over.
+  Problem: Find the number of paths from start to end that visit every 
+  non-obstacle square exactly once.
 
-Return the number of 4-directional walks from the starting square to the ending
-square, that walk over every non-obstacle square exactly once.
+  Algorithm: DFS with Backtracking
+  1. Count the total number of empty squares.
+  2. Perform DFS from the starting point.
+  3. In each step:
+     - Decrement the empty square count.
+     - Mark current cell as visited.
+     - If the target is reached and empty count is 0, we found a valid path.
+  4. Backtrack: Unmark current cell and increment empty count.
 
-Example 1:
+  Complexity Analysis:
+  - Time Complexity: O(3^N)
+    Reason: Where N is the number of cells. At each cell, we can move in 3 
+    directions (excluding the one we came from). 
+  - Space Complexity: O(N)
+    Reason: Recursion stack depth can reach the total number of cells.
 
-Input: [[1,0,0,0],[0,0,0,0],[0,0,2,-1]]
-Output: 2
-Explanation: We have the following two paths: 
-1. (0,0),(0,1),(0,2),(0,3),(1,3),(1,2),(1,1),(1,0),(2,0),(2,1),(2,2)
-2. (0,0),(1,0),(2,0),(2,1),(1,1),(0,1),(0,2),(0,3),(1,3),(1,2),(2,2)
+  Comparison:
+  - BFS vs DFS: BFS is typically used for shortest paths. Since this 
+    problem requires visiting **every** cell, we need to explore all paths 
+    to their full length, which is the definition of DFS/Backtracking.
+  - Dynamic Programming with Bitmask:
+    - Logic: `dp(current_cell, visited_mask)`.
+    - Time Complexity: O(N * 2^N).
+    - Comparison: If N is small (N <= 20), DP with bitmask can be more 
+      efficient by avoiding redundant path calculations. For larger N, 
+      backtracking is usually more memory-efficient.
 
-Example 2:
-
-Input: [[1,0,0,0],[0,0,0,0],[0,0,0,2]]
-Output: 4
-Explanation: We have the following four paths: 
-1. (0,0),(0,1),(0,2),(0,3),(1,3),(1,2),(1,1),(1,0),(2,0),(2,1),(2,2),(2,3)
-2. (0,0),(0,1),(1,1),(1,0),(2,0),(2,1),(2,2),(1,2),(0,2),(0,3),(1,3),(2,3)
-3. (0,0),(1,0),(2,0),(2,1),(2,2),(1,2),(1,1),(0,1),(0,2),(0,3),(1,3),(2,3)
-4. (0,0),(1,0),(2,0),(2,1),(1,1),(0,1),(0,2),(0,3),(1,3),(1,2),(2,2),(2,3)
-
-Example 3:
-
-Input: [[0,1],[2,0]]
-Output: 0
-Explanation: 
-There is no path that walks over every empty square exactly once.
-Note that the starting and ending square can be anywhere in the grid.
-
+  Brute Force comparison:
+  - Generating all possible sequences of moves and checking each one.
+  - Time: O(4^N).
+  - Comparison: DFS with "empty cell counting" and "visited tracking" is 
+    the optimized standard for Hamiltonian path problems on a grid.
 */
 
 #include <iostream>

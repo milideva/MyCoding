@@ -1,37 +1,33 @@
 /*
+  LeetCode 994: Rotting Oranges
 
-994. Rotting Oranges
+  Algorithm: Multi-source Breadth-First Search (BFS)
+  1. Identify all rotten oranges (2) and add them to a queue. Count total 
+     fresh oranges (1).
+  2. Perform BFS. In each step (minute), all rotten oranges spread rot to 
+     their fresh neighbors simultaneously.
+  3. Decrement the fresh orange count as they rot.
+  4. The number of levels in the BFS represents the minutes elapsed.
 
-You are given an m x n grid where each cell can have one of three values:
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: Every cell is scanned once at the start, and every orange 
+    is enqueued and dequeued at most once.
+  - Space Complexity: O(M * N)
+    Reason: The queue can store up to O(M * N) oranges in the worst case.
 
-    the value 0 representing an empty cell;
-    the value 1 representing a fresh orange;
-    the value 2 representing a rotten orange.
+  Alternative Approaches:
+  - Brute Force (Repeated Scans): Every minute, scan the entire grid to 
+    find oranges that should rot.
+    - Time Complexity: O((M * N)^2).
+    - Comparison: BFS is far superior as it only processes the "frontier" 
+      of the infection.
 
-Every minute, any fresh orange that is adjacent (4-directionally) to a rotten orange becomes rotten.
-
-Return the minimum number of minutes that must elapse until no cell has a fresh
-orange. If this is impossible, return -1 instead.
-
-Example 1:
-
-Input: [[2,1,1],[1,1,0],[0,1,1]]
-Output: 4
-
-Example 2:
-
-Input: [[2,1,1],[0,1,1],[1,0,1]]
-Output: -1
-
-Explanation: The orange in the bottom left corner (row 2, column 0) is never
-rotten, because rotting only happens 4-directionally.
-
-Example 3:
-
-Input: [[0,2]]
-Output: 0
-Explanation:  Since there are already no fresh oranges at minute 0, the answer is just 0.
-
+  Comparison:
+  - BFS vs DFS: DFS is unsuitable for this problem because we need the 
+    **minimum** time for **all** sources to spread. DFS would find 
+    the time for one branch, but wouldn't easily handle the simultaneous 
+    nature of the spreading. BFS naturally simulates time steps.
 */
 
 #include <vector>

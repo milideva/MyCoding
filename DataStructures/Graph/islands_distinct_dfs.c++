@@ -1,3 +1,42 @@
+/*
+  LeetCode 694: Number of Distinct Islands
+
+  Problem: Count the number of islands with unique shapes. Translation-only 
+  equivalence (no rotation/reflection).
+
+  Algorithm 1: Direction-String Serialization (numDistinctIslands)
+  - During DFS, record the direction taken ('u', 'd', 'l', 'r') and a marker 
+    'n' when a path cannot proceed.
+  - The resulting string uniquely represents the "path" taken, which 
+    corresponds to the island's shape.
+  - Store strings in a hash set to count unique shapes.
+
+  Algorithm 2: Relative Coordinates (numDistinctIslands_2)
+  - During DFS, record the coordinates of each cell relative to the 
+    island's starting cell (i - i0, j - j0).
+  - Store the set of relative coordinates in a `set<vector<pair<int, int>>>`.
+
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: Every cell is visited once. Set/Map operations on shapes take 
+    time proportional to the number of cells in the island.
+  - Space Complexity: O(M * N)
+    Reason: To store the visited matrix and the shapes in the set.
+
+  Comparison:
+  - Direction Strings: Elegant and easy to implement. However, you MUST 
+    include a "null/backtrack" marker (like 'n') to distinguish shapes 
+    properly (e.g., 'rd' vs 'r' then 'd').
+  - Relative Coordinates: More robust and avoids the need for special 
+    markers. It represents the shape as a point cloud.
+
+  Brute Force Approach:
+  - For every pair of islands, perform a coordinate-wise comparison to 
+    see if one can be translated to the other.
+  - Time Complexity: O((Number of Islands)^2 * Avg Island Size).
+  - Comparison: Hashing shapes (via strings or coordinate lists) is much 
+    faster as it reduces comparisons to set lookups.
+*/
 
 #include <vector>
 #include <map>

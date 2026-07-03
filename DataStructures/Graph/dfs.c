@@ -2,6 +2,39 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/*
+  Problem: Depth-First Search (DFS) Traversal
+
+  Algorithm 1: Recursive DFS
+  - Standard backtracking-style traversal. Marks a node as visited and 
+    recursively visits unvisited neighbors.
+
+  Algorithm 2: Iterative DFS
+  - Uses a manual stack to simulate recursion. 
+  - Note: The order of neighbor processing is reversed compared to 
+    recursion unless neighbors are pushed in reverse order.
+
+  Complexity Analysis:
+  - Time Complexity: O(V + E)
+    Reason: In a graph with V vertices and E edges, DFS visits every vertex 
+    once and explores every edge exactly twice (for undirected graphs).
+  - Space Complexity: O(V)
+    Reason: In the worst case (a line graph), the recursion stack or manual 
+    stack can hold all V vertices.
+
+  Alternative Approaches:
+  - Breadth-First Search (BFS): Uses a queue. Finds the shortest path in 
+    unweighted graphs.
+    - Time: O(V + E), Space: O(V).
+  - Comparison: DFS is better for exhaustive searches, finding cycles, 
+    and topological sorting. BFS is better for shortest path problems.
+
+  Brute Force comparison:
+  - A brute force search for reachability between two nodes without 
+    tracking 'visited' state would lead to infinite loops in graphs 
+    with cycles. The O(V+E) DFS is the optimized standard.
+*/
+
 typedef struct node_tag node_t;
 struct node_tag {
     int vertex;

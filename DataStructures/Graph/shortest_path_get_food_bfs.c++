@@ -1,3 +1,30 @@
+/*
+  LeetCode 1730: Shortest Path to Get Food
+
+  Algorithm: Multi-target Breadth-First Search (BFS)
+  1. Find the starting position (*).
+  2. Perform BFS to find the nearest food cell (#).
+  3. BFS naturally finds the shortest path level by level.
+
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: We visit every cell at most once.
+  - Space Complexity: O(M * N)
+    Reason: `visited` matrix and BFS queue.
+
+  Comparison:
+  - Multi-source BFS: If there were multiple starting positions and one 
+    food source, we could add all start positions to the queue. Here, 
+    we have one start and multiple targets, which standard BFS handles 
+    by returning on the first '#' encountered.
+  - DFS: Unsuitable for shortest path as it doesn't guarantee finding the 
+    minimum steps without visiting every possible path.
+
+  Brute Force comparison:
+  - Naive recursion without memoization would take exponential time. 
+    The BFS approach is the standard optimal linear-time solution.
+*/
+
 #include <iostream>
 #include <queue>
 #include <vector>

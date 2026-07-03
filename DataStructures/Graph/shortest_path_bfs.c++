@@ -1,3 +1,40 @@
+/*
+  Problem: Shortest Path in a Maze
+
+  Algorithm: Breadth-First Search (BFS)
+  1. Use a queue to store the current cell coordinates and its distance 
+     from the source.
+  2. Starting from the source, visit all 4-directional neighbors.
+  3. Mark visited cells to avoid cycles and redundant work.
+  4. The first time the destination is reached, the current distance 
+     is guaranteed to be the shortest path.
+
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: In the worst case, we may visit every cell in the M*N matrix.
+  - Space Complexity: O(M * N)
+    Reason: To store the `visited` matrix and the BFS queue.
+
+  Alternative Approaches:
+  - Depth-First Search (DFS): 
+    - Logic: Explore all paths from source to destination and keep 
+      track of the minimum length found.
+    - Time Complexity: O(4^(M*N)) - Exponential.
+    - Comparison: DFS is highly inefficient for shortest paths as it must 
+      exhaustively search all possible paths. BFS stops as soon as the 
+      target is found.
+  - Dijkstra's Algorithm:
+    - Logic: Generalization of BFS for weighted graphs.
+    - Time: O(E log V).
+    - Comparison: Since all edge weights are 1 in this maze, standard BFS 
+      is more efficient as it avoids the priority queue overhead.
+
+  Brute Force comparison:
+  - Recursive backtracking without pruning or visited tracking would 
+    result in infinite recursion or astronomical time complexity. 
+    BFS provides the optimal O(MN) solution.
+*/
+
 #include <iostream>
 #include <queue>
 #include <climits>

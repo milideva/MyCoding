@@ -1,3 +1,40 @@
+/*
+  LeetCode 269: Alien Dictionary
+
+  Algorithm: Topological Sort (Kahn's BFS)
+  1. Build a Directed Graph:
+     - Compare adjacent words to find the first differing character.
+     - An edge `u -> v` exists if `u` appears before `v` in the alien order.
+     - Handle Edge Case: If word1 is a prefix of word2 but is longer 
+       (e.g., "abc", "ab"), the order is invalid.
+  2. Perform Topological Sort:
+     - Use a queue for nodes with in-degree 0.
+     - Detect cycles: If the result string size != number of unique characters, 
+       a cycle exists (return "").
+
+  Complexity Analysis:
+  - Time Complexity: O(C)
+    Reason: Where C is the total number of characters in all words combined. 
+    Building the graph takes O(C) to compare adjacent words. The topological 
+    sort takes O(V + E), where V is unique characters (max 26) and E is 
+    edges (max V^2). Since V is constant, it's effectively O(C).
+  - Space Complexity: O(1) or O(V + E)
+    Reason: Adjacency list and in-degree map store up to 26 characters.
+
+  Alternative Approaches:
+  - DFS: Use recursion and a "visiting" state to detect cycles and post-order 
+    traversal to determine order.
+    - Comparison: Equally efficient. Kahn's BFS is often easier to debug 
+      for cycle detection.
+
+  Brute Force comparison:
+  - Check every possible permutation of the alphabet to see if it satisfies 
+    the given word order.
+  - Time Complexity: O(26! * C).
+  - Comparison: Impossible. Topological sort provides the correct linear 
+    time solution.
+*/
+
 #include <iostream>
 #include <unordered_map>
 #include <vector>

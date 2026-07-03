@@ -1,39 +1,36 @@
 /*
+  LeetCode 547: Friend Circles (Number of Provinces)
 
-There are N students in a class. Some of them are friends, while some are not.
-Their friendship is transitive in nature. For example, if A is a direct friend
-of B, and B is a direct friend of C, then A is an indirect friend of C. And we
-defined a friend circle is a group of students who are direct or indirect
-friends.
+  Algorithm: DFS on Adjacency Matrix
+  1. The input is an N*N adjacency matrix.
+  2. We treat each student as a node in a graph. An edge exists if M[i][j] == 1.
+  3. We iterate through each student. If a student hasn't been visited, 
+     it marks the start of a new "circle" (connected component).
+  4. Perform DFS from that student to mark all reachable friends as visited.
 
-Given a N*N matrix M representing the friend relationship between students in
-the class. If M[i][j] = 1, then the ith and jth students are direct friends with
-each other, otherwise not. And you have to output the total number of friend
-circles among all the students.
+  Complexity Analysis:
+  - Time Complexity: O(N^2)
+    Reason: We visit every cell in the N*N matrix exactly once to check 
+    for friendships. Even though we track 'visited' students, the nested 
+    loop inside `dfs` always scans N potential friends.
+  - Space Complexity: O(N)
+    Reason: The `visited` vector of size N and the recursion stack which 
+    can reach depth N in a skewed friendship chain.
 
-Example 1:
+  Alternative Approaches:
+  - BFS: Same logic as DFS but using a queue.
+    - Time: O(N^2), Space: O(N).
+  - Union-Find (DSU): Iterate through the matrix and `union(i, j)` if they are 
+    friends. Count the number of disjoint sets at the end.
+    - Time: O(N^2 * α(N)).
+    - Comparison: DFS is slightly faster in practice as it avoids the DSU 
+      overhead, though both are effectively O(N^2).
 
-Input: 
-[[1,1,0],
- [1,1,0],
- [0,0,1]]
-Output: 2
-
-Explanation:The 0th and 1st students are direct friends, so they are in a friend
-circle. The 2nd student himself is in a friend circle. So return 2.
-
-Example 2:
-
-Input: 
-[[1,1,0],
- [1,1,1],
- [0,1,1]]
-Output: 1
-
-Explanation:The 0th and 1st students are direct friends, the 1st and 2nd
-students are direct friends, so the 0th and 2nd students are indirect friends.
-All of them are in the same friend circle, so return 1.
-
+  Brute Force comparison:
+  - For every student, calculate the set of all reachable friends. Use set 
+    unions to merge circles. 
+  - This involves significantly more memory and overhead than a simple 
+    DFS with a boolean visited array.
 */
 
 #include <vector>

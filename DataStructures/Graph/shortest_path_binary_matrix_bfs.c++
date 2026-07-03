@@ -1,3 +1,33 @@
+/*
+  LeetCode 1091: Shortest Path in Binary Matrix
+
+  Algorithm: Breadth-First Search (BFS) with 8-Connectivity
+  1. Standard BFS starting from (0, 0).
+  2. Neighbors include all 8 adjacent cells (horizontal, vertical, and diagonal).
+  3. Path is only valid if cells contain 0.
+
+  Complexity Analysis:
+  - Time Complexity: O(N^2)
+    Reason: We visit every cell in the N*N matrix exactly once.
+  - Space Complexity: O(N^2)
+    Reason: `visited` matrix and queue.
+
+  Alternative Approaches:
+  - A* Search:
+    - Logic: Use a heuristic (like Chebyshev distance to destination) to 
+      prioritize the search.
+    - Comparison: Faster in practice for large grids, but has the same 
+      worst-case complexity as BFS.
+  - In-place BFS:
+    - Logic: Mark visited cells by changing `grid[x][y]` to 1.
+    - Space: O(1) auxiliary space (excluding queue), but modifies input.
+
+  Brute Force comparison:
+  - DFS: Exploring all paths in an 8-directional grid is extremely slow 
+    and doesn't guarantee the shortest path without exhaustive searching. 
+    BFS is the optimal choice for unweighted shortest paths.
+*/
+
 #include <iostream>
 #include <queue>
 #include <climits>

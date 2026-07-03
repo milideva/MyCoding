@@ -1,36 +1,40 @@
 /*
-    79. Word Search
-    Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+  LeetCode 79: Word Search
 
-    The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. 
-    The same letter cell may not be used more than once.
+  Algorithm: DFS with Backtracking
+  1. Iterate through each cell in the grid. If it matches the first letter 
+     of the word, start a DFS.
+  2. In DFS:
+     - Mark the current cell as `visited`.
+     - Recursively explore all 4 neighbors for the next character in the word.
+     - If the word is found, return true.
+     - Backtrack: Mark the current cell as `unvisited` before returning to 
+       the caller.
 
-    Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
-    Output: true
+  Complexity Analysis:
+  - Time Complexity: O(N * 3^L)
+    Reason: N is the number of cells in the grid. L is the length of the 
+    word. For each starting cell, we explore 4 directions initially, 
+    and then 3 directions (excluding the one we came from) for each 
+    remaining character. 
+  - Space Complexity: O(L)
+    Reason: The maximum depth of the recursion stack is the length of 
+    the word.
 
-    Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
-    Output: true
+  Alternative Approaches:
+  - BFS: Difficult to implement because each path requires its own 
+    `visited` state to ensure we don't reuse cells within the same path.
+  - Trie + DFS (LC 212 - Word Search II): If we were searching for multiple 
+    words at once, a Trie would allow us to prune paths that don't match 
+    any prefix.
 
-    Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
-    Output: false
-    
-    Input: board = [["C","A","A"],["A","A","A"],["B","C","D"]], word ="AAB"
-    Output: true
-
-    Constraints:
-
-    m == board.length
-    n = board[i].length
-    1 <= m, n <= 6
-    1 <= word.length <= 15
-    board and word consists of only lowercase and uppercase English letters.
-
-*/
-
-/*
-    Time: O(m * n * 4^|word|) => 4 recursive calls inside dfs
-    Space: O(4^|word|) => function call stack for 4 recursive calls
-
+  Brute Force comparison:
+  - Generating all possible paths of length L in the grid and checking if 
+    any match the word.
+  - Time Complexity: O(N * 4^L).
+  - Comparison: DFS with backtracking is the optimized way to perform 
+    this exhaustive search, as it prunes the search tree as soon as 
+    a character mismatch occurs.
 */
 
 #include <iostream>

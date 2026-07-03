@@ -1,43 +1,37 @@
 /*
+  LeetCode 200: Number of Islands
 
-  200. Number of Islands
+  Algorithm: DFS (Flood Fill)
+  1. Iterate through the grid.
+  2. When a '1' (land) is found, start a DFS to visit all connected '1's.
+  3. Mark all visited '1's in a `visited` matrix (or flip them to '0' in-place 
+     to save space).
+  4. Each DFS start represents one unique island.
 
-Given an m x n 2D binary grid grid which represents a map of '1's
-(land) and '0's (water), return the number of islands.
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: Every cell in the grid is visited exactly once.
+  - Space Complexity: O(M * N)
+    Reason: The `visited` matrix of size M*N. The recursion stack can also 
+    reach O(M * N) in the worst case (e.g., a grid full of '1's).
 
-An island is surrounded by water and is formed by connecting adjacent
-lands horizontally or vertically. You may assume all four edges of the
-grid are all surrounded by water.
+  Alternative Approaches:
+  - In-place DFS: Modify the input `grid` by changing visited '1's to '0's. 
+    This reduces auxiliary space to O(H) for the stack.
+  - BFS: Use a queue to process islands level by level. 
+    - Space Complexity: O(min(M, N)) for the queue.
+  - Union-Find (DSU): Iterate through the grid and `union` adjacent '1' cells. 
+    Count the number of disjoint sets.
+    - Time: O(M * N * α(M*N)).
+    - Comparison: DSU is useful if the grid is being updated dynamically 
+      (e.g., land being added).
 
-Example 1:
-
-Input: grid = [
-  ["1","1","1","1","0"],
-  ["1","1","0","1","0"],
-  ["1","1","0","0","0"],
-  ["0","0","0","0","0"]
-]
-Output: 1
-Example 2:
-
-Input: grid = [
-  ["1","1","0","0","0"],
-  ["1","1","0","0","0"],
-  ["0","0","1","0","0"],
-  ["0","0","0","1","1"]
-]
-Output: 3
- 
-Constraints:
-
-m == grid.length
-n == grid[i].length
-1 <= m, n <= 300
-grid[i][j] is '0' or '1'.
-
-Time: O(mn)
-Space: O(mn)
-
+  Brute Force Approach:
+  - For every cell, check if it belongs to any previously identified island 
+    by re-traversing all discovered islands.
+  - Time Complexity: O((M*N)^2).
+  - Comparison: Flood fill (DFS/BFS) is significantly more efficient as it 
+    uses a 'visited' state to ensure linear time.
 */
 
 #include <vector>

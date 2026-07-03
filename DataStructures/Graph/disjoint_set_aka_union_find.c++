@@ -3,6 +3,38 @@
 
 using namespace std;
 
+/*
+  Problem: Disjoint Set Union (DSU) / Union-Find
+
+  Algorithm: Union-Find with Path Compression
+  1. `find(x)`: Recursively finds the representative of the set containing x. 
+     Path compression flattens the tree structure by making every node in 
+     the path point directly to the root.
+  2. `union(x, y)`: Merges two sets. (Note: The current implementation uses 
+     simple union; Union by Rank/Size would further optimize it).
+
+  Complexity Analysis:
+  - Time Complexity: O(E * log V) or O(E * α(V))
+    Reason: With path compression alone, find/union take O(log V) on average. 
+    With both Path Compression and Union by Rank, the time per operation 
+    becomes nearly constant O(α(V)), where α is the inverse Ackermann function.
+  - Space Complexity: O(V)
+    Reason: To store the `parent` array of size V.
+
+  Alternative Approaches:
+  - DFS/BFS for Connectivity: To check if two nodes are connected, perform 
+    a traversal.
+    - Time: O(V + E) per check.
+    - Comparison: DSU is much faster for multiple dynamic connectivity 
+      queries as it maintains the structure incrementally.
+
+  Brute Force comparison:
+  - For every query (u, v), run a full DFS from u to see if v is reachable. 
+    For Q queries, this is O(Q * (V + E)). 
+  - Union-Find reduces this significantly, making it the preferred 
+    choice for Kruskal's algorithm and dynamic connectivity.
+*/
+
 struct edge {
   int src, dest;
 };

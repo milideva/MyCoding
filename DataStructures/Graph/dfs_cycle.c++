@@ -1,3 +1,42 @@
+/*
+  Problem: Finding Minimum Trio Degree (Amazon Pattern)
+
+  A "Trio" is a group of 3 nodes where every node is connected to the other 
+  two (a 3-cycle). The score of a trio is the sum of (degree - 2) for each 
+  node in the trio.
+
+  Algorithm 1: Brute Force (findCycle)
+  - Iterates through all combinations of 3 nodes (i, j, k).
+  - Checks if an edge exists between (i,j), (j,k), and (k,i).
+
+  Complexity Analysis (Brute Force):
+  - Time Complexity: O(V^3)
+    Reason: Three nested loops from 1 to V. The edge check is O(1) using 
+    an adjacency matrix or set.
+  - Space Complexity: O(V + E) for adjacency structure.
+
+  Algorithm 2: DFS Based (findCycle_dfs)
+  - Uses DFS to find cycles.
+  - If a cycle of length 3 is detected, calculates its score.
+
+  Complexity Analysis (DFS):
+  - Time Complexity: O(V + E) to traverse the graph, but O(V * E) or O(E^1.5) 
+    to find all 3-cycles specifically.
+  - Space Complexity: O(V + E).
+
+  Brute Force comparison:
+  - If the graph is dense (E ≈ V^2), O(V^3) is comparable to checking 
+    all edges. 
+  - For sparse graphs, O(V^3) is wasteful. A better approach is to iterate 
+    over every edge (u, v) and find the intersection of neighbors(u) 
+    and neighbors(v).
+  - Intersection approach: O(Σ degree(u)^2) or O(E * sqrt(E)).
+
+  Comparison:
+  - The O(V^3) brute force is acceptable for the constraint V=500, but 
+    the intersection-based approach is significantly faster for larger, 
+    sparser graphs.
+*/
 
 #include <vector>
 #include <unordered_map>

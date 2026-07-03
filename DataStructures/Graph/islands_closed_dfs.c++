@@ -1,44 +1,38 @@
-
 /*
+  LeetCode 1254: Number of Closed Islands
 
-Given a 2D grid consists of 0s (land) and 1s (water). An island is a maximal
-4-directionally connected group of 0s and a closed island is an island totally
-(all left, top, right, bottom) surrounded by 1s.
+  Problem: Count islands that are completely surrounded by water (1s) and 
+  do not touch the grid boundaries.
 
-Return the number of closed islands.
+  Algorithm: DFS with Boundary Check
+  1. Iterate through the grid. When an unvisited land (0) is found, start a DFS.
+  2. During DFS, mark nodes as visited.
+  3. If the DFS reaches any cell on the grid boundary (row 0, col 0, etc.), 
+     mark a flag to indicate this island is "open" (not closed).
+  4. Only increment the count if the DFS completes without touching a boundary.
 
- 
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: We visit every cell in the M*N grid at most once.
+  - Space Complexity: O(M * N)
+    Reason: In the worst case (all land), the recursion stack and the 
+    `visited` matrix both take O(M * N) space.
 
-Example 1:
+  Alternative Approaches:
+  - Boundary-Flood Fill (Pre-processing): 
+    1. Perform DFS from all land cells on the edges to mark them and their 
+       connected neighbors as "water" or "invalid".
+    2. Perform a standard "Number of Islands" count on the remaining grid.
+    - Comparison: This is often cleaner to implement and ensures edge 
+      cases are handled before the main logic runs.
+  - BFS: Use a queue instead of recursion.
+    - Time: O(M * N), Space: O(min(M, N)) for the queue on average.
 
-Input: grid = [[1,1,1,1,1,1,1,0],[1,0,0,0,0,1,1,0],[1,0,1,0,1,1,1,0],[1,0,0,0,0,1,0,1],[1,1,1,1,1,1,1,0]]
-Output: 2
-Explanation: 
-Islands in gray are closed because they are completely surrounded by water (group of 1s).
-
-Example 2:
-
-Input: grid = [[0,0,1,0,0],[0,1,0,1,0],[0,1,1,1,0]]
-Output: 1
-
-Example 3:
-
-Input: grid = [[1,1,1,1,1,1,1],
-               [1,0,0,0,0,0,1],
-               [1,0,1,1,1,0,1],
-               [1,0,1,0,1,0,1],
-               [1,0,1,1,1,0,1],
-               [1,0,0,0,0,0,1],
-               [1,1,1,1,1,1,1]]
-Output: 2
-
- 
-
-Constraints:
-
-    1 <= grid.length, grid[0].length <= 100
-    0 <= grid[i][j] <=1
-
+  Brute Force comparison:
+  - For every land cell, perform a search to see if it can reach the boundary. 
+    Without marking visited cells, this would be highly redundant and 
+    take O((M*N)^2) time. Marking visited ensures each component is 
+    processed once.
 */
 
 #include <vector>

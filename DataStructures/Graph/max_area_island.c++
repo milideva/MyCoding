@@ -1,38 +1,34 @@
 /*
+  LeetCode 695: Max Area of Island
 
-Leetcode 695. Max Area of Island
+  Algorithm: DFS (Flood Fill)
+  1. Iterate through every cell in the grid.
+  2. If the cell contains '1' and hasn't been visited:
+     - Start a DFS to find all connected land cells.
+     - The DFS returns the total count of cells visited (the area).
+  3. Keep track of the maximum area found across all DFS starts.
 
-Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's
-(representing land) connected 4-directionally (horizontal or vertical.) You may
-assume all four edges of the grid are surrounded by water.
+  Complexity Analysis:
+  - Time Complexity: O(M * N)
+    Reason: We visit every cell in the grid exactly once.
+  - Space Complexity: O(M * N)
+    Reason: The `visited` matrix and the recursion stack (worst case is a 
+    grid of all land).
 
-Find the maximum area of an island in the given 2D array. (If there is no
-island, the maximum area is 0.)
+  Alternative Approaches:
+  - BFS: Use a queue.
+    - Time: O(M * N), Space: O(min(M, N)).
+  - Union-Find: Maintain component sizes.
+    - Time: O(M * N * α(M*N)).
+  - In-place DFS: Overwrite '1's with '0's as they are visited to avoid 
+    the `visited` matrix.
+    - Space: Reduced to O(H) for recursion stack.
 
-Example 1:
-
-[[0,0,1,0,0,0,0,1,0,0,0,0,0],
- [0,0,0,0,0,0,0,1,1,1,0,0,0],
- [0,1,1,0,1,0,0,0,0,0,0,0,0],
- [0,1,0,0,1,1,0,0,1,0,1,0,0],
- [0,1,0,0,1,1,0,0,1,1,1,0,0],
- [0,0,0,0,0,0,0,0,0,0,1,0,0],
- [0,0,0,0,0,0,0,1,1,1,0,0,0],
- [0,0,0,0,0,0,0,1,1,0,0,0,0]]
-
-Given the above grid, return 6. Note the answer is not 11, because the island
-must be connected 4-directionally.
-
-Example 2:
-
-[[0,0,0,0,0,0,0,0]]
-
-Given the above grid, return 0.
-
-Note: The length of each dimension in the given grid does not exceed 50.
-
-Time : O(m*n)
-Space : O(1)
+  Brute Force comparison:
+  - For every cell, calculate the area of the island it belongs to without 
+    global state tracking.
+  - Time Complexity: O((M*N)^2).
+  - Comparison: Standard flood-fill with visited tracking is the optimal O(MN).
 */
 
 #include <vector>

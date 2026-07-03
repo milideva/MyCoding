@@ -1,3 +1,41 @@
+/*
+  LeetCode 127: Word Ladder
+
+  Algorithm: Breadth-First Search (BFS)
+  1. We treat each word as a node in a graph. An edge exists if two words 
+     differ by exactly one character.
+  2. We need the **shortest** transformation sequence, which is the 
+     primary use case for BFS.
+  3. Instead of comparing the current word against every word in the 
+     dictionary (O(N)), we generate all possible 1-char mutations 
+     (26 * length) and check if they exist in the dictionary (O(1)).
+  4. Remove visited words from the dictionary to avoid cycles.
+
+  Complexity Analysis:
+  - Time Complexity: O(M^2 * N)
+    Reason: M is the word length and N is the number of words in `wordList`. 
+    For each word in the BFS queue, we try 26 * M mutations. For each 
+    mutation, creating the new string takes O(M). Set lookup is O(M) due 
+    to hashing. Total: N words * 26 * M * M = O(M^2 * N).
+  - Space Complexity: O(M * N)
+    Reason: To store all words in the hash set and the BFS queue.
+
+  Alternative Approaches:
+  - Bidirectional BFS: 
+    - Logic: Start BFS from both `beginWord` and `endWord`. When the 
+      two frontiers meet, the shortest path is found.
+    - Comparison: Significantly reduces the search space (exponentially 
+      smaller "frontier" circles), though the worst-case complexity 
+      remains the same.
+  - DFS: Unsuitable as it doesn't guarantee the shortest path without 
+    searching every possible path.
+
+  Brute Force comparison:
+  - For every word, compare it against all other words in the list to build 
+    a full adjacency list first (O(N^2 * M)). 
+  - Then run BFS. Generating mutations is usually faster if the alphabet 
+    is small and N is large.
+*/
 
 #include <iostream>
 #include <queue>

@@ -1,3 +1,38 @@
+/*
+  Problem: Largest Item Association (Amazon OA)
+
+  Given pairs of associated items, find the largest group of items that are 
+  all associated (connected component). If multiple groups have the same size, 
+  return the one that is lexicographically smallest.
+
+  Algorithm: Union-Find (DSU)
+  1. Map each unique string item to an integer ID.
+  2. For each pair, `union` their IDs in the DSU structure.
+  3. Track the "rank" (or size) of each component.
+  4. Find the component with the maximum size.
+  5. Collect all items belonging to that component and sort them.
+
+  Complexity Analysis:
+  - Time Complexity: O(N * α(N) + N log N)
+    Reason: Mapping strings to IDs takes O(N). Union-Find operations take 
+    nearly constant time O(α(N)). The final step involves sorting the 
+    items in the largest component, which is O(N log N).
+  - Space Complexity: O(N)
+    Reason: Hash maps for string-to-ID mapping and the DSU parent/rank arrays.
+
+  Alternative Approaches:
+  - DFS/BFS on Graph: Build an adjacency list where each item is a node. 
+    Find connected components using DFS.
+    - Time: O(V + E), Space: O(V + E).
+    - Comparison: DFS is equally efficient and might be simpler if the graph 
+      is already built. Union-Find is better for streaming/dynamic input.
+
+  Brute Force comparison:
+  - For every item, perform a BFS/DFS to find its entire group, and keep 
+    track of the largest. 
+  - Without a visited set, this would be O(N^2). With a visited set, 
+    it's effectively the same as the DFS approach.
+*/
 
 #include <vector>
 #include <unordered_map>
