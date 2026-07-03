@@ -55,22 +55,27 @@ public:
       uset.insert(curr);
       curr = curr->parent;
     }
-    
+
     // Path from q to root, first common node is LCA
     curr = q;
     while (curr) {
       if (uset.find(curr) != uset.end()) return curr;
       curr = curr->parent;
     }
-    
+
     return nullptr;
   }
 };
 
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+// Since int cannot be null in C++, we use -1 as a marker to represent the absence of a child
+// node at a specific position, mirroring LeetCode's 'null' representation in their binary tree inputs.
+const int MARKER = -1;
+
 // Builds a tree from a standard LeetCode-style level-order vector.
-// Use -1 (or another sentinel value) to represent null/empty nodes.
+// Use MARKER to represent null/empty nodes.
 TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
-    if (arr.empty() || arr[0] == -1) return nullptr;
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
 
     TreeNode* root = new TreeNode(arr[0]);
     queue<TreeNode*> q;
@@ -80,20 +85,23 @@ TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
     while (!q.empty() && i < arr.size()) {
         TreeNode* current = q.front();
         q.pop();
-
+       // We process next two nodes, left first and then right
         // Process Left Child
-        if (i < arr.size() && arr[i] != -1) {
-            current->left = new TreeNode(arr[i]);
-            current->left->parent = current; // Instantly wire parent connection safely
-            q.push(current->left);
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            left->parent = current; // Instantly wire parent connection safely
+            current->left = left;
+            q.push(left);
         }
+
         i++;
 
         // Process Right Child
-        if (i < arr.size() && arr[i] != -1) {
-            current->right = new TreeNode(arr[i]);
-            current->right->parent = current; // Instantly wire parent connection safely
-            q.push(current->right);
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            right->parent = current; // Instantly wire parent connection safely
+           current->right = right;
+            q.push(right);
         }
         i++;
     }
@@ -120,13 +128,14 @@ void destroyTree(TreeNode* root) {
 int main() {
     Solution sol;
 
-    // Example 1: root = [3,5,1,6,2,0,8,-1,-1,7,4], p = 5, q = 1
-    vector<int> nodes1 = {3, 5, 1, 6, 2, 0, 8, -1, -1, 7, 4};
+    // Example 1: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+    // Using MARKER for 'null' nodes.
+    vector<int> nodes1 = {3, 5, 1, 6, 2, 0, 8, MARKER, MARKER, 7, 4};
     TreeNode* root1 = createTreeFromLevelOrder(nodes1);
-    
+
     TreeNode* p1 = findNode(root1, 5);
     TreeNode* q1 = findNode(root1, 1);
-    
+
     TreeNode* lca1 = sol.lowestCommonAncestor(p1, q1);
     cout << "Example 1: LCA of 5 and 1 is " << (lca1 ? to_string(lca1->val) : "null") << " (Expected: 3)" << endl;
 
@@ -141,6 +150,7 @@ int main() {
     // Example 3: root = [1,2], p = 1, q = 2
     vector<int> nodes3 = {1, 2};
     TreeNode* root3 = createTreeFromLevelOrder(nodes3);
+
     TreeNode* p3 = findNode(root3, 1);
     TreeNode* q3 = findNode(root3, 2);
     TreeNode* lca3 = sol.lowestCommonAncestor(p3, q3);
