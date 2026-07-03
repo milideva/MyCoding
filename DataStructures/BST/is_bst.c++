@@ -12,13 +12,21 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-class Solution {
-public:
-    //=========================================================================
-    // Method 1: Brute-force, check constraints for every node.
-    // This is very inefficient due to repeated traversals.
-    // Time Complexity: O(N^2) in the worst case (skewed tree).
-    //=========================================================================
+/*
+  LeetCode 98: Validate Binary Search Tree
+
+  Problem Description:
+  Given the root of a binary tree, determine if it is a valid binary 
+  search tree (BST).
+
+  A valid BST is defined as follows:
+  - The left subtree of a node contains only nodes with keys less than 
+    the node's key.
+  - The right subtree of a node contains only nodes with keys greater 
+    than the node's key.
+  - Both the left and right subtrees must also be binary search trees.
+
+  Algorithm:
 private:
     // Helper to find the maximum value in a subtree.
     int findMax(TreeNode* node) {

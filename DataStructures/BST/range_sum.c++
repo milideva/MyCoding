@@ -1,6 +1,11 @@
 /*
   LeetCode 938: Range Sum of BST
 
+  Problem Description:
+  Given the root node of a binary search tree and two integers low 
+  and high, return the sum of values of all nodes with a value in 
+  the inclusive range [low, high].
+
   Algorithm: Pruned DFS
   We traverse the tree recursively. At each node, we check if its value 
   falls within the range [low, high].

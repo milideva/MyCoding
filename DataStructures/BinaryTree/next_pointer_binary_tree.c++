@@ -7,7 +7,11 @@ using namespace std;
 /*
   LeetCode 116 / 117: Populating Next Right Pointers in Each Node
 
-  Problem: Connect each node to its next right neighbor at the same height.
+  Problem Description:
+  You are given a binary tree where each node has a 'next' pointer. 
+  Initially, all next pointers are set to NULL. Populate each next 
+  pointer to point to its next right node. If there is no next right 
+  node, the next pointer should be set to NULL.
 
   Algorithm: Breadth-First Search (BFS) / Level Order Traversal
   We use a queue to process the tree level by level. For each node in a 

@@ -1,8 +1,12 @@
 /*
   LeetCode 1254: Number of Closed Islands
 
-  Problem: Count islands that are completely surrounded by water (1s) and 
-  do not touch the grid boundaries.
+  Problem Description:
+  Given a 2D grid consists of 0s (land) and 1s (water). An island is a 
+  maximal 4-directionally connected group of 0s and a closed island is 
+  an island totally (all left, top, right, bottom) surrounded by 1s.
+
+  Return the number of closed islands.
 
   Algorithm: DFS with Boundary Check
   1. Iterate through the grid. When an unvisited land (0) is found, start a DFS.

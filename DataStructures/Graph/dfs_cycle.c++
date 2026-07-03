@@ -1,9 +1,14 @@
 /*
   Problem: Finding Minimum Trio Degree (Amazon Pattern)
 
-  A "Trio" is a group of 3 nodes where every node is connected to the other 
-  two (a 3-cycle). The score of a trio is the sum of (degree - 2) for each 
-  node in the trio.
+  Problem Description:
+  You are given an undirected graph. A "Trio" is a group of 3 nodes 
+  where every node is connected to the other two. The degree of a 
+  node is the number of edges connected to it. 
+  The "Trio Degree" is the number of edges connected to the three 
+  nodes minus the edges within the trio (i.e., sum(degree(u)-2) 
+  for each node u in the trio).
+  Find the minimum trio degree in the graph.
 
   Algorithm 1: Brute Force (findCycle)
   - Iterates through all combinations of 3 nodes (i, j, k).

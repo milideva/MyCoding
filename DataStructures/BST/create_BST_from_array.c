@@ -6,6 +6,13 @@
 /* 
   LeetCode 108: Convert Sorted Array to Binary Search Tree
 
+  Problem Description:
+  Given an integer array nums where the elements are sorted in 
+  ascending order, convert it to a height-balanced binary search tree.
+
+  A height-balanced binary tree is a binary tree in which the depth 
+  of the two subtrees of every node never differs by more than one.
+
   Algorithm: Recursive Midpoint Split
   To ensure the BST is height-balanced, the root must be the middle element 
   of the sorted array. We recursively apply this logic to the left and 

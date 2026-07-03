@@ -5,6 +5,14 @@ using namespace std;
 /*
   Problem: Binary Search Tree (BST) Operations: Successor, Predecessor, Insertion
 
+  Problem Description:
+  Implement core BST operations:
+  - Successor: Find the node with the smallest value larger than the 
+    given node.
+  - Predecessor: Find the node with the largest value smaller than the 
+    given node.
+  - Insertion: Add a new value to the BST while maintaining its property.
+
   Algorithms & Complexity:
 
   1. getSuccessor (Smallest element in right subtree or closest left-turn ancestor):

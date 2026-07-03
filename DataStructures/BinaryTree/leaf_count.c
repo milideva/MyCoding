@@ -4,6 +4,10 @@
 /*
   Problem: Count Leaf Nodes in a Binary Tree
 
+  Problem Description:
+  Given a binary tree, return the count of all leaf nodes. A node 
+  is a leaf if it has no left or right children.
+
   Algorithm: Recursive DFS
   A node is a leaf if both its left and right children are NULL.
   Total leaves = leafcount(left) + leafcount(right).

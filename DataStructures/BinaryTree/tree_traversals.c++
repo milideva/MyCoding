@@ -14,6 +14,15 @@ const int MARKER = -1;
 /*
   Problem: Common Binary Tree Operations (Traversals, Symmetry, Path Sum)
 
+  Problem Description:
+  Implement and demonstrate various binary tree traversals and 
+  common operations:
+  - Pre-order (Recursive & Iterative): Root -> Left -> Right
+  - Level-order (BFS): Level-by-level from left to right.
+  - Symmetry: Check if a tree is a mirror of itself.
+  - Path Sum: Determine if the tree has a root-to-leaf path such that 
+    adding up all the values along the path equals the given target sum.
+
   Algorithms & Complexity:
 
   1. Pre-order Traversal (Recursive & Iterative):

@@ -7,6 +7,12 @@ using namespace std;
 /*
   Problem: Iterative In-order Traversal & BST Validation (LeetCode 94, 98)
 
+  Problem Descriptions:
+  LC 94: Given the root of a binary tree, return the inorder traversal 
+  of its nodes' values.
+  LC 98: Given the root of a binary tree, determine if it is a valid 
+  binary search tree (BST).
+
   Algorithm 1: Iterative In-order (print_inorder_without_recursion)
   We use an explicit stack to simulate the recursion of an in-order traversal 
   (Left, Root, Right). We push all left children to the stack, pop the top, 

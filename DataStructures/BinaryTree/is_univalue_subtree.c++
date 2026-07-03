@@ -8,8 +8,9 @@ using namespace std;
 /*
   LeetCode 250: Count Univalue Subtrees
 
-  Problem: Given the root of a binary tree, return the number of uni-value 
-  subtrees. A uni-value subtree is one where all nodes in the subtree 
+  Problem Description:
+  Given the root of a binary tree, return the number of uni-value 
+  subtrees. A uni-value subtree means all nodes of the subtree 
   have the same value.
 
   Algorithm: Bottom-Up DFS

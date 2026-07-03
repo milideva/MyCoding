@@ -8,9 +8,24 @@
 using namespace std;
  
 /*
-  LeetCode 236 (Variant): Lowest Common Ancestor with Parent Pointers
+  LeetCode 1650: Lowest Common Ancestor of a Binary Tree III
 
-  Problem: Find the LCA of two nodes p and q. Each node has a 'parent' pointer.
+  Problem Description:
+  Given two nodes of a binary tree p and q, return their lowest common 
+  ancestor (LCA). Each node has a reference to its parent node. The 
+  definition for Node is as follows:
+
+  class Node {
+      public int val;
+      public Node left;
+      public Node right;
+      public Node parent;
+  }
+
+  According to the definition of LCA on Wikipedia: "The lowest common 
+  ancestor of two nodes p and q in a tree T is the lowest node that 
+  has both p and q as descendants (where we allow a node to be a 
+  descendant of itself)."
 
   Algorithm: Path Intersection (using Hash Set)
   1. Traverse from p upwards to the root, adding each node to a hash set.

@@ -6,6 +6,12 @@ using namespace std;
 /*
   Problem: Disjoint Set Union (DSU) / Union-Find
 
+  Problem Description:
+  Implement a Disjoint Set Union (DSU) data structure that supports 
+  `find` and `union` operations. This structure is used to manage 
+  a partition of a set into disjoint subsets and to efficiently 
+  determine connectivity.
+
   Algorithm: Union-Find with Path Compression
   1. `find(x)`: Recursively finds the representative of the set containing x. 
      Path compression flattens the tree structure by making every node in 

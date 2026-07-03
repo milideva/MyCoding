@@ -6,6 +6,11 @@
 /*
   Problem: BST Serialization and Deserialization
 
+  Problem Description:
+  Design an algorithm to serialize and deserialize a binary search 
+  tree. Serialization is the process of converting a data structure 
+  into a sequence of bits so that it can be stored or transmitted.
+
   Algorithm: Pre-order DFS
   For a general tree, we need two traversals or null markers to rebuild it. 
   For a BST, a single Pre-order or Post-order traversal is sufficient to 

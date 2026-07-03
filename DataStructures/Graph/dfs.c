@@ -5,6 +5,12 @@
 /*
   Problem: Depth-First Search (DFS) Traversal
 
+  Problem Description:
+  Implement Depth-First Search (DFS) traversal for a given graph. 
+  The traversal should be able to explore all nodes reachable from a 
+  starting vertex. Both recursive and iterative implementations are 
+  provided.
+
   Algorithm 1: Recursive DFS
   - Standard backtracking-style traversal. Marks a node as visited and 
     recursively visits unvisited neighbors.

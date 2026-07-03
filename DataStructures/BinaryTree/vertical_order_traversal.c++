@@ -1,44 +1,45 @@
 /*
+  LeetCode 987: Vertical Order Traversal of a Binary Tree
 
-Given a binary tree, return the vertical order traversal of its nodes values.
+  Problem Description:
+  Given the root of a binary tree, calculate the vertical order 
+  traversal of the binary tree. For each node at position (row, col), 
+  its left child will be at (row + 1, col - 1), and its right child 
+  will be at (row + 1, col + 1). The root is at (0, 0).
 
-For each node at position (X, Y), its left and right children respectively will
-be at positions (X-1, Y-1) and (X+1, Y-1).
+  The vertical order traversal of a binary tree is a list of 
+  top-to-bottom orderings for each column index starting from the 
+  leftmost column and ending on the rightmost column. There may 
+  be multiple nodes in the same row and same column. In such a 
+  case, sort these nodes by their values.
 
-Running a vertical line from X = -infinity to X = +infinity, whenever the
-vertical line touches some nodes, we report the values of the nodes in order
-from top to bottom (decreasing Y coordinates).
+  Algorithm: DFS with Map
+  1. Use a nested map `map<int, map<int, multiset<int>>>` where the first 
+     key is the column (x), the second is the row (y), and the multiset 
+     stores node values at that coordinate (to handle sorting for same 
+     position).
+  2. Perform a DFS/BFS to populate the map.
+  3. Traverse the map to collect the results into the final 2D vector.
 
-If two nodes have the same position, then the value of the node that is reported
-first is the value that is smaller.
+  Complexity Analysis:
+  - Time Complexity: O(N log N)
+    Reason: We visit every node (N). Inserting into the map and 
+    multiset takes O(log N). Sorting and traversing also take O(N log N).
+  - Space Complexity: O(N)
+    Reason: To store all node values in the map structure.
 
-Return an list of non-empty reports in order of X coordinate. Every report will
-have a list of values of nodes.
+  Comparison:
+  - BFS vs DFS: BFS is often preferred for vertical traversal as it 
+    naturally processes nodes level-by-level (row-by-row), but DFS 
+    works fine as long as we store the coordinates and sort correctly.
+  - The current map-based approach is robust for the LeetCode 
+    requirements.
 
-Example 1:
-
-Input: [3,9,20,null,null,15,7]
-Output: [[9],[3,15],[20],[7]]
-Explanation:
-Without loss of generality, we can assume the root node is at position (0, 0):
-Then, the node with value 9 occurs at position (-1, -1);
-The nodes with values 3 and 15 occur at positions (0, 0) and (0, -2);
-The node with value 20 occurs at position (1, -1);
-The node with value 7 occurs at position (2, -2).
-
-Example 2:
-
-Input: [1,2,3,4,5,6,7]
-Output: [[4],[2],[1,5,6],[3],[7]]
-Explanation:
-The node with value 5 and the node with value 6 have the same position according to the given scheme.
-However, in the report "[1,5,6]", the node value of 5 comes first since 5 is smaller than 6.
-
-Note:
-
-    The tree will have between 1 and 1000 nodes.
-    Each node's value will be between 0 and 1000.
-
+  Brute Force comparison:
+  - For every column, perform a full tree traversal to find all nodes in 
+    that column and sort them. 
+  - Time: O(W * N log N), where W is the width of the tree.
+  - Using a map reduces this to a single traversal + sorting overhead.
 */
 
 #include <map>

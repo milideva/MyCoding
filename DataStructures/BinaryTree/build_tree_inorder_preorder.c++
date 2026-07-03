@@ -1,6 +1,11 @@
 /*
   LeetCode 105: Construct Binary Tree from Inorder and Preorder Traversal
 
+  Problem Description:
+  Given two integer arrays preorder and inorder where preorder is the 
+  preorder traversal of a binary tree and inorder is the inorder 
+  traversal of the same tree, construct and return the binary tree.
+
   Algorithm: Recursive DFS with HashMap
   1. Preorder: ROOT -> LEFT -> RIGHT. The first element is always the root.
   2. Inorder: LEFT -> ROOT -> RIGHT. The root splits the array into left 

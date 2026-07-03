@@ -1,9 +1,12 @@
 /*
   Problem: Largest Item Association (Amazon OA)
 
-  Given pairs of associated items, find the largest group of items that are 
-  all associated (connected component). If multiple groups have the same size, 
-  return the one that is lexicographically smallest.
+  Problem Description:
+  You are given a list of item associations, where each association 
+  contains two items that are related. Friendship/association is 
+  transitive. Find the largest group of items that are all 
+  associated. If multiple groups have the same maximum size, return 
+  the one that is lexicographically smallest.
 
   Algorithm: Union-Find (DSU)
   1. Map each unique string item to an integer ID.

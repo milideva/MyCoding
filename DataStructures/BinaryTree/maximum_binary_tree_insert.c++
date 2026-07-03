@@ -1,8 +1,18 @@
 /*
   LeetCode 998: Maximum Binary Tree II
 
-  Problem: Insert a value into an existing Maximum Binary Tree. This value 
-  was conceptually added to the end of the original array.
+  Problem Description:
+  A maximum tree is a tree where every node has a value greater than 
+  any other value in its subtree.
+
+  You are given the root of a maximum binary tree and an integer val.
+  Just as in the previous problem, the given tree was constructed 
+  from a list a (root = Construct(a)) recursively with the 
+  Maximum(a) function.
+
+  Suppose b is a copy of a with the value val appended to it. It is 
+  guaranteed that b has unique values.
+  Return Construct(b).
 
   Algorithm: Recursive DFS (Right-skewed Traversal)
   Since the value was appended to the array, it can only be:

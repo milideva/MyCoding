@@ -5,6 +5,11 @@
 /*
   Problem: Average of Levels in Binary Tree (LeetCode 637)
 
+  Problem Description:
+  Given the root of a binary tree, return the average value of the nodes 
+  on each level in the form of an array. Answers within 10^-5 of the 
+  actual answer will be accepted.
+
   Algorithm: Breadth-First Search (BFS) / Level Order Traversal
   We use a queue to process nodes level by level. For each level, we calculate
   the sum of all node values and divide by the number of nodes in that level.

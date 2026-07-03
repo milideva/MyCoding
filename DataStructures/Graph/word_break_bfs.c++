@@ -1,6 +1,14 @@
 /*
   LeetCode 139: Word Break
 
+  Problem Description:
+  Given a string s and a dictionary of strings wordDict, return true 
+  if s can be segmented into a space-separated sequence of one or 
+  more dictionary words.
+
+  Note that the same word in the dictionary may be reused multiple 
+  times in the segmentation.
+
   Algorithm: Breadth-First Search (BFS) on String Indices
   1. Treat the string as a graph where each index is a node. 
   2. An edge exists between index `i` and `j` if the substring `s[i...j-1]` 

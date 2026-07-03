@@ -9,8 +9,12 @@ using namespace std;
 /*
   LeetCode 366: Find Leaves of Binary Tree
 
-  Problem: Collect and remove leaf nodes level by level until the tree 
-  is empty.
+  Problem Description:
+  Given the root of a binary tree, collect a tree's nodes as if you 
+  were doing this:
+  1. Collect all the leaf nodes.
+  2. Remove all the leaf nodes.
+  3. Repeat until the tree is empty.
 
   Algorithm: Bottom-Up Height Calculation
   We define "height" as the distance from the furthest leaf. 

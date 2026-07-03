@@ -7,56 +7,45 @@
 using namespace std;
 
 /*
+  LeetCode 314: Binary Tree Vertical Order Traversal
 
-Given a binary tree, return the vertical order traversal of its nodes' values.
-(ie, from top to bottom, column by column).
+  Problem Description:
+  Given the root of a binary tree, return the vertical order 
+  traversal of its nodes' values. (i.e., from top to bottom, 
+  column by column).
 
-If two nodes are in the same row and column, the order should be from left to right.
+  If two nodes are in the same row and column, the order should 
+  be from left to right.
 
-Examples 1:
+  Algorithm: BFS with Map
+  1. Use a map `map<int, vector<int>>` where the key is the column index 
+     (root is 0).
+  2. Use a queue for BFS, storing pairs of `(Node*, column_index)`.
+  3. BFS ensures that nodes are visited from top to bottom and left to 
+     right for the same column.
+  4. Collect all vectors from the map (which is sorted by key) into the 
+     final 2D result.
 
-Input: [3,9,20,null,null,15,7]
+  Complexity Analysis:
+  - Time Complexity: O(N log W)
+    Reason: We visit every node (N). Inserting into the map takes 
+    O(log W) where W is the width of the tree.
+  - Space Complexity: O(N)
+    Reason: To store all node values in the map.
 
-   3
-  /\
- /  \
- 9  20
-    /\
-   /  \
-  15   7
+  Comparison:
+  - BFS vs DFS: BFS is better here because the problem asks for nodes 
+    in the same row/column to be ordered from left to right. Standard BFS 
+    handles this naturally, while DFS would require storing the row 
+    index and sorting.
+  - The map keeps columns in the correct left-to-right order.
 
-Output:
-
-[
-  [9],
-  [3,15],
-  [20],
-  [7]
-]
-
-Examples 2:
-
-Input: [3,9,8,4,0,1,7]
-
-     3
-    /\
-   /  \
-   9   8
-  /\  /\
- /  \/  \
- 4  01   7
-
-Output:
-
-[
-  [4],
-  [9],
-  [3,0,1],
-  [8],
-  [7]
-]
-
-Examples 3:
+  Brute Force comparison:
+  - Calculate the width boundaries first (min_col, max_col), then for 
+    each col in [min_col, max_col], run a full traversal.
+  - Time: O(W * N). 
+  - Using a map and single BFS is more efficient.
+*/
 
 Input: [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
 

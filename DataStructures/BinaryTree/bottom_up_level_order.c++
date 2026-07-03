@@ -8,7 +8,10 @@
 /*
   LeetCode 107: Binary Tree Level Order Traversal II (Bottom-Up)
 
-  Problem: Return the level order traversal from leaf to root.
+  Problem Description:
+  Given the root of a binary tree, return the bottom-up level order 
+  traversal of its nodes' values. (i.e., from left to right, level 
+  by level from leaf to root).
 
   Algorithm: Breadth-First Search (BFS) + Result Reversal
   1. Perform a standard level-order traversal (BFS) using a queue.

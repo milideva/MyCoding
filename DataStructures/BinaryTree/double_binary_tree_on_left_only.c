@@ -4,6 +4,12 @@
 /*
   Problem: Double Tree (Duplicate nodes on left)
 
+  Problem Description:
+  For every node in the binary tree, create a duplicate node with 
+  the same value and insert it as the left child of the original node, 
+  pushing the original left child down to be the left child of the 
+  newly created node.
+
   Algorithm: Post-order Traversal (Bottom-Up)
   We traverse to the leaves first, then create the duplicate node and insert
   it between the current node and its original left child.

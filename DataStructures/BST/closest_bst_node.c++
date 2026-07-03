@@ -1,7 +1,9 @@
 /*
   LeetCode 270: Closest Binary Search Tree Value
 
-  Problem: Find the node value in a BST closest to a given floating-point target.
+  Problem Description:
+  Given the root of a binary search tree and a target value, return 
+  the value in the BST that is closest to the target.
 
   Algorithm: Binary Search on Tree
   Since it's a BST, if the target is smaller than the current node's value, 

@@ -4,6 +4,9 @@
 /*
   Problem: Size of a Binary Tree (Total number of nodes)
 
+  Problem Description:
+  Given a binary tree, calculate the total number of nodes present in it.
+
   Algorithm: Recursive DFS
   The size of a tree is 1 (for the root) + size(left) + size(right).
 

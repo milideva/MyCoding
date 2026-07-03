@@ -4,6 +4,12 @@
 /*
   Problem: Distance between two nodes in a BST
 
+  Problem Description:
+  Given a list of unique integers nums, construct a BST from it and 
+  find the distance between two nodes node1 and node2. Distance is 
+  the number of edges between two nodes. If any of the given nodes 
+  does not appear in the BST, return -1.
+
   Algorithm: LCA Property + Path Length
   1. Find the Lowest Common Ancestor (LCA) of the two nodes.
   2. In a BST, the LCA of n1 and n2 is the first node whose value is 

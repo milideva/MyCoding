@@ -4,34 +4,17 @@
 
 
 /*
-  Check if two nodes are cousins in a Binary Tree
+  Problem: Check if two nodes are cousins in a Binary Tree (LeetCode 993)
 
-  Given the binary Tree and the two nodes say a and b, determine whether
-  the two nodes are cousins of each other or not.
-  
-  Two nodes are cousins of each other if they are at same level and have
-  different parents.
-  
-Example
+  Problem Description:
+  Given the root of a binary tree and the values of two different nodes 
+  of the tree x and y, return true if the nodes corresponding to the 
+  values x and y are cousins, or false otherwise.
 
-     6
-   /   \
-  13     5
- / \   / \
-7   8 1   3
+  Two nodes of a binary tree are cousins if they have the same depth 
+  but different parents.
 
-Say two node be 7 and 1, result is TRUE.
-Say two nodes are 13 and 5, result is FALSE.
-Say two nodes are 7 and 5, result is FALSE.
-
-*/
-
-/*
-  Check if two nodes are cousins in a Binary Tree
-
-  Definition: Two nodes are cousins if they are at the same level but have different parents.
-
-  Approach 1: Multiple Traversals (is_cousin)
+  Algorithm: Multiple Traversals (is_cousin)
   - Time Complexity: O(N)
     Reason: It calls get_level twice (O(N) each) and is_sibling once (O(N)).
     Total work is 3 * O(N), which simplifies to O(N).

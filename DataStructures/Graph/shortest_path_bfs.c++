@@ -1,6 +1,12 @@
 /*
   Problem: Shortest Path in a Maze
 
+  Problem Description:
+  Given a 2D binary matrix where 1 represents a path and 0 represents 
+  a wall, find the length of the shortest path from a source cell 
+  to a destination cell. You can move in 4 directions: up, down, 
+  left, and right.
+
   Algorithm: Breadth-First Search (BFS)
   1. Use a queue to store the current cell coordinates and its distance 
      from the source.

@@ -1,6 +1,10 @@
 /* 
   LeetCode 102: Binary Tree Level Order Traversal
 
+  Problem Description:
+  Given the root of a binary tree, return the level order traversal 
+  of its nodes' values. (i.e., from left to right, level by level).
+
   Algorithm: Breadth-First Search (BFS)
   BFS visits nodes level by level, starting from the root. It uses a queue 
   to keep track of the children of the current level's nodes.

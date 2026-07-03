@@ -4,6 +4,12 @@
 /*
   Problem: Predecessor and Successor in a BST
 
+  Problem Description:
+  Given a BST and a key, find the in-order predecessor and successor 
+  of the given key in the BST. If the key is not found, return the 
+  nodes that would be its predecessor and successor if it were 
+  present.
+
   Algorithm: Recursive BST Search
   1. If root is NULL, return.
   2. If key is found:

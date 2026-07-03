@@ -4,6 +4,11 @@
 /*
   Problem: Height of a Binary Tree
 
+  Problem Description:
+  Given a binary tree, find its height. The height of a binary tree 
+  is the number of nodes along the longest path from the root node 
+  down to the farthest leaf node.
+
   Algorithm: Recursive Depth-First Search (DFS)
   The height of a tree is defined as 1 + max(height of left subtree, height 
   of right subtree).

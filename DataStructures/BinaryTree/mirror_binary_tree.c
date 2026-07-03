@@ -4,6 +4,11 @@
 /*
   Problem: Mirror (Invert) a Binary Tree
 
+  Problem Description:
+  Given a binary tree, convert it into its mirror image. In a mirror 
+  image, the left and right children of all non-leaf nodes are 
+  interchanged.
+
   Algorithm: Post-order DFS
   We recursively traverse to the bottom of the tree. At each node, we swap 
   the left and right pointers.

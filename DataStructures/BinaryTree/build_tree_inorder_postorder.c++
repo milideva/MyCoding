@@ -1,6 +1,11 @@
 /*
   LeetCode 106: Construct Binary Tree from Inorder and Postorder Traversal
 
+  Problem Description:
+  Given two integer arrays inorder and postorder where inorder is the 
+  inorder traversal of a binary tree and postorder is the postorder 
+  traversal of the same tree, construct and return the binary tree.
+
   Algorithm: Recursive DFS with HashMap
   1. Postorder: LEFT -> RIGHT -> ROOT. The last element is always the root.
   2. Inorder: LEFT -> ROOT -> RIGHT. The root splits the array into left 
