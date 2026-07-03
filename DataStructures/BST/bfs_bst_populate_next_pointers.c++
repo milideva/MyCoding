@@ -88,20 +88,26 @@ public:
 int main() {
     Solution sol;
 
-    // Constructing a perfect binary tree: [1,2,3,4,5,6,7]
-    Node* root = new Node(1);
-    root->left = new Node(2);
-    root->right = new Node(3);
-    root->left->left = new Node(4);
-    root->left->right = new Node(5);
-    root->right->left = new Node(6);
-    root->right->right = new Node(7);
+    // Test Case 1: Perfect binary tree [1,2,3,4,5,6,7]
+    Node* root1 = new Node(1);
+    root1->left = new Node(2);
+    root1->right = new Node(3);
+    root1->left->left = new Node(4);
+    root1->left->right = new Node(5);
+    root1->right->left = new Node(6);
+    root1->right->right = new Node(7);
 
-    sol.connect(root);
-    
-    cout << "Connections using 'next' pointers:" << endl;
-    sol.printLevelsWithNext(root);
+    cout << "Test 1 (Perfect Tree):" << endl;
+    sol.connect(root1);
+    sol.printLevelsWithNext(root1);
+    sol.destroyTree(root1);
 
-    sol.destroyTree(root);
+    // Test Case 2: Single Node
+    Node* root2 = new Node(100);
+    cout << "\nTest 2 (Single Node):" << endl;
+    sol.connect(root2);
+    sol.printLevelsWithNext(root2);
+    sol.destroyTree(root2);
+
     return 0;
 }

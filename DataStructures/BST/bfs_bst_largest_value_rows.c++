@@ -62,27 +62,40 @@ public:
         destroyTree(root->right);
         delete root;
     }
+
+    void printVector(const vector<int>& v) {
+        cout << "[";
+        for (size_t i = 0; i < v.size(); i++) {
+            cout << v[i] << (i == v.size() - 1 ? "" : ", ");
+        }
+        cout << "]";
+    }
 };
 
 int main() {
     Solution sol;
 
-    // Constructing the example tree: [1,3,2,5,3,null,9]
-    TreeNode* root = new TreeNode(1);
-    root->left = new TreeNode(3);
-    root->right = new TreeNode(2);
-    root->left->left = new TreeNode(5);
-    root->left->right = new TreeNode(3);
-    root->right->right = new TreeNode(9);
+    // Test Case 1: Example tree [1,3,2,5,3,null,9]
+    TreeNode* root1 = new TreeNode(1);
+    root1->left = new TreeNode(3);
+    root1->right = new TreeNode(2);
+    root1->left->left = new TreeNode(5);
+    root1->left->right = new TreeNode(3);
+    root1->right->right = new TreeNode(9);
+    cout << "Test 1: "; sol.printVector(sol.largestValues(root1)); cout << " (Expected: [1, 3, 9])" << endl;
+    sol.destroyTree(root1);
 
-    vector<int> res = sol.largestValues(root);
-    
-    cout << "Largest values per row: [";
-    for (size_t i = 0; i < res.size(); i++) {
-        cout << res[i] << (i == res.size() - 1 ? "" : ", ");
-    }
-    cout << "] (Expected: [1, 3, 9])" << endl;
+    // Test Case 2: Negative values
+    TreeNode* root2 = new TreeNode(-1);
+    root2->left = new TreeNode(-3);
+    root2->right = new TreeNode(-2);
+    cout << "Test 2: "; sol.printVector(sol.largestValues(root2)); cout << " (Expected: [-1, -2])" << endl;
+    sol.destroyTree(root2);
 
-    sol.destroyTree(root);
+    // Test Case 3: Single Node
+    TreeNode* root3 = new TreeNode(100);
+    cout << "Test 3: "; sol.printVector(sol.largestValues(root3)); cout << " (Expected: [100])" << endl;
+    sol.destroyTree(root3);
+
     return 0;
 }

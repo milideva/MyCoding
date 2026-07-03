@@ -71,15 +71,31 @@ public:
 int main() {
     Solution sol;
 
-    // Constructing the example tree: [3,9,20,null,null,15,7]
-    TreeNode* root = new TreeNode(3);
-    root->left = new TreeNode(9);
-    root->right = new TreeNode(20);
-    root->right->left = new TreeNode(15);
-    root->right->right = new TreeNode(7);
+    // Test Case 1: Example tree [3,9,20,null,null,15,7]
+    TreeNode* root1 = new TreeNode(3);
+    root1->left = new TreeNode(9);
+    root1->right = new TreeNode(20);
+    root1->right->left = new TreeNode(15);
+    root1->right->right = new TreeNode(7);
+    cout << "Test 1 (Standard): " << sol.minDepth(root1) << " (Expected: 2)" << endl;
+    sol.destroyTree(root1);
 
-    cout << "Minimum Depth: " << sol.minDepth(root) << " (Expected: 2)" << endl;
+    // Test Case 2: Skewed Tree (Right) [2,null,3,null,4,null,5,null,6]
+    TreeNode* root2 = new TreeNode(2);
+    root2->right = new TreeNode(3);
+    root2->right->right = new TreeNode(4);
+    root2->right->right->right = new TreeNode(5);
+    root2->right->right->right->right = new TreeNode(6);
+    cout << "Test 2 (Skewed Right): " << sol.minDepth(root2) << " (Expected: 5)" << endl;
+    sol.destroyTree(root2);
 
-    sol.destroyTree(root);
+    // Test Case 3: Empty Tree
+    cout << "Test 3 (Empty): " << sol.minDepth(nullptr) << " (Expected: 0)" << endl;
+
+    // Test Case 4: Single Node
+    TreeNode* root4 = new TreeNode(1);
+    cout << "Test 4 (Single Node): " << sol.minDepth(root4) << " (Expected: 1)" << endl;
+    sol.destroyTree(root4);
+
     return 0;
 }
