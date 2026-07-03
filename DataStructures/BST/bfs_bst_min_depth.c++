@@ -20,6 +20,8 @@ Output: 2
 #include <queue>
 #include <algorithm>
 
+using namespace std;
+
 struct TreeNode {
     int val;
     TreeNode *left;
@@ -32,7 +34,7 @@ public:
     int minDepth(TreeNode* root) {
         if (!root) return 0;
         
-        std::queue<TreeNode*> q;
+        queue<TreeNode*> q;
         q.push(root);
         int depth = 1;
         
@@ -76,7 +78,7 @@ int main() {
     root->right->left = new TreeNode(15);
     root->right->right = new TreeNode(7);
 
-    std::cout << "Minimum Depth: " << sol.minDepth(root) << " (Expected: 2)" << std::endl;
+    cout << "Minimum Depth: " << sol.minDepth(root) << " (Expected: 2)" << endl;
 
     sol.destroyTree(root);
     return 0;

@@ -20,6 +20,8 @@ Output: [1,3,9]
 #include <limits>
 #include <algorithm>
 
+using namespace std;
+
 struct TreeNode {
     int val;
     TreeNode *left;
@@ -29,22 +31,22 @@ struct TreeNode {
 
 class Solution {
 public:
-    std::vector<int> largestValues(TreeNode* root) {
+    vector<int> largestValues(TreeNode* root) {
         if (!root) return {};
         
-        std::vector<int> result;
-        std::queue<TreeNode*> q;
+        vector<int> result;
+        queue<TreeNode*> q;
         q.push(root);
         
         while (!q.empty()) {
             int levelSize = q.size();
-            int maxVal = std::numeric_limits<int>::min();
+            int maxVal = numeric_limits<int>::min();
             
             for (int i = 0; i < levelSize; i++) {
                 TreeNode* curr = q.front();
                 q.pop();
                 
-                maxVal = std::max(maxVal, curr->val);
+                maxVal = max(maxVal, curr->val);
                 
                 if (curr->left) q.push(curr->left);
                 if (curr->right) q.push(curr->right);
@@ -73,13 +75,13 @@ int main() {
     root->left->right = new TreeNode(3);
     root->right->right = new TreeNode(9);
 
-    std::vector<int> res = sol.largestValues(root);
+    vector<int> res = sol.largestValues(root);
     
-    std::cout << "Largest values per row: [";
+    cout << "Largest values per row: [";
     for (size_t i = 0; i < res.size(); i++) {
-        std::cout << res[i] << (i == res.size() - 1 ? "" : ", ");
+        cout << res[i] << (i == res.size() - 1 ? "" : ", ");
     }
-    std::cout << "] (Expected: [1, 3, 9])" << std::endl;
+    cout << "] (Expected: [1, 3, 9])" << endl;
 
     sol.destroyTree(root);
     return 0;

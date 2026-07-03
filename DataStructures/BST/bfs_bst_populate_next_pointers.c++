@@ -24,6 +24,8 @@ Explanation: Given the above perfect binary tree, your function should populate 
 #include <iostream>
 #include <queue>
 
+using namespace std;
+
 struct Node {
     int val;
     Node *left;
@@ -39,7 +41,7 @@ public:
     Node* connect(Node* root) {
         if (!root) return nullptr;
         
-        std::queue<Node*> q;
+        queue<Node*> q;
         q.push(root);
         
         while (!q.empty()) {
@@ -67,10 +69,10 @@ public:
         while (levelStart) {
             Node* curr = levelStart;
             while (curr) {
-                std::cout << curr->val << (curr->next ? " -> " : " -> NULL");
+                cout << curr->val << (curr->next ? " -> " : " -> NULL");
                 curr = curr->next;
             }
-            std::cout << std::endl;
+            cout << endl;
             levelStart = levelStart->left;
         }
     }
@@ -97,7 +99,7 @@ int main() {
 
     sol.connect(root);
     
-    std::cout << "Connections using 'next' pointers:" << std::endl;
+    cout << "Connections using 'next' pointers:" << endl;
     sol.printLevelsWithNext(root);
 
     sol.destroyTree(root);
