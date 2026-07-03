@@ -2,7 +2,7 @@ http://www.geeksforgeeks.org/serialize-deserialize-binary-tree/
 
 How to store a general Binary Tree?
 A simple solution is to store both Inorder and Preorder traversals. This 
-solution requires requires space twice the size of Binary Tree.
+solution requires space twice the size of Binary Tree.
 We can save space by storing Preorder traversal and a marker for NULL 
 pointers. 
 
@@ -24,7 +24,7 @@ Can we optimize it further?
 The above solution can be optimized in many ways. If we take a closer look 
 at above serialized trees, we can observe that all leaf nodes require two 
 markers. One simple optimization is to store a separate bit with every 
-node to indicate that the node is internal or external. This way we don?t 
+node to indicate that the node is internal or external. This way we don't 
 have to store two markers with every leaf node as leaves can be identified 
 by extra bit. We still need marker for internal nodes with one child.
 
@@ -39,8 +39,53 @@ Tree B:
    \
     2
 
-
 A standard Inorder traversal produces [1, 2] for both trees, failing to tell them apart because it loses the structural depth.
+
+1. Showcasing Preorder with NULL Markers (#)
+A Preorder traversal follows the pattern: Root -> Left Child -> Right Child.
+
+Tracing Tree A:
+- Visit Root -> 2
+- Move Left to Node 1:
+  - Visit Root -> 1
+  - Move Left -> empty child, so write #
+  - Move Right -> empty child, so write #
+- Go back up to Node 2 and move Right -> empty child, so write #
+Tree A Preorder Output: [2, 1, #, #, #]
+
+Tracing Tree B:
+- Visit Root -> 1
+- Move Left -> empty child, so write #
+- Move Right to Node 2:
+  - Visit Root -> 2
+  - Move Left -> empty child, so write #
+  - Move Right -> empty child, so write #
+Tree B Preorder Output: [1, #, 2, #, #]
+
+Why it is sufficient:
+The deserializer gets two completely different sequences.
+- If it reads [2, 1, #, #, #], it instantly knows 2 is the absolute root, and its immediate left child is 1.
+- If it reads [1, #, 2, #, #], it instantly knows 1 is the absolute root, its left child is completely empty (#), and 2 must belong on the right.
+
+2. Showcasing Postorder with NULL Markers (#)
+A Postorder traversal follows the pattern: Left Child -> Right Child -> Root.
+
+Tracing Tree A:
+- From Root 2, go Left to Node 1.
+- From Node 1, check Left (#), check Right (#), then visit Root -> 1
+- Go back to Root 2, check Right (#).
+- Finally, visit Root -> 2
+Tree A Postorder Output: [#, #, 1, #, 2]
+
+Tracing Tree B:
+- From Root 1, check Left (#).
+- Go Right to Node 2.
+- From Node 2, check Left (#), check Right (#), then visit Root -> 2
+- Go back to Root 1, and visit Root -> 1
+Tree B Postorder Output: [#, #, #, 2, 1]
+
+Why it is sufficient:
+Just like Preorder, the sequences are entirely unique. By reading the position of the # markers relative to the values, a deserializer can perfectly reconstruct the exact parent-child boundaries without needing a second traversal type.
 
 
 
