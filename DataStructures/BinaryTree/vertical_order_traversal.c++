@@ -19,7 +19,7 @@ Example 1:
 
 Input: [3,9,20,null,null,15,7]
 Output: [[9],[3,15],[20],[7]]
-Explanation: 
+Explanation:
 Without loss of generality, we can assume the root node is at position (0, 0):
 Then, the node with value 9 occurs at position (-1, -1);
 The nodes with values 3 and 15 occur at positions (0, 0) and (0, -2);
@@ -30,7 +30,7 @@ Example 2:
 
 Input: [1,2,3,4,5,6,7]
 Output: [[4],[2],[1,5,6],[3],[7]]
-Explanation: 
+Explanation:
 The node with value 5 and the node with value 6 have the same position according to the given scheme.
 However, in the report "[1,5,6]", the node value of 5 comes first since 5 is smaller than 6.
 
@@ -45,6 +45,8 @@ Note:
 #include <set>
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <string>
 
 using namespace std;
 
@@ -57,6 +59,9 @@ struct TreeNode {
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
+
 class Solution {
   // sort based on <row, col, val>
   map <int, set <pair<int,int>> > mp; // x --> { y, value } lower x first, lower y first, lower val first
@@ -66,9 +71,9 @@ class Solution {
 
   // why set ? Because set is an ordered data structure. If two nodes have the
   // same position, then the value of the node that is reported first is the
-  // value that is smaller. 
+  // value that is smaller.
   // set <pair <a, b>> // orders on lower a first, if a is same, then orders on lower b first.
-  
+
   // vertical order is row wise ordering, row = level
   void pre ( TreeNode *root, int x, int y ){
     if(!root)
@@ -77,15 +82,16 @@ class Solution {
     pre(root->left, x-1, y+1);
     pre(root->right, x+1, y+1);
   }
-  
+
 public:
   vector<vector<int>> verticalTraversal(TreeNode* root) {
+    mp.clear();
     pre(root, 0, 0 );
     vector <vector<int>> v;
-    for (auto [x, s] : mp ) {
+    for (auto const& [x, s] : mp ) {
       vector<int> c;
 
-      for (auto [y, val] : s )
+      for (auto const& [y, val] : s )
         c.push_back(val);
 
       v.push_back(c);
@@ -95,65 +101,97 @@ public:
 };
 
 ///////////////////////////////// Test code ////////////////////////////////////////
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
+
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
+
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
+
+        // Move to the next element for the next child
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
+
+        // Move to the next element for the next node
+        i++;
+    }
+
+    return root;
 }
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (end < start) return NULL;
-
-    int mid = (start+end)/2;
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
-
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : 0,
-           n->right ? n->right->val : 0);
-    return n;
-}
-
-static void inorder (TreeNode *root)  { 
-    if (root) { 
-        inorder(root->left); 
-        printf("%d \n", root->val); 
-        inorder(root->right); 
-    } 
+static void inorder (TreeNode *root)  {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->val);
+        inorder(root->right);
+    }
 }
 
 void print_inorder (TreeNode *n) {
-    printf("print_inorder: \n");
+    printf("print_inorder: ");
     inorder(n);
+    printf("\n");
 }
 
-TreeNode *create_tree () {
-    int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-    int end = sizeof array/ sizeof array[0];
-    TreeNode *root = create_BST_from_array(array, 0, end-1);
-    print_inorder(root);
-    return root;
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
 }
-void print_vec_vec (vector <vector <int>> &res) {
-  cout << "Vertical order : " << endl;
+
+void print_vec_vec (vector <vector <int>> &res, string label) {
+  cout << label << " : " << endl;
   for (auto v: res) {
-    for (auto e : v) {
-      cout << e << " ";
+    cout << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+      cout << v[i] << (i == v.size() - 1 ? "" : ", ");
     }
-    cout << endl;
+    cout << "] ";
   }
+  cout << endl;
 }
 
 int main () {
-  class Solution sol;
-  TreeNode *root = create_tree();
-  vector <vector <int>> res = sol.verticalTraversal(root);
-  print_vec_vec(res);
+  Solution sol;
+
+  // Example 1: [3,9,20,null,null,15,7]
+  vector<int> nodes1 = {3, 9, 20, MARKER, MARKER, 15, 7};
+  TreeNode *root1 = createTreeFromLevelOrder(nodes1);
+  vector <vector <int>> res1 = sol.verticalTraversal(root1);
+  print_vec_vec(res1, "Example 1 Vertical Order");
+  // Expected: [[9],[3,15],[20],[7]]
+
+  // Example 2: [1,2,3,4,5,6,7]
+  vector<int> nodes2 = {1, 2, 3, 4, 5, 6, 7};
+  TreeNode *root2 = createTreeFromLevelOrder(nodes2);
+  vector <vector <int>> res2 = sol.verticalTraversal(root2);
+  print_vec_vec(res2, "Example 2 Vertical Order");
+  // Expected: [[4],[2],[1,5,6],[3],[7]]
+
+  destroyTree(root1);
+  destroyTree(root2);
 
   return 0;
 }

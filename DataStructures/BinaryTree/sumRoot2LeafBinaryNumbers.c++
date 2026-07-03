@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -20,17 +21,16 @@ integer.
 
 */
 
-
 struct TreeNode {
   int val;
   TreeNode *left;
   TreeNode *right;
-  TreeNode *next;
-  TreeNode() : val(0), left(nullptr), right(nullptr), next(nullptr){}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}  
+  TreeNode() : val(0), left(nullptr), right(nullptr){}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-#define MY_NULL (-999)
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
 
 class Solution {
 
@@ -53,6 +53,44 @@ public:
   }
 };
 
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
+
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
+
+        // Move to the next element for the next child
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
+
+        // Move to the next element for the next node
+        i++;
+    }
+
+    return root;
+}
+
 static void inorder (TreeNode *root)  {
     if (root) {
         inorder(root->left);
@@ -63,77 +101,30 @@ static void inorder (TreeNode *root)  {
 
 
 void printTreeInorder (TreeNode *n) {
-  cout << "Inorder:" << endl;
+  cout << "Inorder: ";
   inorder(n);
   cout << endl;
 }
 
-static void postorder (TreeNode *root)  {
-    if (root) {
-        postorder(root->left);
-	postorder(root->right);
-        cout << root->val << " ";
-    }
-}
-
-
-void printTreePostorder (TreeNode *n) {
-  cout << "Postorder:" << endl;
-  postorder(n);
-  cout << endl;
-}
-
-void print_vec_vec (vector <vector <int>> &res, string str) {
-  cout << endl << str << endl;
-  for (auto v: res) {
-    for (auto e : v) {
-      cout << e << " ";
-    }
-    cout << endl;
-  }
-}
-
-void print_vec (vector <int> &res, string str) {
-  cout << endl << str << endl;
-  for (auto v:res) {
-    cout << v << " ";
-  }
-  cout << endl;
-}
-
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (start > end) return NULL;
-
-    int mid = (start+end)/2;
-    if (array[mid] == MY_NULL) {
-      return NULL;
-    }
-    TreeNode *n = new TreeNode(array[mid]);
-    if (!n) return n;
-
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : -999,
-           n->right ? n->right->val : -999);
-    return n;
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
 }
 
 int main () {
+  // Example 1: root = [1,0,1,0,1,0,1]
+  // Paths: 100(4), 101(5), 110(6), 111(7). Sum = 22.
+  vector<int> nodes1 = {1, 0, 1, 0, 1, 0, 1};
+  TreeNode *root1 = createTreeFromLevelOrder(nodes1);
 
-  int array[] = { 1, 0, 1, 1, 1, 0, 1 };
-  int sz = sizeof array / sizeof array[0];
-  TreeNode *root = create_BST_from_array(array, 0, sz-1);
+  printTreeInorder(root1);
 
-  printTreeInorder(root);
-  printTreePostorder(root);
-  
-  class Solution sol;
-  auto sum = sol.sumRootToLeaf(root);
-  
-  cout << "sum: " << sum << endl;
+  Solution sol;
+  auto sum = sol.sumRootToLeaf(root1);
+  cout << "sum: " << sum << " (Expected: 22)" << endl;
+
+  destroyTree(root1);
   return 0;
 }

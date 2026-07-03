@@ -1,14 +1,15 @@
-
 #include <map>
 #include <set>
 #include <iostream>
 #include <vector>
 #include <stack>
 #include <queue>
+#include <string>
 
 using namespace std;
 
-#define MY_NULL (-999)
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
 
 struct TreeNode {
   int val;
@@ -42,7 +43,7 @@ class Solution {
       return false;
     pathSum += root->val;
     if (!root->left && !root->right) {
-      if (targetSum == pathSum) 
+      if (targetSum == pathSum)
 	        return true;
       pathSum -= root->val;
       return false;
@@ -50,7 +51,7 @@ class Solution {
     if (pathSumDfs(root->left, targetSum, pathSum)) {
       return true;
     }
-    
+
     if (pathSumDfs(root->right, targetSum, pathSum)){
       return true;
     }
@@ -63,14 +64,14 @@ public:
       int pathSum = 0;
       return pathSumDfs(root, targetSum, pathSum);
     }
-  
+
   vector<int> preOrderTraversal(TreeNode* root) {
     vector <int> vec;
     if (!root) return vec;
-    preOrderTraversalHelper(root, vec); 
+    preOrderTraversalHelper(root, vec);
     return vec;
   }
-  
+
   vector <int> preOrderIterative (TreeNode* root) {
     vector <int> ans;
     if (!root)
@@ -93,7 +94,7 @@ public:
 
   vector<vector<int>> levelOrder(TreeNode* root) {
         vector <vector <int>> answer;
-        if (!root) 
+        if (!root)
             return answer;
         queue <TreeNode *> q;
         q.push(root);
@@ -112,7 +113,7 @@ public:
             }
 
             answer.push_back(levelVec);
-            
+
         }
         return answer;
     }
@@ -124,50 +125,64 @@ public:
 };
 
 ///////////////////////////////// Test code ////////////////////////////////////////
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
-}
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (start > end) return NULL;
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
 
-    int mid = (start+end)/2;
-    if (array[mid] == MY_NULL) {
-      return NULL;
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
+
+        // Move to the next element for the next child
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
+
+        // Move to the next element for the next node
+        i++;
     }
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
 
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : -999,
-           n->right ? n->right->val : -999);
-    return n;
+    return root;
 }
 
-static void inorder (TreeNode *root)  { 
-    if (root) { 
-        inorder(root->left); 
-        printf("%d \n", root->val); 
-        inorder(root->right); 
-    } 
+static void inorder (TreeNode *root)  {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->val);
+        inorder(root->right);
+    }
 }
 
 void print_inorder (TreeNode *n) {
     printf("print_inorder: \n");
     inorder(n);
+    printf("\n");
 }
 
-TreeNode *create_tree (int *array, int size) {
-    TreeNode *root = create_BST_from_array(array, 0, size);
-    print_inorder(root);
-    return root;
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
 }
 
 void print_vec_vec (vector <vector <int>> &res, string str) {
@@ -187,45 +202,47 @@ void print_vec (vector <int> &res, string str) {
   }
   cout << endl;
 }
-  
-int main () {
-  class Solution sol;
 
-  int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-  int sz = sizeof array / sizeof array[0];
-  TreeNode *root = create_tree(array, sz);
-  
-  vector <int> res = sol.preOrderTraversal(root);
+int main () {
+  Solution sol;
+
+  // Test Case 1: Standard Tree
+  vector<int> nodes1 = {1, 2, 3, 4, 5, 6, 7};
+  TreeNode *root1 = createTreeFromLevelOrder(nodes1);
+  print_inorder(root1);
+
+  vector <int> res = sol.preOrderTraversal(root1);
   print_vec(res, "preOrder");
-  res.clear();
-  res = sol.preOrderIterative(root);
+  res = sol.preOrderIterative(root1);
   print_vec(res, "preOrderIterative");
 
-  vector <vector<int>> ans = sol.levelOrder(root);
+  vector <vector<int>> ans = sol.levelOrder(root1);
   print_vec_vec(ans, "levelOrder");
 
-  //int arr[] = {1,2,2,0,3,0,3};
-  int arr[] = {MY_NULL, 2, 3, 1, MY_NULL, 2, 3};
-  
-  sz = sizeof arr / sizeof arr[0];
-  root = create_tree(arr, sz-1);
-  bool isMirror = sol.isSymmetric(root);
-  cout << endl << (isMirror ? "symmetric" : "not symmetric") << endl;
+  // Test Case 2: Symmetric check (False)
+  vector<int> nodes2 = {1, 2, 2, MARKER, 3, MARKER, 3};
+  TreeNode *root2 = createTreeFromLevelOrder(nodes2);
+  bool isMirror = sol.isSymmetric(root2);
+  cout << endl << "Tree 2 " << (isMirror ? "symmetric" : "not symmetric") << endl;
 
-  //int arr2[] = {1,2,2,3,4,4,3};
-  int arr2[] = {3, 2, 4, 1, 4, 2, 3};
-  sz = sizeof arr2 / sizeof arr2[0];
-  root = create_tree(arr2, sz-1);
-  isMirror = sol.isSymmetric(root);
-  cout << endl << (isMirror ? "symmetric" : "not symmetric") << endl;
+  // Test Case 3: Symmetric check (True)
+  vector<int> nodes3 = {1, 2, 2, 3, 4, 4, 3};
+  TreeNode *root3 = createTreeFromLevelOrder(nodes3);
+  isMirror = sol.isSymmetric(root3);
+  cout << endl << "Tree 3 " << (isMirror ? "symmetric" : "not symmetric") << endl;
 
-  int sum  = 17;
-  bool hasPathSum = sol.hasPathSum(root, sum);
+  // Test Case 4: Path Sum
+  int sum = 7;
+  bool hasPathSum = sol.hasPathSum(root3, sum);
   cout << endl << "hasPathSum: " << hasPathSum << " for pathSum:" << sum << endl;
 
-  sum = 7;
-  hasPathSum = sol.hasPathSum(root, sum);
+  sum = 10;
+  hasPathSum = sol.hasPathSum(root3, sum);
   cout << endl << "hasPathSum: " << hasPathSum << " for pathSum:" << sum << endl;
+
+  destroyTree(root1);
+  destroyTree(root2);
+  destroyTree(root3);
 
   return 0;
 }

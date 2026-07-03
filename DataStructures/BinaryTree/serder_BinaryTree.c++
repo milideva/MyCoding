@@ -1,9 +1,11 @@
-
 #include <vector>
 #include <list>
 #include <iostream>
+#include <queue>
+#include <string>
+
 using namespace std;
- 
+
 /*
 
 Serialization is the process of converting a data structure or object into a
@@ -37,11 +39,15 @@ Input: root = [1,2]
 Output: [1,2]
 
 */
+
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
+
 struct TreeNode {
   int val;
   TreeNode *left;
   TreeNode *right;
-  TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
 class Codec {
@@ -61,11 +67,11 @@ public:
     helperSer(root, ser);
     return ser;
   }
-  
+
   TreeNode * helperDeser(list <string>& lStr) {
     if (lStr.front() == "null") {
       lStr.pop_front();
-      return NULL;
+      return nullptr;
     }
     TreeNode* root = new TreeNode(stoi(lStr.front()));
     lStr.pop_front();
@@ -79,7 +85,7 @@ public:
     list <string> lStr;
     string tmp = "";
     // remove delimiter ,
-    for (int i = 0; i < data.size(); i++) {
+    for (size_t i = 0; i < data.size(); i++) {
       if (data[i] == ',') {
         lStr.push_back(tmp);
         tmp = "";
@@ -87,64 +93,90 @@ public:
         tmp +=  data[i];
       }
     }
-    
+
     TreeNode *root = helperDeser(lStr);
     return root;
   }
 };
 
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
+
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
+
+        // Move to the next element for the next child
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
+
+        // Move to the next element for the next node
+        i++;
+    }
+
+    return root;
 }
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (end < start) return NULL;
-
-    int mid = (start+end)/2;
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
-
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : 0,
-           n->right ? n->right->val : 0);
-    return n;
-}
-static void inorder (TreeNode *root)  { 
-    if (root) { 
-        inorder(root->left); 
-        printf("%d \n", root->val); 
-        inorder(root->right); 
-    } 
+static void inorder (TreeNode *root)  {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->val);
+        inorder(root->right);
+    }
 }
 
 void print_inorder (TreeNode *n) {
     printf("print_inorder: ");
     inorder(n);
+    printf("\n");
+}
+
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
 }
 
 int main (void) {
 
-    int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-    int end = sizeof array/ sizeof array[0];
-    TreeNode *root = create_BST_from_array(array, 0, end-1);
+    // root = [1,2,3,null,null,4,5]
+    vector<int> nodes = {1, 2, 3, MARKER, MARKER, 4, 5};
+    TreeNode *root = createTreeFromLevelOrder(nodes);
     print_inorder(root);
 
-    class Codec cdc;
+    Codec cdc;
 
     string ser = cdc.serialize(root);
-    cout << "Serialied string: " << ser;
+    cout << "Serialized string: " << ser << endl;
 
     TreeNode *deserRoot = cdc.deserialize(ser);
-    
+
+    cout << "Deserialized ";
     print_inorder(deserRoot);
+
+    destroyTree(root);
+    destroyTree(deserRoot);
 
     return 0;
 }
-

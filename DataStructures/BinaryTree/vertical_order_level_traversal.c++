@@ -1,11 +1,9 @@
-/*
-
-*/
-
 #include <map>
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <string>
+
 using namespace std;
 
 /*
@@ -25,7 +23,7 @@ Input: [3,9,20,null,null,15,7]
  9  20
     /\
    /  \
-  15   7 
+  15   7
 
 Output:
 
@@ -46,7 +44,7 @@ Input: [3,9,8,4,0,1,7]
    9   8
   /\  /\
  /  \/  \
- 4  01   7 
+ 4  01   7
 
 Output:
 
@@ -84,6 +82,7 @@ Output:
 ]
 
 */
+
 struct TreeNode {
   int val;
   TreeNode *left;
@@ -93,17 +92,21 @@ struct TreeNode {
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
+
 class Solution {
     map <int, vector <int>> mp;
 
 public:
     vector<vector<int>> verticalOrder(TreeNode* root) {
+        mp.clear();
         vector<vector<int>> res;
         if(!root) return res;
-        
+
         queue <pair<TreeNode *, int>> q;
         q.push({root, 0});
-        
+
         while (!q.empty()) {
             int sz = q.size();
             for (int i = 0; i < sz; i++) {
@@ -112,76 +115,94 @@ public:
                 if (n->left)
                     q.push({n->left, y -1});
                 if (n->right)
-                    q.push({n->right, y + 1});  
+                    q.push({n->right, y + 1});
             }
         }
-        for (auto e : mp) 
-            res.push_back(e.second);
-        
-        return res;    
+        for (auto const& [col, values] : mp)
+            res.push_back(values);
+
+        return res;
     }
 };
 
 ///////////////////////////////// Test code ////////////////////////////////////////
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
-}
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (end < start) return NULL;
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
 
-    int mid = (start+end)/2;
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
 
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
 
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : 0,
-           n->right ? n->right->val : 0);
-    return n;
-}
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
 
-static void inorder (TreeNode *root)  { 
-    if (root) { 
-        inorder(root->left); 
-        printf("%d \n", root->val); 
-        inorder(root->right); 
-    } 
-}
+        // Move to the next element for the next child
+        i++;
 
-void print_inorder (TreeNode *n) {
-    printf("print_inorder: \n");
-    inorder(n);
-}
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
 
-TreeNode *create_tree () {
-    int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-    int end = sizeof array/ sizeof array[0];
-    TreeNode *root = create_BST_from_array(array, 0, end-1);
-    print_inorder(root);
+        // Move to the next element for the next node
+        i++;
+    }
+
     return root;
 }
-void print_vec_vec (vector <vector <int>> &res) {
-  cout << "Vertical order : " << endl;
+
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
+}
+
+void print_vec_vec (vector <vector <int>> &res, string label) {
+  cout << label << " : " << endl;
   for (auto v: res) {
-    for (auto e : v) {
-      cout << e << " ";
+    cout << "[";
+    for (size_t i = 0; i < v.size(); ++i) {
+      cout << v[i] << (i == v.size() - 1 ? "" : ", ");
     }
-    cout << endl;
+    cout << "] ";
   }
+  cout << endl;
 }
 
 int main () {
-  class Solution sol;
-  TreeNode *root = create_tree();
-  vector <vector <int>> res = sol.verticalOrder(root);
-  print_vec_vec(res);
+  Solution sol;
+
+  // Example 1: [3,9,20,null,null,15,7]
+  vector<int> nodes1 = {3, 9, 20, MARKER, MARKER, 15, 7};
+  TreeNode *root1 = createTreeFromLevelOrder(nodes1);
+  vector <vector <int>> res1 = sol.verticalOrder(root1);
+  print_vec_vec(res1, "Example 1 Vertical Order");
+  // Expected: [[9],[3,15],[20],[7]]
+
+  // Example 2: [3,9,8,4,0,1,7]
+  vector<int> nodes2 = {3, 9, 8, 4, 0, 1, 7};
+  TreeNode *root2 = createTreeFromLevelOrder(nodes2);
+  vector <vector <int>> res2 = sol.verticalOrder(root2);
+  print_vec_vec(res2, "Example 2 Vertical Order");
+  // Expected: [[4],[9],[3,0,1],[8],[7]]
+
+  destroyTree(root1);
+  destroyTree(root2);
 
   return 0;
 }

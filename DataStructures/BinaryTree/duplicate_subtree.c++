@@ -8,7 +8,7 @@ For each kind of duplicate subtrees, you only need to return the root node of an
 
 Two trees are duplicate if they have the same structure with the same node values.
 
- 
+
 
 Example 1:
 
@@ -24,12 +24,14 @@ Example 3:
 
 Input: root = [2,2,2,3,null,3,null]
 Output: [[2,3],[3]]
- 
+
 */
 
 #include <unordered_map>
 #include <iostream>
 #include <vector>
+#include <string>
+#include <queue>
 
 using namespace std;
 
@@ -42,96 +44,112 @@ struct TreeNode {
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -1;
+
 class Solution {
   unordered_map < string, vector <TreeNode *>> str2node;
-    
-  string inOrder (TreeNode *node) {
-    if (node == nullptr) 
+
+  string serialize (TreeNode *node) {
+    if (node == nullptr)
       return "#";
     string subtree;
-    
-    subtree += "(" + inOrder(node->left) + to_string(node->val) + inOrder(node->right) + ")";
-    //cout << "subtree:" << subtree << endl;
+
+    subtree += "(" + serialize(node->left) + to_string(node->val) + serialize(node->right) + ")";
     str2node[subtree].push_back(node);
     return subtree;
   }
-    
+
 public:
   vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+    str2node.clear();
     vector<TreeNode*> res;
-    inOrder(root);
-    
-    for (auto it : str2node) {
-      if (it.second.size() > 1) {
-        res.push_back(it.second[0]);
+    serialize(root);
+
+    for (auto const& [str, nodes] : str2node) {
+      if (nodes.size() > 1) {
+        res.push_back(nodes[0]);
       }
     }
-    
+
     return res;
   }
 };
 
 ///////////////////////////////// Test code ////////////////////////////////////////
-TreeNode *create_TreeNode (int data) {
-    TreeNode *node = (TreeNode *) calloc(1, sizeof *node);
-    if (node) node->val = data;
-    return node;
-}
 
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (end < start) return NULL;
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
 
-    int mid = (start+end)/2;
-    TreeNode *n = create_TreeNode(array[mid]);
-    if (!n) return n;
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
 
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
 
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : 0,
-           n->right ? n->right->val : 0);
-    return n;
-}
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
 
-static void inorder (TreeNode *root)  { 
-  if (root) { 
-    inorder(root->left); 
-    printf("%d \n", root->val); 
-    inorder(root->right); 
-  } 
-}
+        // Move to the next element for the next child
+        i++;
 
-void print_inorder (TreeNode *n) {
-    printf("print_inorder: \n");
-    inorder(n);
-}
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
 
-TreeNode *create_tree () {
-    int array[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
-    int end = sizeof array/ sizeof array[0];
-    TreeNode *root = create_BST_from_array(array, 0, end-1);
-    print_inorder(root);
+        // Move to the next element for the next node
+        i++;
+    }
+
     return root;
 }
-void print_vec_vec (vector <vector <int>> &res) {
-  cout << "Vertical order : " << endl;
-  for (auto v: res) {
-    for (auto e : v) {
-      cout << e << " ";
-    }
-    cout << endl;
+
+static void inorder (TreeNode *root)  {
+  if (root) {
+    inorder(root->left);
+    printf("%d ", root->val);
+    inorder(root->right);
   }
 }
 
-int main () {
-  class Solution sol;
-  TreeNode *root = create_tree();
-  vector <TreeNode *> res = sol.findDuplicateSubtrees(root);
-
-  return 0;
+void print_inorder (TreeNode *n) {
+    printf("print_inorder: ");
+    inorder(n);
+    printf("\n");
 }
 
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
+}
 
+int main () {
+  Solution sol;
+
+  // Example 1: root = [1,2,3,4,null,2,4,null,null,4]
+  vector<int> nodes1 = {1, 2, 3, 4, MARKER, 2, 4, MARKER, MARKER, 4};
+  TreeNode *root1 = createTreeFromLevelOrder(nodes1);
+
+  vector <TreeNode *> res = sol.findDuplicateSubtrees(root1);
+  cout << "Example 1 duplicates:" << endl;
+  for (auto n : res) {
+      print_inorder(n);
+  }
+
+  destroyTree(root1);
+  return 0;
+}

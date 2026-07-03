@@ -1,5 +1,8 @@
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -40,22 +43,22 @@ struct TreeNode {
   int val;
   TreeNode *left;
   TreeNode *right;
-  TreeNode *next;
-  TreeNode() : val(0), left(nullptr), right(nullptr), next(nullptr){}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}  
+  TreeNode() : val(0), left(nullptr), right(nullptr){}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-#define MY_NULL (-999)
+// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
+const int MARKER = -999;
 
 class Solution {
   vector <vector <int>> ans;
   int getHeight (TreeNode *root) {
-    if (!root) 
+    if (!root)
       return -1;
     int lh = getHeight(root->left);
     int rh = getHeight(root->right);
     int h = max(lh, rh) + 1;
-    if (size(ans) == h) {
+    if ((int)ans.size() == h) {
       ans.push_back({});
     }
     ans[h].push_back(root->val);
@@ -68,6 +71,44 @@ public:
   }
 };
 
+// Builds a tree from a standard LeetCode-style level-order vector.
+TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
+    if (arr.empty() || arr[0] == MARKER) return nullptr;
+
+    TreeNode* root = new TreeNode(arr[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+
+    size_t i = 1;
+    while (!q.empty() && i < arr.size()) {
+        TreeNode* current = q.front();
+        q.pop();
+
+        // We process next two nodes, left first and then right
+        // Process Left Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *left = new TreeNode(arr[i]);
+            current->left = left;
+            q.push(left);
+        }
+
+        // Move to the next element for the next child
+        i++;
+
+        // Process Right Child
+        if (i < arr.size() && arr[i] != MARKER) {
+            TreeNode *right = new TreeNode(arr[i]);
+            current->right = right;
+            q.push(right);
+        }
+
+        // Move to the next element for the next node
+        i++;
+    }
+
+    return root;
+}
+
 static void inorder (TreeNode *root)  {
   if (root) {
     inorder(root->left);
@@ -78,46 +119,11 @@ static void inorder (TreeNode *root)  {
 
 
 void printTreeInorder (TreeNode *n) {
-  cout << "Inorder:" << endl;
+  cout << "Inorder: ";
   inorder(n);
   cout << endl;
 }
 
-static void postorder (TreeNode *root)  {
-  if (root) {
-    postorder(root->left);
-    postorder(root->right);
-    cout << root->val << " ";
-  }
-}
-
-void printTreePostorder (TreeNode *n) {
-  cout << "Postorder:" << endl;
-  postorder(n);
-  cout << endl;
-}
-
-
-// Helper function to create a BST
-TreeNode *create_BST_from_array (int array[], int start, int end) {
-    if (!array) return NULL;
-    if (start > end) return NULL;
-
-    int mid = (start+end)/2;
-    if (array[mid] == MY_NULL) {
-      return NULL;
-    }
-    TreeNode *n = new TreeNode(array[mid]);
-    if (!n) return n;
-
-    n->left = create_BST_from_array(array, start, mid-1);
-    n->right = create_BST_from_array(array, mid+1, end);
-
-    printf("TreeNode:%d left:%d right:%d\n", n->val,
-           n->left ? n->left->val : -999,
-           n->right ? n->right->val : -999);
-    return n;
-}
 void print_vec_vec (vector <vector <int>> &res, string str) {
   cout << endl << str << endl;
   for (auto v: res) {
@@ -128,29 +134,26 @@ void print_vec_vec (vector <vector <int>> &res, string str) {
   }
 }
 
-void print_vec (vector <int> &res, string str) {
-  cout << endl << str << endl;
-  for (auto v:res) {
-    cout << v << " ";
-  }
-  cout << endl;
+void destroyTree(TreeNode* node) {
+    if (!node) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
 }
 
 int main () {
 
-  int array[] = { 1, 2, 3, 4, 5, 6, 7 };
-  int sz = sizeof array / sizeof array[0];
-  TreeNode *root = create_BST_from_array(array, 0, sz-1);
+  // root = [1,2,3,4,5]
+  vector<int> nodes = {1, 2, 3, 4, 5};
+  TreeNode *root = createTreeFromLevelOrder(nodes);
 
   printTreeInorder(root);
-  printTreePostorder(root);
-  
-  class Solution sol;
+
+  Solution sol;
   auto ans = sol.findLeaves(root);
 
   print_vec_vec(ans, "answer for findLeaves()");
-  //printTreeInorder(root);
-  //printTreePostorder(root);
 
+  destroyTree(root);
   return 0;
 }

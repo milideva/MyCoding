@@ -94,6 +94,7 @@ TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
             q.push(left);
         }
 
+        // Move to the next element for the next child
         i++;
 
         // Process Right Child
@@ -103,6 +104,8 @@ TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
            current->right = right;
             q.push(right);
         }
+
+        // Move to the next element for the next node
         i++;
     }
 
