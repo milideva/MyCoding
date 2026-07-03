@@ -1,7 +1,36 @@
-
 #include <stdio.h>
 #include <stdlib.h>
- 
+
+/*
+  Problem: Count Leaf Nodes in a Binary Tree
+
+  Algorithm: Recursive DFS
+  A node is a leaf if both its left and right children are NULL.
+  Total leaves = leafcount(left) + leafcount(right).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We must visit every node in the tree to determine if it is a leaf.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth depends on the height of the tree (H).
+
+  Alternative Approaches:
+  - Iterative BFS: Use a queue. If a dequeued node has no children, 
+    increment the counter.
+    - Time: O(N)
+    - Space: O(W) where W is the max width.
+  
+  Comparison:
+  - DFS is simpler to implement. BFS is useful for extremely deep trees
+    to avoid stack overflow.
+
+  Brute Force comparison:
+  - You could traverse every path from the root to every possible termination 
+    point and count the ones that end at a node with no children.
+  - This is redundant and would take O(N) anyway. The O(N) DFS/BFS is 
+    the standard.
+*/
+
 struct node {
     int data;
     struct node* left;

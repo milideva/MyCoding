@@ -1,7 +1,42 @@
-
 #include <stdio.h>
 #include <stdlib.h>
- 
+
+/*
+  LeetCode 543: Diameter of Binary Tree
+
+  Problem: Find the length of the longest path between any two nodes in a tree.
+  This path may or may not pass through the root.
+
+  Current Approach: Recursive Top-Down
+  - Logic: Diameter at a node is max(left_height + right_height, 
+                                     left_diameter, 
+                                     right_diameter).
+
+  Complexity Analysis (Current Implementation):
+  - Time Complexity: O(N^2) (Worst Case - Skewed Tree)
+    Reason: For every node, we call `height()`, which is an O(N) operation.
+    In a skewed tree, we do N calls * O(N) per call = O(N^2).
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is the height of the tree.
+
+  Optimized Approach (Bottom-Up):
+  - Logic: Compute height and diameter in a single traversal. Each recursive
+    call returns the height, while updating a global/reference variable for
+    the maximum diameter found so far.
+  - Time Complexity: O(N) - visits each node once.
+  - Space Complexity: O(H) - recursion stack.
+
+  Brute Force comparison:
+  - The O(N^2) approach is essentially a brute force method because it 
+    redundantly calculates the height of subtrees for every single node in 
+    the tree. By merging the height calculation into the diameter check 
+    (Bottom-Up), we remove the O(N) overhead from each node visit.
+
+  Comparison:
+  - The current implementation is simple to understand but inefficient for
+    large/skewed trees. The O(N) approach is industry standard for this problem.
+*/
+
 struct node {
     int data;
     struct node* left;

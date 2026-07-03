@@ -6,9 +6,32 @@
 using namespace std;
 
 /*
- Given the root of a binary tree, return the number of uni-value
- subtrees. A uni-value subtree means all nodes of the subtree have the
- same value.
+  LeetCode 250: Count Univalue Subtrees
+
+  Problem: Given the root of a binary tree, return the number of uni-value 
+  subtrees. A uni-value subtree is one where all nodes in the subtree 
+  have the same value.
+
+  Algorithm: Bottom-Up DFS
+  A node is the root of a univalue subtree if:
+  1. Its left child is null or (is a univalue subtree AND has same value).
+  2. Its right child is null or (is a univalue subtree AND has same value).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit each node once in a bottom-up manner. Each node's 
+    status is determined by its children's status and a constant number 
+    of comparisons.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is the height of the tree (H).
+
+  Comparison:
+  - Top-Down Brute Force: For every node, check if its entire subtree is 
+    univalue using another DFS. 
+    - Time: O(N^2) or O(N log N) for balanced trees.
+    - This is significantly worse than the current O(N) bottom-up approach.
+  - Global variable: Using a counter during the bottom-up traversal allows 
+    us to calculate the result in one pass without redundant checks.
 */
 
 struct TreeNode {

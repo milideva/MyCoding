@@ -83,6 +83,41 @@ Output:
 
 */
 
+/*
+  LeetCode 314: Binary Tree Vertical Order Traversal
+
+  Problem: Return vertical order traversal (top to bottom, column by column).
+
+  Algorithm: Breadth-First Search (BFS) + Map
+  1. Use a queue to store pairs of (TreeNode*, column_index).
+  2. The root is at column 0. Left children at col-1, right at col+1.
+  3. Use a Map (TreeMap) to store nodes grouped by their column index. 
+     Since Map is sorted by keys, we get columns in order.
+  4. BFS ensures that within each column, nodes are processed top-to-bottom.
+
+  Complexity Analysis:
+  - Time Complexity: O(N log W)
+    Reason: We visit every node (N). For each node, we perform an insertion 
+    into a map. The map size is proportional to the width (W) of the tree.
+  - Space Complexity: O(N)
+    Reason: We store all node values in the map and the queue.
+
+  Comparison:
+  - DFS Approach: If you use DFS, you must also track the row (level) to
+    ensure nodes in the same column are sorted correctly (top to bottom).
+    BFS is naturally suited for this without extra level sorting.
+  - Hash Map + Range Tracking: Instead of a sorted `std::map`, use
+    `std::unordered_map` and keep track of min/max column indices to
+    achieve O(N) time.
+
+  Brute Force Approach:
+  - 1. Calculate the column index for every node and store as (node, col).
+  - 2. Sort all nodes by column index O(N log N).
+  - 3. For nodes with the same column, sort by level O(N log N).
+  - Time: O(N log N).
+  - The map + BFS approach is O(N log W), which is typically better as W << N.
+*/
+
 struct TreeNode {
   int val;
   TreeNode *left;

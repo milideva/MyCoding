@@ -21,6 +21,30 @@ integer.
 
 */
 
+/*
+  LeetCode 1022: Sum of Root To Leaf Binary Numbers
+
+  Algorithm: Pre-order DFS
+  Similar to LeetCode 129, but the path represents a binary number. 
+  Calculation: `currentValue = (parentValue << 1) | node->val`.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: Every node is visited once.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth.
+
+  Comparison:
+  - This is essentially a specialized version of the "Sum Root to Leaf Numbers"
+    problem using base 2 instead of base 10.
+
+  Brute Force comparison:
+  - Similar to LC 129, a brute force would involve explicit path storage 
+    and conversion. 
+  - By using the bit-shifting logic `(val << 1) | node->val`, we avoid 
+    extra space for path arrays and achieve O(N) efficiency.
+*/
+
 struct TreeNode {
   int val;
   TreeNode *left;

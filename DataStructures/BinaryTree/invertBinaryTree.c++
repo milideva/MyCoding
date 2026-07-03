@@ -6,32 +6,46 @@
 using namespace std;
 
 /*
-226. Invert Binary Tree
-Given the root of a binary tree, invert the tree, and return its root.
+  LeetCode 226: Invert Binary Tree
 
-Input: root = [4,2,7,1,3,6,9]
-Output: [4,7,2,9,6,3,1]
+  Problem: Given the root of a binary tree, invert the tree (mirror it) 
+  and return its root.
 
-Input: root = [2,1,3]
-Output: [2,3,1]
+  Algorithm: Recursive DFS (Post-order)
+  1. Recursively invert the left subtree.
+  2. Recursively invert the right subtree.
+  3. Swap the left and right pointers of the current node.
 
-Example
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit every node in the tree exactly once to perform the swap.
+  - Space Complexity: O(H)
+    Reason: Recursion stack space is proportional to the tree height (H).
 
-Before invert :
-       6
-     /   \
-   13     5
-  / \    / \
- 7   8  1   3
+  Alternative Approaches:
+  - Iterative BFS: Use a queue. For each node dequeued, swap its children 
+    and enqueue any non-null children.
+    - Time: O(N)
+    - Space: O(W) where W is the max width.
+  - Iterative DFS: Use a stack to simulate the recursion.
+    - Time: O(N)
+    - Space: O(H)
 
-After invert :
-       6
-     /   \
-    5     13
-   / \   /  \
-  3   1 8    7
+  Comparison:
+  - The recursive approach is the most idiomatic and readable.
+  - BFS is useful if the tree is extremely deep (potential stack overflow),
+    as the heap-allocated queue can typically handle more nodes than the
+    thread's stack.
 
+  Brute Force comparison:
+  - Similar to "Double Tree", a brute force approach would be to copy the 
+    entire tree into a new structure while swapping children during 
+    construction. 
+  - Time: O(N), Space: O(N) for the new tree.
+  - The in-place swap is superior as it doesn't require extra memory for 
+    new node allocations.
 */
+
 struct TreeNode
 {
   int val;

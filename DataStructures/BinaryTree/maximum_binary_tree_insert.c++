@@ -1,3 +1,37 @@
+/*
+  LeetCode 998: Maximum Binary Tree II
+
+  Problem: Insert a value into an existing Maximum Binary Tree. This value 
+  was conceptually added to the end of the original array.
+
+  Algorithm: Recursive DFS (Right-skewed Traversal)
+  Since the value was appended to the array, it can only be:
+  1. The new root (if it's greater than the current root).
+  2. A node in the right subtree (since it appears after the root in the array).
+  3. The right child of some node.
+
+  Complexity Analysis:
+  - Time Complexity: O(H) or O(N)
+    Reason: We only traverse down the right spine of the tree. In the 
+    worst case (skewed right), we visit O(N) nodes. On average (balanced), 
+    it is O(log N).
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth.
+
+  Comparison:
+  - Constructing the whole tree again (LC 654): O(N^2).
+  - The current approach is optimal because it leverages the property that
+    the new value was added to the *end* of the array, restricting its
+    possible positions to the right-most path.
+
+  Brute Force comparison:
+  - A brute-force solution would involve converting the existing tree back 
+    into an array, appending the new value, and calling the O(N^2) construction 
+    function again. 
+  - Time: O(N^2), Space: O(N).
+  - The optimized insertion is O(H), requiring no extra array storage.
+*/
+
 #include <iostream>
 #include <unordered_map>
 #include <vector>

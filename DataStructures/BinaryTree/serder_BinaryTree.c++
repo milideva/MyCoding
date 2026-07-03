@@ -7,37 +7,37 @@
 using namespace std;
 
 /*
+  LeetCode 297: Serialize and Deserialize Binary Tree
 
-Serialization is the process of converting a data structure or object into a
-sequence of bits so that it can be stored in a file or memory buffer, or
-transmitted across a network connection link to be reconstructed later in the
-same or another computer environment.
+  Algorithm: DFS (Pre-order) with NULL Markers
+  - Serialization: Traverse the tree in pre-order. If a node is null, 
+    append "null" to the string. Otherwise, append the node value.
+  - Deserialization: Split the string into a list of tokens. Recursively 
+    reconstruct the tree by taking tokens one by one from the list.
 
-Design an algorithm to serialize and deserialize a binary tree. There is no
-restriction on how your serialization/deserialization algorithm should work. You
-just need to ensure that a binary tree can be serialized to a string and this
-string can be deserialized to the original tree structure.
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: 
+      - Serialization: Visits every node once (O(N)).
+      - Deserialization: Processes every token in the string once (O(N)).
+  - Space Complexity: O(N)
+    Reason: We store the entire tree structure in a string or list. The 
+    recursion stack also uses O(H) space.
 
-Example 1:
+  Alternative Approaches:
+  - BFS (Level Order): LeetCode's default serialization format. Use a queue 
+    to process levels and store nulls for missing children.
+    - Advantage: Better for visualizing level-by-level relationships.
+  
+  Comparison:
+  - DFS (Pre-order) is generally easier to implement recursively and is
+    highly compact for most tree structures.
 
-Input: root = [1,2,3,null,null,4,5]
-Output: [1,2,3,null,null,4,5]
-
-Example 2:
-
-Input: root = []
-Output: []
-
-Example 3:
-
-Input: root = [1]
-Output: [1]
-
-Example 4:
-
-Input: root = [1,2]
-Output: [1,2]
-
+  Brute Force comparison:
+  - A brute force serialization might involve storing the tree as an 
+    adjacency list or a full matrix. 
+  - Space: O(N^2) for matrix, O(N + E) for adjacency list.
+  - Tree-specific serialization (using null markers) is much more compact (O(N)).
 */
 
 // MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.

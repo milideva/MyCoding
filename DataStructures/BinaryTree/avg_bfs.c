@@ -2,6 +2,39 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+/*
+  Problem: Average of Levels in Binary Tree (LeetCode 637)
+
+  Algorithm: Breadth-First Search (BFS) / Level Order Traversal
+  We use a queue to process nodes level by level. For each level, we calculate
+  the sum of all node values and divide by the number of nodes in that level.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: Every node in the binary tree is enqueued and dequeued exactly once.
+    Calculating the sum and count for each level happens as we visit each node.
+  - Space Complexity: O(W) or O(N)
+    Reason: In the worst case (a perfect binary tree), the queue will hold the 
+    maximum width (W) of the tree at once. For a perfect tree, W = N/2, so 
+    it is O(N).
+
+  Alternative Approaches:
+  - Depth-First Search (DFS):
+    - You can use DFS to maintain two arrays: one for the sum of values at
+      each level and one for the count of nodes at each level.
+    - Time: O(N) - visits every node once.
+    - Space: O(H) - where H is the height of the tree for recursion stack.
+    - Comparison: BFS is generally more intuitive for "level-based" problems
+      as it naturally processes nodes level by level.
+
+  Brute Force Approach:
+  - For every level L (from 0 to H), perform a full DFS to find all nodes at 
+    depth L, sum them, and count them.
+  - Time Complexity: O(H * N), which can be O(N^2) for skewed trees.
+  - Comparison: This is highly inefficient as it re-traverses the same nodes 
+    multiple times for each level. The O(N) BFS/DFS is far superior.
+*/
+
 typedef struct node_ node_t;
 struct node_ {
     int key;

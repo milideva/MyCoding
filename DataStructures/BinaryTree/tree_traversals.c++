@@ -11,6 +11,42 @@ using namespace std;
 // MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
 const int MARKER = -1;
 
+/*
+  Problem: Common Binary Tree Operations (Traversals, Symmetry, Path Sum)
+
+  Algorithms & Complexity:
+
+  1. Pre-order Traversal (Recursive & Iterative):
+     - Time: O(N) - visits each node once.
+     - Space: O(H) - stack usage.
+
+  2. Level-order Traversal (BFS):
+     - Time: O(N) - visits each node once.
+     - Space: O(W) or O(N) - queue usage for the maximum width.
+
+  3. Symmetric Tree (LeetCode 101):
+     - Algorithm: Recursive DFS comparing mirrors (left->left vs right->right).
+     - Time: O(N).
+     - Space: O(H).
+
+  4. Path Sum (LeetCode 112):
+     - Algorithm: Pre-order DFS carrying target remainder.
+     - Time: O(N).
+     - Space: O(H).
+
+  Comparison:
+  - Recursive vs Iterative DFS: Recursive is more readable; iterative (using
+    manual stack) avoids potential stack overflow on extremely deep trees.
+  - BFS is necessary when processing level-by-level (e.g., finding the average
+    of each level or the right-side view).
+
+  Brute Force comparison:
+  - Navigating the tree without a stack or queue (e.g., using "find-parent" 
+    repeatedly for each node) would take O(N^2) or O(N * H). 
+  - The standard DFS/BFS traversals are O(N) and are the most fundamental 
+    building blocks for tree algorithms.
+*/
+
 struct TreeNode {
   int val;
   TreeNode *left;

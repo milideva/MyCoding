@@ -32,6 +32,44 @@ Output: 1
 
 */
 
+/*
+  LeetCode 236: Lowest Common Ancestor of a Binary Tree
+
+  Problem: Find the LCA of two nodes p and q. Both nodes are guaranteed 
+  to exist in the tree.
+
+  Algorithm: Recursive DFS (Top-Down with Short-circuiting)
+  1. If root is null, p, or q, return root.
+  2. Recursively search left and right subtrees.
+  3. If both left and right search return non-null, current root is the LCA.
+  4. If only one is non-null, return that non-null node.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: In the worst case (e.g., LCA is a leaf or nodes are far apart), 
+    we may visit every node. 
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is proportional to tree height (H).
+
+  Comparison:
+  - Brute Force: For every node, check if p and q are in its subtrees.
+    - Time: O(N^2).
+  - With Parent Pointers: Use a hash set to find the intersection of
+    paths to the root.
+    - Time: O(H), Space: O(H).
+  - Current Approach: Optimized O(N) DFS is the best possible when
+    parent pointers are unavailable and you cannot pre-process the tree.
+
+  Brute Force Approach:
+  - For every node 'node' in the tree:
+  -   1. Run a search to see if node 'p' is in the subtree rooted at 'node'.
+  -   2. Run a search to see if node 'q' is in the subtree rooted at 'node'.
+  -   3. The first node found (starting from the bottom) that satisfies both is the LCA.
+  - Time Complexity: O(N^2).
+  - Comparison: The optimized DFS reduces this to O(N) by visiting each node 
+    once and returning the findings upwards.
+*/
+
 struct TreeNode {
   int val;
   TreeNode *left;

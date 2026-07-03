@@ -50,6 +50,42 @@ Note:
 
 using namespace std;
 
+/*
+  LeetCode 987: Vertical Order Traversal of a Binary Tree
+
+  Problem: Similar to LC 314, but with strict sorting rules:
+  - Sort by Column (X) first.
+  - If same X, sort by Row (Y) top-to-bottom.
+  - If same X and Y, sort by Value (Val).
+
+  Algorithm: DFS + Sorted Nested Maps/Sets
+  We use `map<int, set<pair<int, int>>>` where:
+  - Key 1 (int): Column index (X).
+  - Value 1 (set): Contains pairs of (Row Index Y, Node Value).
+  By using `std::set<pair<int, int>>`, C++ automatically sorts by Y 
+  coordinate first, and then by the node value if Y is identical.
+
+  Complexity Analysis:
+  - Time Complexity: O(N log N)
+    Reason: Every node is inserted into a map and a set. The set sorting 
+    overhead for N elements results in O(N log N).
+  - Space Complexity: O(N)
+    Reason: We store all nodes in the map structure.
+
+  Comparison with LC 314:
+  - LC 314 only requires top-to-bottom order for the same column,
+    making BFS ideal.
+  - LC 987 requires sorting values if coordinates are identical,
+    making a coordinate-based DFS + Sort approach more appropriate.
+
+  Brute Force Approach:
+  - Collect all nodes into a list of triplets: (X, Y, Value).
+  - Sort the entire list using a custom comparator.
+  - Time: O(N log N).
+  - The nested Map/Set approach is also O(N log N) but organizes the data 
+    as it's collected, which can be more memory efficient than a large flat list.
+*/
+
 struct TreeNode {
   int val;
   TreeNode *left;

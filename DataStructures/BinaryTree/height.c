@@ -1,7 +1,38 @@
-
 #include <stdio.h>
 #include <stdlib.h>
- 
+
+/*
+  Problem: Height of a Binary Tree
+
+  Algorithm: Recursive Depth-First Search (DFS)
+  The height of a tree is defined as 1 + max(height of left subtree, height 
+  of right subtree).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We must visit every node in the tree exactly once to determine 
+    the overall height.
+  - Space Complexity: O(H)
+    Reason: The space used by the recursion stack is equal to the height 
+    of the tree (H). 
+    - Balanced Tree: O(log N)
+    - Skewed Tree: O(N)
+
+  Alternative Approaches:
+  - Iterative BFS (Level Order): Use a queue to count the number of levels. 
+    After processing all nodes of a level, increment the height.
+    - Time: O(N)
+    - Space: O(W) where W is the maximum width (can be O(N)).
+    - Comparison: The recursive DFS is more concise and uses less space
+      on average (stack vs queue).
+
+  Brute Force comparison:
+  - For height, there isn't really a "brute force" that is worse than O(N) 
+    unless you perform redundant traversals (e.g., for each node, counting 
+    all paths to leaves).
+  - The O(N) DFS is the most direct and efficient method.
+*/
+
 struct node {
     int data;
     struct node* left;

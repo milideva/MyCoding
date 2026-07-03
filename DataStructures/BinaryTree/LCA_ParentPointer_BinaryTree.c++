@@ -8,31 +8,41 @@
 using namespace std;
  
 /*
+  LeetCode 236 (Variant): Lowest Common Ancestor with Parent Pointers
 
-236. Lowest Common Ancestor of a Binary Tree
+  Problem: Find the LCA of two nodes p and q. Each node has a 'parent' pointer.
 
-Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+  Algorithm: Path Intersection (using Hash Set)
+  1. Traverse from p upwards to the root, adding each node to a hash set.
+  2. Traverse from q upwards to the root. The first node encountered that 
+     is already in the hash set is the LCA.
 
-According to the definition of LCA on Wikipedia: “The lowest common ancestor is
-defined between two nodes p and q as the lowest node in T that has both p and q
-as descendants (where we allow a node to be a descendant of itself).”
+  Complexity Analysis:
+  - Time Complexity: O(H)
+    Reason: We traverse the height of the tree twice—once for p and once 
+    for q. In the worst case (skewed tree), this is O(N).
+  - Space Complexity: O(H)
+    Reason: We store the path from p to the root in an unordered_set.
 
-This solution assumes parent pointer is present in a node.
+  Alternative Approaches (Space Optimized):
+  - Two Pointers (Linked List Intersection logic): 
+    - Calculate depths of p and q. 
+    - Advance the deeper node until it's at the same level as the other.
+    - Advance both together until they meet.
+    - Time: O(H), Space: O(1).
+  - Difference in Heights:
+    - Same logic as finding the intersection of two linked lists.
+  
+  Comparison:
+  - The Hash Set approach is easier to implement but uses O(H) extra space.
+  - The Depth-adjustment approach (O(1) space) is preferred if memory is
+    a constraint.
 
-Example 1:
-Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
-Output: 3
-Explanation: The LCA of nodes 5 and 1 is 3.
-
-Example 2:
-Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
-Output: 5
-Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
-
-Example 3:
-Input: root = [1,2], p = 1, q = 2
-Output: 1
-
+  Brute Force comparison:
+  - Without using the parent pointers or a hash set, you would have to 
+    perform a full LC 236 style O(N) search from the root. 
+  - The parent-pointer approach is better when the nodes are deep in the 
+    tree but close to each other, as it avoids visiting unrelated branches.
 */
 
 struct TreeNode {

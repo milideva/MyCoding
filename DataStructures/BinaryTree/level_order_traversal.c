@@ -1,24 +1,32 @@
-
 /* 
-   Level order traversal of a tree is BFS (breadth first traversal).
-   DFS has 3 traversals : pre-order, in-order, post-order.
-*/
+  LeetCode 102: Binary Tree Level Order Traversal
 
-/* Pseudo code:
- */
+  Algorithm: Breadth-First Search (BFS)
+  BFS visits nodes level by level, starting from the root. It uses a queue 
+  to keep track of the children of the current level's nodes.
 
-/*
-void level_order_traversal (node *node) {
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: Each node is enqueued and dequeued exactly once.
+  - Space Complexity: O(W) or O(N)
+    Reason: The queue holds at most the maximum width (W) of the tree. 
+    For a complete binary tree, the last level has N/2 nodes, making it O(N).
 
-   queue *q = create_queue();
+  Alternative Approaches:
+  - Recursive DFS: Pass the current level as an argument. Use the level 
+    as an index to add the node's value to the corresponding level-list.
+    - Time: O(N)
+    - Space: O(H) for recursion stack + O(N) for the result.
+  
+  Comparison:
+  - BFS is the standard iterative approach and avoids stack depth issues.
+  - DFS is more concise but slightly less intuitive for "breadth-first" logic.
 
-    while (node) {
-        if (node->left) enqueue(q, node->left);
-        if (node->right) enqueue(q, node->right);
-        process(node);
-        node = dequeue(q);
-    }
-}
+  Brute Force Approach:
+  - For every level i from 0 to height H:
+  -   Traverse the tree to print nodes at level i.
+  - Time Complexity: O(H * N) which is O(N^2) in the worst case.
+  - Comparison: BFS is O(N) and much more efficient.
 */
 
 #include <stdbool.h>

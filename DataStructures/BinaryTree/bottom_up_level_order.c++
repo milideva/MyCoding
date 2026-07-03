@@ -1,29 +1,48 @@
 #include <vector>
 #include <queue>
 #include <iostream>
-
+#include <algorithm>
 
 // g++ -std=c++2a bottom_up_level_order.c++ -g
 
 /*
+  LeetCode 107: Binary Tree Level Order Traversal II (Bottom-Up)
 
-Given a binary tree, return the bottom-up level order traversal of its nodes'
-values. (ie, from left to right, level by level from leaf to root).
+  Problem: Return the level order traversal from leaf to root.
 
-For example:
-Given binary tree [3,9,20,null,null,15,7],
-    3
-   / \
-  9  20
-    /  \
-   15   7
-return its bottom-up level order traversal as:
-[
-  [15,7],
-  [9,20],
-  [3]
-]
+  Algorithm: Breadth-First Search (BFS) + Result Reversal
+  1. Perform a standard level-order traversal (BFS) using a queue.
+  2. Store each level's nodes in a 2D vector.
+  3. Reverse the 2D vector at the end.
 
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: BFS visits each of the N nodes exactly once. Reversing the outer 
+    vector (containing H levels) takes O(H) time, where H < N.
+  - Space Complexity: O(N)
+    Reason: We store all N nodes in the result vector. The queue also holds 
+    up to O(W) nodes, where W is the maximum width.
+
+  Alternative Approaches:
+  - DFS: Use a recursive function passing the current depth. Use the depth 
+    index to add nodes to the correct inner vector. Reverse at the end.
+    - Time: O(N), Space: O(N + H).
+  - Deque (Optimized Space): Instead of a vector and reversing, use a deque 
+    and push each new level to the front (`push_front`). 
+    - Note: In C++, `std::vector` + `std::reverse` is usually faster due to
+      memory locality and contiguous storage compared to `std::deque`.
+
+  Brute Force Approach:
+  - 1. Calculate the height of the tree H.
+  - 2. For each level i from H down to 1:
+  -    Perform a DFS to find all nodes at depth i and add them to the result.
+  - Time Complexity: O(H * N), which is O(N^2) in the worst case (skewed tree).
+  - Space Complexity: O(N) to store the result.
+
+  Comparison:
+  - The BFS + Reverse approach is O(N) and is the most efficient way to 
+    collect level nodes. The Brute Force approach is much slower because 
+    it repeats the traversal for every single level.
 */
 
 struct TreeNode {

@@ -26,6 +26,49 @@ Say two nodes are 7 and 5, result is FALSE.
 
 */
 
+/*
+  Check if two nodes are cousins in a Binary Tree
+
+  Definition: Two nodes are cousins if they are at the same level but have different parents.
+
+  Approach 1: Multiple Traversals (is_cousin)
+  - Time Complexity: O(N)
+    Reason: It calls get_level twice (O(N) each) and is_sibling once (O(N)).
+    Total work is 3 * O(N), which simplifies to O(N).
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is proportional to the height of the tree (H).
+
+  Approach 2: Single-Pass DFS (isCousin / findLevelsAndParents)
+  - Time Complexity: O(N)
+    Reason: Performs a single traversal to find both nodes' levels and parents.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth.
+
+  Approach 3: BFS (are_cousins)
+  - Time Complexity: O(N)
+    Reason: Processes nodes level by level. Once both nodes are found in the same 
+    level's queue processing, we check their parents.
+  - Space Complexity: O(W) or O(N)
+    Reason: Queue stores one level of the tree.
+  - Advantage: BFS is often preferred for "same level" checks as it processes
+    all level nodes together, making the level check implicit.
+
+  Comparison:
+  - Approach 1 is the easiest to implement using existing helpers but does
+    redundant work.
+  - Approach 2/3 are more optimal in practice as they reduce the constant
+    factor of the O(N) time.
+
+  Brute Force Approach:
+  - For every node in the tree, perform a search to find node 'a' and node 'b'.
+  - Once found, perform another full traversal from the root to find their 
+    respective depths and parents.
+  - Time Complexity: O(N) but with a very high constant factor if implemented 
+    naively without state sharing.
+  - Comparison: The specialized DFS/BFS approaches are cleaner and ensure 
+    a single pass (or controlled multiple passes) over the data.
+*/
+
 typedef struct node_ node_t;
 
 struct node_ {

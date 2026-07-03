@@ -33,6 +33,42 @@ Output: 1
 
 */
 
+/*
+  LeetCode 1644: Lowest Common Ancestor of a Binary Tree II
+
+  Problem: Find the LCA of two nodes p and q. If either p or q does not 
+  exist in the tree, return null.
+
+  Algorithm: Post-order DFS (Exhaustive)
+  Unlike the standard LCA problem, we cannot return immediately when we find 
+  p or q (short-circuit). We must traverse the entire tree to confirm that 
+  BOTH nodes exist. We use boolean flags `foundP` and `foundQ` to track this.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We must visit every node in the tree to ensure we don't miss 
+    the second target node (if it exists).
+  - Space Complexity: O(H)
+    Reason: Recursion stack space is proportional to the tree height (H).
+
+  Comparison with LeetCode 236 (Standard LCA):
+  - In LC 236, you are guaranteed that both p and q exist. Thus, if you 
+    find p, you can immediately return p because either q is in p's 
+    subtree (making p the LCA) or q is elsewhere (and you'll find it 
+    through a different branch).
+  - In LC 1644, that guarantee is gone. If you find p and return
+    immediately, q might not be in the tree at all, which should
+    result in a `null` LCA. This is why the exhaustive search is mandatory.
+
+  Brute Force comparison:
+  - 1. Search the whole tree to see if 'p' exists.
+  - 2. Search the whole tree to see if 'q' exists.
+  - 3. If both exist, perform a standard LC 236 LCA search.
+  - Time: 3 * O(N) = O(N).
+  - The current approach is better because it performs all three checks in 
+    a single pass.
+*/
+
 // Definition for a binary tree node.
 struct TreeNode {
     int val;

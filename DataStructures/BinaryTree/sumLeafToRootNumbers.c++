@@ -51,6 +51,41 @@ using namespace std;
     Else, recurse DFS(current->left, num*10 + current->val) and DFS(current->right, num*10 + current->val).
 */
 
+/*
+  LeetCode 129: Sum Root to Leaf Numbers
+
+  Problem: Each root-to-leaf path represents a number (e.g., 1->2->3 = 123). 
+  Return the sum of all such numbers.
+
+  Algorithm: Pre-order DFS
+  We traverse from root to leaf, maintaining the current path's numerical 
+  value. For each node, `currentPathValue = parentValue * 10 + node->val`. 
+  When a leaf is reached, we add the `currentPathValue` to the global sum.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit every node in the binary tree exactly once.
+  - Space Complexity: O(H)
+    Reason: Recursion stack depth is proportional to the tree height (H).
+
+  Alternative Approaches:
+  - Iterative DFS: Use a stack to store pairs of (TreeNode*, currentPathValue).
+  - BFS (Level Order): Use a queue to store pairs. This is useful if the 
+    tree is very deep.
+  
+  Comparison:
+  - The recursive pre-order approach is the most efficient and readable
+    for path-based problems like this.
+
+  Brute Force Approach:
+  - 1. Find all paths from root to leaves using a traversal.
+  - 2. For each path (stored as a string or list), convert it to a number.
+  - 3. Sum all those numbers.
+  - Time: O(N * H) due to path copying and conversions.
+  - Space: O(N * H) to store all paths.
+  - The current approach is O(N) time and O(H) space, which is far better.
+*/
+
 /**
  * Definition for a binary tree node.
  */

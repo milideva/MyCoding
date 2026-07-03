@@ -4,9 +4,42 @@
 
 using namespace std;
 
-// Populate each next pointer to point to its next right node at same
-// height. If there is no next right node, the next pointer should be
-// set to NULL.
+/*
+  LeetCode 116 / 117: Populating Next Right Pointers in Each Node
+
+  Problem: Connect each node to its next right neighbor at the same height.
+
+  Algorithm: Breadth-First Search (BFS) / Level Order Traversal
+  We use a queue to process the tree level by level. For each node in a 
+  level, we point its `next` pointer to the node currently at the front 
+  of the queue (unless it is the last node of the level).
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: Every node in the tree is visited exactly once.
+  - Space Complexity: O(W) or O(N)
+    Reason: The queue holds at most one level of nodes. For a perfect 
+    binary tree, the maximum width W is N/2.
+
+  Alternative Approaches:
+  - O(1) Space (Iterative DFS/BFS variant): If the tree is perfect (LC 116), 
+    we can use the `next` pointers established in the level above to 
+    connect the current level without using a queue.
+    - Logic: `curr->left->next = curr->right;` 
+             `if (curr->next) curr->right->next = curr->next->left;`
+  
+  Comparison:
+  - The BFS approach is the most general and works for both perfect and
+    non-perfect binary trees (LC 117). The O(1) space approach is highly
+    optimized but harder to generalize to arbitrary trees.
+
+  Brute Force Approach:
+  - 1. For every level i, collect all nodes in an array.
+  - 2. Iterate through the array and link node[j]->next = node[j+1].
+  - Time: O(N), Space: O(N) to store all nodes level by level.
+  - Comparison: BFS with a queue is O(N) time and O(W) space, which is 
+    generally better than storing all nodes at once.
+*/
 
 struct TreeNode {
   int val;

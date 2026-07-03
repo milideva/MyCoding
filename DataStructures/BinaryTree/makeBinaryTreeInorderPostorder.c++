@@ -1,3 +1,34 @@
+/*
+  LeetCode 106: Construct Binary Tree from Inorder and Postorder Traversal
+
+  Algorithm: Recursive DFS with HashMap
+  1. Postorder: LEFT -> RIGHT -> ROOT. The last element is always the root.
+  2. Inorder: LEFT -> ROOT -> RIGHT. The root splits the array into left 
+     and right subtrees.
+  3. Pre-process Inorder array with a HashMap (Value -> Index) for O(1) 
+     root lookups.
+  4. Build tree recursively by processing the postorder array from back to front.
+
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We create N nodes, and for each node, we perform a constant 
+    time HashMap lookup and pointer wiring.
+  - Space Complexity: O(N)
+    Reason: We use O(N) space for the HashMap. Recursion stack takes 
+    O(H) space, where H is the height of the tree.
+
+  Comparison:
+  - Without HashMap: Finding the root index in the Inorder array in every
+    recursive call takes O(N). This results in O(N^2) total time.
+  - The HashMap optimization is standard for this problem to achieve
+    linear time complexity.
+
+  Brute Force comparison:
+  - The O(N^2) approach is the brute force here. Since every node must be 
+    located in the inorder array to split the subtrees, the total work 
+    becomes a summation of search times. Using a HashMap converts the 
+    O(N) search into an O(1) lookup.
+  */
 #include <unordered_map>
 #include <vector>
 #include <iostream>

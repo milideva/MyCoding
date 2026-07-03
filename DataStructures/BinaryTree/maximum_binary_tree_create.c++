@@ -1,3 +1,40 @@
+/*
+  LeetCode 654: Maximum Binary Tree
+
+  Problem: Build a tree where each node is the maximum value in its subarray.
+
+  Algorithm: Recursive DFS
+  1. Find the maximum value in the current range `[start, end]`.
+  2. This max value becomes the current root.
+  3. Recursively build the left subtree using elements to the left of the max.
+  4. Recursively build the right subtree using elements to the right of the max.
+
+  Complexity Analysis:
+  - Time Complexity: O(N^2)
+    Reason: In the worst case (a sorted array), we find the max N times, 
+    and each search takes O(N) time. Total work: N + (N-1) + ... + 1 = O(N^2).
+    For a balanced tree, it is O(N log N).
+  - Space Complexity: O(N)
+    Reason: Recursion stack can reach O(N) in the worst case (skewed tree).
+
+  Better Approach (Monotonic Stack):
+  - We can solve this in O(N) using a monotonic stack. As we iterate through 
+    the array, we maintain a stack of nodes in decreasing order.
+  - Every node is pushed onto and popped from the stack at most once.
+  - This is the optimal industry-standard approach for Maximum Binary Tree.
+
+  Comparison:
+  - The recursive approach is simpler to write and fits the problem definition
+    more directly, but the Stack approach is more efficient for large inputs.
+
+  Brute Force comparison:
+  - The current recursive implementation is O(N^2) and is essentially the 
+    brute-force way to build the tree based on the problem's definition. 
+    The re-scanning for the maximum in every subarray is what causes the 
+    quadratic time. 
+  - The Monotonic Stack approach is the optimized O(N) version.
+*/
+
 #include <iostream>
 #include <unordered_map>
 #include <vector>

@@ -27,6 +27,42 @@ Output: [[2,3],[3]]
 
 */
 
+/*
+  LeetCode 652: Find Duplicate Subtrees
+
+  Problem: Given the root of a binary tree, return all duplicate subtrees. 
+  For each kind of duplicate subtrees, you only need to return the root node 
+  of any one of them.
+
+  Algorithm: DFS + Serialization + HashMap
+  We traverse the tree in a post-order fashion. For each node, we generate a 
+  unique string representation (serialization) of its subtree. We store these 
+  strings in a hash map to count occurrences.
+
+  Complexity Analysis:
+  - Time Complexity: O(N^2)
+    Reason: We visit every node (N). However, at each node, we create a 
+    serialization string. In the worst case (a skewed tree), the length of 
+    these strings can be O(N). String concatenation and hashing an O(N) 
+    string takes O(N) time. Thus, N nodes * O(N) per node = O(N^2).
+  - Space Complexity: O(N^2)
+    Reason: We store the serialization string for every node in the hash map. 
+    Following the same logic as time complexity, the total space for all 
+    strings can reach O(N^2).
+
+  Optimized Approach:
+  - Instead of full string serialization, use a unique "triplet" ID for each 
+    subtree: (node->val, left_subtree_id, right_subtree_id). 
+  - Map each unique triplet to a new integer ID.
+  - Time: O(N) - hashing a triplet of 3 integers is O(1).
+  - Space: O(N) - storing integer IDs instead of long strings.
+
+  Comparison:
+  - Brute Force: Comparing every possible pair of subtrees would take O(N^3).
+  - The current string serialization is O(N^2), which is acceptable for 
+    moderate N (like LeetCode's N=5000 constraint).
+*/
+
 #include <unordered_map>
 #include <iostream>
 #include <vector>

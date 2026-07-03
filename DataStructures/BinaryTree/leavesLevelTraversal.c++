@@ -7,36 +7,38 @@
 using namespace std;
 
 /*
-366. Find Leaves of Binary Tree
+  LeetCode 366: Find Leaves of Binary Tree
 
-Given the root of a binary tree, collect a tree's nodes as if you were doing this:
+  Problem: Collect and remove leaf nodes level by level until the tree 
+  is empty.
 
-Collect all the leaf nodes.
-Remove all the leaf nodes.
-Repeat until the tree is empty.
+  Algorithm: Bottom-Up Height Calculation
+  We define "height" as the distance from the furthest leaf. 
+  - Leaf nodes have height 0.
+  - Parents of leaves have height 1, and so on.
+  By grouping nodes with the same "bottom-up height", we naturally 
+  collect them in the order they would be removed as leaves.
 
-Input: root = [1,2,3,4,5]
-Output: [[4,5,3],[2],[1]]
+  Complexity Analysis:
+  - Time Complexity: O(N)
+    Reason: We visit every node exactly once to calculate its height.
+  - Space Complexity: O(N)
+    Reason: We store every node value in the 2D result vector.
+    Recursion stack is O(H).
 
-       1
-      / \
-     2   3
-    / \
-   4   5
+  Comparison:
+  - Brute Force: Repeatedly find all leaves, remove them, and restart.
+    - Time: O(N^2) (Worst case skewed tree).
+  - The height-based grouping is significantly better (O(N)) because
+    it solves the problem in a single pass without ever "removing" nodes.
 
-Explanation:
-[[3,5,4],[2],[1]] and [[3,4,5],[2],[1]] are also considered correct answers since per each level it does not matter the order \
-on which elements are returned.
-Example 2:
-
-Input: root = [1]
-Output: [[1]]
-
-
-Constraints:
-
-The number of nodes in the tree is in the range [1, 100].
--100 <= Node.val <= 100
+  Brute Force Approach:
+  - 1. Identify all current leaves and add them to the list.
+  - 2. Delete those leaves from the tree.
+  - 3. Repeat until the tree is empty.
+  - Time Complexity: O(N^2) because you might perform O(N) traversals, each taking O(N).
+  - Comparison: Using the bottom-up height (distance from leaf) is an O(N) 
+    shortcut that yields the same grouping.
 */
 
 struct TreeNode {
