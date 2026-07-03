@@ -27,3 +27,22 @@ markers. One simple optimization is to store a separate bit with every
 node to indicate that the node is internal or external. This way we don?t 
 have to store two markers with every leaf node as leaves can be identified 
 by extra bit. We still need marker for internal nodes with one child.
+
+The Two Ambiguous Trees 
+Tree A:
+    2
+   /
+  1
+
+Tree B:
+ 1
+   \
+    2
+
+
+A standard Inorder traversal produces [1, 2] for both trees, failing to tell them apart because it loses the structural depth.
+
+
+
+
+
