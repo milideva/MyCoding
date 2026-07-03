@@ -42,32 +42,31 @@ struct TreeNode {
 
 class Solution {
     // Returns true ONLY when the k-th element is successfully found
-    bool inOrder(TreeNode* node, int& count, int k, TreeNode*& result) {
-        if (!node) return false; // Base case: cleanly means "not found"
+    bool inOrder(TreeNode* node, int& k, TreeNode*& result) {
+        if (!node) return false; // Base case
 
         // 1. Traverse left subtree
-        if (inOrder(node->left, count, k, result)) return true; // Early exit!
+        if (inOrder(node->left, k, result)) return true; // Early exit!
 
-        // 2. Visit current node
-        count++;
-        if (count == k) {
-            result = node; // Capture the address of the k-th node
+        // 2. Visit current node (Decrement and check)
+        k--; 
+        if (k == 0) {
+            result = node; // Found the kth smallest!
             return true;   // Signal success up the call stack
         }
 
         // 3. Traverse right subtree
-        return inOrder(node->right, count, k, result);
+        return inOrder(node->right, k, result);
     }
 public:
     int kthSmallest(TreeNode* root, int k) {
-        int count = 0;
         TreeNode* result = nullptr;
         
-        // If true, result now points directly to the k-th node
-        if (inOrder(root, count, k, result) && result != nullptr) {
-            return result->val; 
+        // k is passed by reference here, so it will be modified as we go
+        if (inOrder(root, k, result) && result != nullptr) {
+            return result->val;
         }
-        // Flawed assumption, if k is out of bounds, assumes -1 is not in the tree.
+        
         return -1; 
     }
 };
