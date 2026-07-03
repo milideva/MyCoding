@@ -79,7 +79,8 @@ Optimized $O(N)$ approach for building a Maximum Binary Tree (LeetCode 654).
 
 1.  **MARKER = -1**: Used in level-order construction to represent `NULL` nodes.
 2.  **Explicit Memory Management**: Every `createTree` has a corresponding `destroyTree`.
-3.  **Snake Case**: Filenames follow `snake_case.c++` (e.g., `invert_binary_tree.c++`).
+3.  **Search Prefixes**: Filenames are prefixed with `dfs_` or `bfs_` to indicate the primary algorithm used (e.g., `dfs_invert_binary_tree.c++`).
+
 4.  **Complexity Headers**: Every source file contains a detailed Time/Space analysis and comparison with brute-force approaches.
 
 ---
