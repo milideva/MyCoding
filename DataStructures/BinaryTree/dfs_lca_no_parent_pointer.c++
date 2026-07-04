@@ -66,6 +66,9 @@ struct TreeNode {
 
 class Solution {
 public:
+  // Note: This implementation assumes both p and q exist in the tree (LC 236).
+  // If either p or q may be missing, this logic is INCORRECT and should use 
+  // the robust version in dfs_lca_no_parent_pointer_ii.c++ (LC 1644).
   TreeNode* lowestCommonAncestor (TreeNode *root, TreeNode* p, TreeNode * q) {
     if (!root || !p || !q) return nullptr;
     if (root->val == p->val or root->val == q->val) 
