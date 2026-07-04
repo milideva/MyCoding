@@ -1,2 +1,0 @@
-Given two strings, return a bool to indicate whether they are permutations of each other or not.
-Answer: sort the two strings and compare with each other.
