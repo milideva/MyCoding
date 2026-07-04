@@ -1,8 +1,0 @@
-please visit
-https://en.wikipedia.org/wiki/Sorting_algorithm
-
-* Non-comparison sorts
-Pigeonhole sort
-Bucket sort
-LSD/MSD Radix sort
-

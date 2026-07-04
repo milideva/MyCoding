@@ -1,9 +1,0 @@
-When you declare a multidimensional array, the compiler treats it as a single
-dimensional array. Multidimensional arrays are just an abstraction to make our
-life easier.
-
-
-http://web.torek.net/torek/c/pa.html
-
-
-https://www.eskimo.com/~scs/cclass/int/sx9b.html
