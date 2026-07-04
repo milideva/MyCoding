@@ -1,139 +1,73 @@
+/**
+ * Problem: Populating Next Right Pointers in Each Node
+ * You are given a binary tree where each node has a 'next' pointer. 
+ * Initially, all next pointers are set to NULL. Populate each next 
+ * pointer to point to its next right node.
+ * 
+ * Strategy: BFS (Level Order Traversal)
+ * - For each level, iterate through nodes and link them using the queue's front element.
+ * 
+ * Time Complexity: O(N) - Every node is visited once.
+ * Space Complexity: O(W) - W is the maximum width of the tree.
+ */
+
 #include <iostream>
-#include <queue>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
-/*
-  LeetCode 116 / 117: Populating Next Right Pointers in Each Node
-
-  Problem Description:
-  You are given a binary tree where each node has a 'next' pointer. 
-  Initially, all next pointers are set to NULL. Populate each next 
-  pointer to point to its next right node. If there is no next right 
-  node, the next pointer should be set to NULL.
-
-  Algorithm: Breadth-First Search (BFS) / Level Order Traversal
-  We use a queue to process the tree level by level. For each node in a 
-  level, we point its `next` pointer to the node currently at the front 
-  of the queue (unless it is the last node of the level).
-
-  Complexity Analysis:
-  - Time Complexity: O(N)
-    Reason: Every node in the tree is visited exactly once.
-  - Space Complexity: O(W) or O(N)
-    Reason: The queue holds at most one level of nodes. For a perfect 
-    binary tree, the maximum width W is N/2.
-
-  Alternative Approaches:
-  - O(1) Space (Iterative DFS/BFS variant): If the tree is perfect (LC 116), 
-    we can use the `next` pointers established in the level above to 
-    connect the current level without using a queue.
-    - Logic: `curr->left->next = curr->right;` 
-             `if (curr->next) curr->right->next = curr->next->left;`
-  
-  Comparison:
-  - The BFS approach is the most general and works for both perfect and
-    non-perfect binary trees (LC 117). The O(1) space approach is highly
-    optimized but harder to generalize to arbitrary trees.
-
-  Brute Force Approach:
-  - 1. For every level i, collect all nodes in an array.
-  - 2. Iterate through the array and link node[j]->next = node[j+1].
-  - Time: O(N), Space: O(N) to store all nodes level by level.
-  - Comparison: BFS with a queue is O(N) time and O(W) space, which is 
-    generally better than storing all nodes at once.
-*/
-
-struct TreeNode {
-  int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode *next;
-  TreeNode() : val(0), left(nullptr), right(nullptr), next(nullptr){}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}
+struct Node {
+    int val;
+    Node *left, *right, *next;
+    Node(int x) : val(x), left(nullptr), right(nullptr), next(nullptr) {}
 };
-
-// MARKER is a sentinel value used to represent a null/empty node in the level-order input vector.
-const int MARKER = -1;
 
 class Solution {
-
 public:
-  TreeNode* connect(TreeNode* root) {
-    if (!root) return nullptr;
-    // This is a Simple BFS
-    queue <TreeNode *> q;
-    q.push(root);
-    while (!q.empty()) {
-      int size = q.size();
-      while (size--) {
-	      TreeNode *n = q.front(); q.pop();
-	      if (size == 0) {
-	        n->next = nullptr;
-	      } else {
-	        n->next = q.front();
-	      }
-	      if (n->left)
-	        q.push(n->left);
-	      if (n->right)
-	        q.push(n->right);
-      }
+    /**
+     * Populates the 'next' pointers using BFS.
+     */
+    Node* connect(Node* root) {
+        if (!root) return nullptr;
+
+        queue<Node*> q;
+        q.push(root);
+
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                Node* curr = q.front();
+                q.pop();
+
+                // Link to the next node in the same level
+                if (i < size - 1) {
+                    curr->next = q.front();
+                }
+
+                if (curr->left) q.push(curr->left);
+                if (curr->right) q.push(curr->right);
+            }
+        }
+        return root;
     }
-    return root;
-  }
 };
 
-// Builds a tree from a standard LeetCode-style level-order vector.
-TreeNode* createTreeFromLevelOrder(const vector<int>& arr) {
-    if (arr.empty() || arr[0] == MARKER) return nullptr;
-
-    TreeNode* root = new TreeNode(arr[0]);
-    queue<TreeNode*> q;
-    q.push(root);
-
-    size_t i = 1;
-    while (!q.empty() && i < arr.size()) {
-        TreeNode* current = q.front();
-        q.pop();
-
-        // We process next two nodes, left first and then right
-        // Process Left Child
-        if (i < arr.size() && arr[i] != MARKER) {
-            TreeNode *left = new TreeNode(arr[i]);
-            current->left = left;
-            q.push(left);
-        }
-
-        // Move to the next element for the next child
-        i++;
-
-        // Process Right Child
-        if (i < arr.size() && arr[i] != MARKER) {
-            TreeNode *right = new TreeNode(arr[i]);
-            current->right = right;
-            q.push(right);
-        }
-
-        // Move to the next element for the next node
-        i++;
-    }
-
-    return root;
-}
-
-void printLevelsWithNext(TreeNode* root) {
-    TreeNode* levelStart = root;
+/**
+ * Utility to print levels using 'next' pointers.
+ */
+void printLevels(Node* root) {
+    Node* levelStart = root;
     while (levelStart) {
-        TreeNode* curr = levelStart;
+        Node* curr = levelStart;
         while (curr) {
             cout << curr->val << (curr->next ? " -> " : " -> NULL");
             curr = curr->next;
         }
         cout << endl;
-        // Move to the next level. Note: for perfect binary trees, this is levelStart->left.
-        // For general trees, we'd need a BFS approach to find the first node of the next level.
-        TreeNode* nextLevel = nullptr;
+
+        // Find the first node of the next level
+        Node* nextLevel = nullptr;
         curr = levelStart;
         while (curr && !nextLevel) {
             if (curr->left) nextLevel = curr->left;
@@ -144,23 +78,20 @@ void printLevelsWithNext(TreeNode* root) {
     }
 }
 
-void destroyTree(TreeNode* node) {
-    if (!node) return;
-    destroyTree(node->left);
-    destroyTree(node->right);
-    delete node;
-}
+int main() {
+    Node* root = new Node(1);
+    root->left = new Node(2);
+    root->right = new Node(3);
+    root->left->left = new Node(4);
+    root->left->right = new Node(5);
+    root->right->left = new Node(6);
+    root->right->right = new Node(7);
 
-int main () {
-  vector<int> nodes = {1, 2, 3, 4, 5, 6, 7};
-  TreeNode *root = createTreeFromLevelOrder(nodes);
+    Solution sol;
+    sol.connect(root);
 
-  Solution sol;
-  root = sol.connect(root);
+    cout << "Populated 'next' pointers level-by-level:" << endl;
+    printLevels(root);
 
-  cout << "Connections using 'next' pointers:" << endl;
-  printLevelsWithNext(root);
-
-  destroyTree(root);
-  return 0;
+    return 0;
 }

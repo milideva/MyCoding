@@ -1,5 +1,0 @@
-https://en.wikipedia.org/wiki/Selection_algorithm
-http://stackoverflow.com/questions/251781/how-to-find-the-kth-largest-element-in-an-unsorted-array-of-length-n-in-on
-
-http://www.geeksforgeeks.org/kth-smallestlargest-element-unsorted-array/
-
