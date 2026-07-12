@@ -12,14 +12,31 @@ Cumulus Linux implements In-Service Software Upgrade (ISSU) primarily through a 
 *   **Open Components:** You can download the source for ~90% of the OS (Debian base, FRR, ifupdown2, various scripts).
 *   **The "Black Box":** The specific binary `switchd` and the low-level SDKs are provided as pre-compiled objects. Even if you download the "source ISO," those parts remain binary blobs.
 
-## 4. What Actually Changes During ISSU?
-An ISSU (Warm Reboot) is typically used for a **full OS upgrade**. The following are replaced:
-*   **The Linux Kernel:** A completely new kernel is loaded into memory via `kexec`.
-*   **The `switchd` Binary:** The proprietary hardware manager is upgraded to a new version.
-*   **Routing Daemons (FRR):** `bgpd`, `ospfd`, and `zebra` are updated.
-*   **System Libraries:** Core libraries (libc, systemd, etc.) and all other Debian packages.
+## 4. Software Upgrade Scope: What is Replaced?
 
-## 5. The User Trigger: cl-warm-reboot
+An ISSU (Warm Reboot) in Cumulus Linux is designed to update the **entire operating system image**.
+
+### 4.1 Components Updated
+*   **The Linux Kernel:** YES. A completely new kernel version is loaded into memory via `kexec`. This is the core of the upgrade.
+*   **The `switchd` Binary:** YES. The proprietary hardware manager is upgraded.
+*   **Routing Daemons (FRR):** YES. `bgpd`, `ospfd`, and `zebra` are updated.
+*   **System Libraries & Tools:** YES. Core libraries (libc, systemd), management tools (NVUE), and all Debian packages are updated.
+
+### 4.2 Components NOT Updated (Require Cold Boot)
+Certain low-level firmware components reside outside the OS image and cannot be updated via ISSU because they require a hardware reset to initialize:
+*   **CPLD (Complex Programmable Logic Device):** Manages power sequencing and low-level hardware logic.
+*   **FPGA (Field Programmable Gate Array):** Used for specific hardware offloads or internal bus management.
+*   **BIOS / UEFI ROM:** The primary system firmware.
+*   **ASIC Microcode:** In some architectures, the low-level microcode for the switching silicon requires a cold reset (though `switchd` can often update high-level ASIC tables).
+
+## 5. Management Plane vs. Data Plane Impact
+
+A critical distinction in Cumulus ISSU is the impact on different network planes:
+
+*   **Data Plane (Front Panel Ports):** **Hitless / Near-Hitless.** Packets continue to be forwarded by the ASIC throughout the transition.
+*   **Control Plane (BGP/OSPF):** **Hitless (Graceful).** Neighbors keep routes active due to Graceful Restart.
+*   **Management Plane (SSH/SNMP):** **Interrupted.** The CPU is rebooting, so all active SSH sessions will drop.
+*   **Management Ethernet (eth0):** **Flaps.** Unlike front panel ports, the management Ethernet driver is reset during kernel init, causing a brief link flap on the management network.
 The process is triggered manually using the command:
 `sudo cl-warm-reboot`
 
