@@ -7,9 +7,59 @@ This document presents a comprehensive, hardware-optimized system design for a B
 
 ---
 
-## 1. Design Parameters & Mathematical Foundations
+## 1. Real-World Applications of Bloom Filters
 
-### 1.1 Standard Optimal Bloom Filter Formula
+Bloom filters are utilized across high-performance systems to perform extremely fast, low-overhead set membership checks, serving as a critical gatekeeper for both hardware and software systems.
+
+### 1.1 High-Speed Networking Applications
+In high-speed networking devices (ASICs, SmartNICs, NPUs), memory access is the ultimate bottleneck. Bloom filters act as single-cycle filters placed ahead of slower, more expensive table searches:
+
+1. **DDoS Mitigation & Traffic Filtering:**
+   During a DDoS attack, a network device is bombarded with millions of malformed or malicious packets. A Bloom filter storing a blacklist of known malicious IPs can filter out these packets at line rate before the ASIC allocates any connection state, buffers, or CPU processing, preventing resource exhaustion.
+2. **Flow Cache Gatekeeping:**
+   When a packet arrives, the router must determine if it belongs to an active, accelerated flow. By checking a Bloom filter first, the router can instantly determine if a flow is *not* active. This bypasses slower, multi-cycle lookup tables (like large hash tables or external DRAM routing tables) for new or unknown flows.
+3. **Network Loop Detection (e.g., multicast routing):**
+   To prevent packet looping in multicast routing, routers track recently forwarded packet IDs. Storing a Bloom filter of packet signatures in fast SRAM allows the card to discard looped packets within nanoseconds.
+
+### 1.2 Database Query Optimization (The "Absent-Key" Performance Saver)
+In modern databases (such as **Google Bigtable, Apache Cassandra, RocksDB, and PostgreSQL**), checking for the existence of a key that *does not exist* is a major performance killer.
+
+#### The Problem: Slower than a hit
+When querying an existing key, the database can fetch the data and return. However, when querying a *non-existent* key, the database engine must traverse B-tree indices, search multiple disk blocks, or check multiple index pages just to confirm that the key is absent. This triggers random disk I/O (SSD/HDD access) which takes milliseconds—completely stalling database thread pools.
+
+#### The Solution: In-Memory Bloom Gatekeeping
+To prevent this performance degradation, databases store a small, highly compressed Bloom filter of all valid keys directly in RAM:
+
+```
+                  +--------------------------------+
+                  |  Query for Non-Existent Key X  |
+                  +---------------+----------------+
+                                  |
+                                  v
+                    +-----------------------------+
+                    | In-Memory Bloom Filter Check|
+                    +-------------+---------------+
+                                  |
+            +---------------------+---------------------+
+            | (Yes - Probable)                          | (No - Definite)
+            v                                           v
++-----------------------+                    +-----------------------+
+| Search Index on Disk  |                    | Instantly Return      |
+| (Expensive Disk I/O)  |                    | "Key Not Found"       |
++-----------------------+                    | (0 Disk Accesses!)    |
+                                             +-----------------------+
+```
+
+1. **Instant "Not Found" Returns:**
+   When a query for key `X` arrives, the system checks the in-memory Bloom filter. If the filter returns `False`, the database instantly returns a "Key Not Found" result with **zero disk accesses**. 
+2. **LSM-Tree (Log-Structured Merge-tree) SSTable Skipping:**
+   In LSM-tree engines (RocksDB, Cassandra), database writes are stored on disk in read-only files called SSTables. A single key lookup might normally require searching *every single SSTable file* on disk sequentially. By placing a separate in-memory Bloom filter in front of each SSTable, the engine can instantly skip 95%+ of the SSTable files, reducing the number of disk accesses to essentially a single disk read.
+
+---
+
+## 2. Design Parameters & Mathematical Foundations
+
+### 2.1 Standard Optimal Bloom Filter Formula
 Using classical Bloom filter theory, the optimal bit array size $m$ and the number of hash functions $k$ for a given capacity $n$ and acceptable error rate $p$ are derived as follows:
 
 1. **Required Bit Array Size ($m$):**
@@ -23,13 +73,13 @@ Using classical Bloom filter theory, the optimal bit array size $m$ and the numb
 
 ---
 
-### 1.2 The Hardware Dilemma: The Modulo Bottleneck
+### 2.2 The Hardware Dilemma: The Modulo Bottleneck
 In general-purpose software, mapping a 32-bit hash value to an index in the range $[0, m-1]$ is performed using the modulo operator:
 $$\text{index} = \text{hash}(\text{IP}) \pmod{14,377,588}$$
 
 **In ASIC/FPGA hardware, modulo by an arbitrary number is extremely expensive.** Integer division requires large pipelined divider circuits, consuming substantial silicon area (logic gates) and introducing tens of clock cycles of latency. This is incompatible with line-rate processing at 100 Gbps+ or 400 Gbps+.
 
-### 1.3 Hardware Co-Design Optimization: Power-of-Two Sizing
+### 2.3 Hardware Co-Design Optimization: Power-of-Two Sizing
 By rounding the bit-array size $m$ up to the nearest power of two, we can eliminate the division logic entirely.
 * Let $m = 2^{24} = 16,777,216 \text{ bits}$ (Exactly **2.0 Megabytes**).
 * Sizing up to $2^{24}$ increases memory usage by only **0.2 MB** (+11% relative to optimal), which is negligible for modern on-chip SRAM.
@@ -37,7 +87,7 @@ By rounding the bit-array size $m$ up to the nearest power of two, we can elimin
   $$\text{index} = \text{hash}(\text{IP}) \ \text{AND} \ (2^{24} - 1)$$
   In hardware, a bitwise AND requires zero clock cycles and zero active gate logic (it is simply a hardwired routing connection to ignore the upper bits of the 32-bit hash).
 
-### 1.4 Improved Accuracy Analysis
+### 2.4 Improved Accuracy Analysis
 By increasing $m$ to $2^{24}$, we also improve the false positive rate. Let's recalculate the false positive probability $p$ with $m = 16,777,216$, $n = 1,000,000$, and keeping $k = 10$:
 $$p \approx \left(1 - e^{-k n / m}\right)^k = \left(1 - e^{-10 \cdot 1,000,000 / 16,777,216}\right)^{10} \approx \left(1 - e^{-0.596}\right)^{10} \approx (0.449)^{10} \approx 0.00034$$
 
@@ -45,7 +95,7 @@ $$p \approx \left(1 - e^{-k n / m}\right)^k = \left(1 - e^{-10 \cdot 1,000,000 /
 
 ---
 
-## 2. Memory Subsystem Architecture: SRAM vs. DRAM
+## 3. Memory Subsystem Architecture: SRAM vs. DRAM
 
 At 100 Gbps, processing minimum-size Ethernet packets (84 bytes on the wire including inter-packet gap and preamble) permits only **6.72 nanoseconds** of processing budget per packet. At 400 Gbps, this drops to **1.68 nanoseconds**.
 
@@ -86,10 +136,10 @@ At 100 Gbps, processing minimum-size Ethernet packets (84 bytes on the wire incl
 | **External DRAM (DDR4/DDR5)** | 30 - 50 ns | Row/column burst access; extremely slow random accesses. | **Unsuitable.** Will cause severe head-of-line blocking and packet drops. |
 | **On-Chip SRAM** | < 1 ns | Single-cycle random access; high parallel bandwidth. | **Ideal.** Easily fits the 2.0 MB filter. Supports line-rate single-cycle reads/writes. |
 
-### 2.1 Bandwidth Bottleneck: Multi-port SRAM Limitations
+### 3.1 Bandwidth Bottleneck: Multi-port SRAM Limitations
 A single SRAM block typically has a maximum of 2 physical access ports (Dual-Port SRAM). If we must verify $k = 10$ distinct bit locations per packet, a standard single SRAM block would require 5 clock cycles (if dual-ported) to read all bits. This is a massive latency bottleneck.
 
-### 2.2 Solution: SRAM Bank Partitioning (Partitioned Bloom Filter)
+### 3.2 Solution: SRAM Bank Partitioning (Partitioned Bloom Filter)
 Instead of allocating one giant 16.78 Mb SRAM block, we split the memory into $k = 10$ independent physical SRAM banks:
 * Each bank size: $m_{bank} = \frac{16,777,216}{10} \approx 1.68 \text{ Megabits}$ (approx. **210 Kilobytes**).
 * To make bank sizing hardware-friendly and ensure fast masking, we can round each bank to a power-of-two: $2^{21} = 2,097,152 \text{ bits}$ per bank. This creates 10 banks of **256 KB each** (total **2.5 MB**), allowing independent power-of-two masking for each bank.
@@ -97,11 +147,11 @@ Instead of allocating one giant 16.78 Mb SRAM block, we split the memory into $k
 
 ---
 
-## 3. Cache-Localized / Blocked Bloom Filters (For CPU/SmartNIC)
+## 4. Cache-Localized / Blocked Bloom Filters (For CPU/SmartNIC)
 
 While SRAM partitioning works perfectly in ASICs, general-purpose CPUs and SmartNICs with processor cores (such as ARM-based DPUs) suffer from **cache line bouncing** and **cache misses** when accessing random bits across a 2.0 MB buffer. A single packet query could trigger up to 10 separate L2/L3 cache misses.
 
-### 3.1 Blocked Bloom Filter (BBF) Design
+### 4.1 Blocked Bloom Filter (BBF) Design
 To solve this, we implement a **Blocked Bloom Filter**:
 1. **Block Structure:** Divide the Bloom filter into blocks of exactly **64 bytes** (512 bits), matching the standard CPU cache line size.
 2. **Block Selection:** Use a primary hash $h_{block}(\text{IP})$ to select exactly one 64-byte block.
@@ -126,16 +176,16 @@ Incoming IP ---> [ h_block(IP) ] ---> Maps to Block #42 (64 Bytes)
 
 ---
 
-## 4. Hardware-Efficient Combinatorial Hashing
+## 5. Hardware-Efficient Combinatorial Hashing
 
 Generating 10 fully independent cryptographic hashes (e.g., SHA-256) in hardware is prohibitively expensive in terms of power, silicon area, and clock speed.
 
-### 4.1 Combinatorial Hashing Scheme
+### 5.1 Combinatorial Hashing Scheme
 As proven by Kirsch and Mitzenmacher, we can generate an arbitrary number of hash values $g_i(x)$ using just **two base hash functions** $h_1(x)$ and $h_2(x)$ with zero asymptotic loss in false positive performance:
 $$g_i(x) = \left(h_1(x) + i \cdot h_2(x)\right) \pmod{m}$$
 Where $i \in [0, k-1]$.
 
-### 4.2 Hardware Synthesis Optimizations
+### 5.2 Hardware Synthesis Optimizations
 1. **Base Hash Functions:**
    * **CRC32-C (Castagnoli Polynomial):** Implemented in dedicated hardware instructions (`_mm_crc32_u64` on Intel/AMD or `__crc32d` on ARMv8). Consumes only 1 clock cycle.
    * **MurmurHash3 (32-bit):** Non-cryptographic, fast, outstanding distribution properties, and very simple logic (mostly shifts, multiplies, and XORs).
@@ -147,11 +197,11 @@ Where $i \in [0, k-1]$.
 
 ---
 
-## 5. Optimized Hashing for 32-Bit Keys (IPv4)
+## 6. Optimized Hashing for 32-Bit Keys (IPv4)
 
 Because IPv4 addresses are native 32-bit (4-byte) integers, hashing them is highly efficient and avoids any complex serialization or prefix mapping.
 
-### 5.1 Base Hash Generators
+### 6.1 Base Hash Generators
 To generate the two independent 32-bit base hashes $h_1(\text{IP})$ and $h_2(\text{IP})$ directly from a 32-bit IPv4 address:
 1. **First Hash ($h_1$):** Run a standard hardware CRC32 instruction on the raw 32-bit IP:
    $$h_1(\text{IP}) = \text{CRC32}(\text{IP})$$
@@ -161,18 +211,18 @@ To generate the two independent 32-bit base hashes $h_1(\text{IP})$ and $h_2(\te
 
 ---
 
-## 6. Managing State and Timeouts (Sliding Window Bloom Filter)
+## 7. Managing State and Timeouts (Sliding Window Bloom Filter)
 
 Standard Bloom filters are accumulate-only; they do not support deletions. Over time, as more unique IPs are seen, the bit array eventually fills with 1s, causing the false positive rate to degrade to 100%.
 
 In network tracking (e.g., DDoS mitigation, state tracking, or IP reputation), we care about IPs seen within a **sliding time window** (e.g., "seen in the last 24 hours").
 
-### 6.1 Why Counting Bloom Filters (CBF) Fall Short
+### 7.1 Why Counting Bloom Filters (CBF) Fall Short
 A Counting Bloom Filter replaces each bit with a 4-bit counter. When an IP is added, we increment the counters; when it expires, we decrement them.
 * **Drawback:** Memory footprint increases by **4x** (from 2.0 MB to 8.0 MB).
 * **Drawback:** Decrementing requires knowing *exactly* which IP expired, requiring an external database of IP timestamps, which defeats the purpose of a space-saving Bloom filter.
 
-### 6.2 Solution: Double Buffering (Generational Bloom Filter)
+### 7.2 Solution: Double Buffering (Generational Bloom Filter)
 Instead of counting, maintain **two** distinct Bloom Filters: `BF_Active` and `BF_Standby`, each of size $m$.
 
 ```
@@ -203,9 +253,9 @@ Time Interval: T_1 -> T_2                      |
 
 ---
 
-## 7. Reference Implementations
+## 8. Reference Implementations
 
-### 7.1 Python Simulation
+### 8.1 Python Simulation
 This production-grade Python simulation showcases the power-of-two size optimization, direct 32-bit IPv4 hashing, and combinatorial hashing.
 
 ```python
@@ -309,7 +359,7 @@ if __name__ == "__main__":
 
 ---
 
-### 7.2 Hardware-Friendly Simulated C++ Core Lookup
+### 8.2 Hardware-Friendly Simulated C++ Core Lookup
 This snippet demonstrates the cycle-accurate combinatorial logic with power-of-two masking designed for hardware pipelines.
 
 ```cpp
@@ -355,56 +405,6 @@ int main() {
     return 0;
 }
 ```
-
----
-
-## 8. Real-World Applications of Bloom Filters
-
-Bloom filters are utilized across high-performance systems to perform extremely fast, low-overhead set membership checks, serving as a critical gatekeeper for both hardware and software systems.
-
-### 8.1 High-Speed Networking Applications
-In high-speed networking devices (ASICs, SmartNICs, NPUs), memory access is the ultimate bottleneck. Bloom filters act as single-cycle filters placed ahead of slower, more expensive table searches:
-
-1. **DDoS Mitigation & Traffic Filtering:**
-   During a DDoS attack, a network device is bombarded with millions of malformed or malicious packets. A Bloom filter storing a blacklist of known malicious IPs can filter out these packets at line rate before the ASIC allocates any connection state, buffers, or CPU processing, preventing resource exhaustion.
-2. **Flow Cache Gatekeeping:**
-   When a packet arrives, the router must determine if it belongs to an active, accelerated flow. By checking a Bloom filter first, the router can instantly determine if a flow is *not* active. This bypasses slower, multi-cycle lookup tables (like large hash tables or external DRAM routing tables) for new or unknown flows.
-3. **Network Loop Detection (e.g., multicast routing):**
-   To prevent packet looping in multicast routing, routers track recently forwarded packet IDs. Storing a Bloom filter of packet signatures in fast SRAM allows the card to discard looped packets within nanoseconds.
-
-### 8.2 Database Query Optimization (The "Absent-Key" Performance Saver)
-In modern databases (such as **Google Bigtable, Apache Cassandra, RocksDB, and PostgreSQL**), checking for the existence of a key that *does not exist* is a major performance killer.
-
-#### The Problem: Slower than a hit
-When querying an existing key, the database can fetch the data and return. However, when querying a *non-existent* key, the database engine must traverse B-tree indices, search multiple disk blocks, or check multiple index pages just to confirm that the key is absent. This triggers random disk I/O (SSD/HDD access) which takes milliseconds—completely stalling database thread pools.
-
-#### The Solution: In-Memory Bloom Gatekeeping
-To prevent this performance degradation, databases store a small, highly compressed Bloom filter of all valid keys directly in RAM:
-
-```
-                  +--------------------------------+
-                  |  Query for Non-Existent Key X  |
-                  +---------------+----------------+
-                                  |
-                                  v
-                    +-----------------------------+
-                    | In-Memory Bloom Filter Check|
-                    +-------------+---------------+
-                                  |
-            +---------------------+---------------------+
-            | (Yes - Probable)                          | (No - Definite)
-            v                                           v
-+-----------------------+                    +-----------------------+
-| Search Index on Disk  |                    | Instantly Return      |
-| (Expensive Disk I/O)  |                    | "Key Not Found"       |
-+-----------------------+                    | (0 Disk Accesses!)    |
-                                             +-----------------------+
-```
-
-1. **Instant "Not Found" Returns:**
-   When a query for key `X` arrives, the system checks the in-memory Bloom filter. If the filter returns `False`, the database instantly returns a "Key Not Found" result with **zero disk accesses**. 
-2. **LSM-Tree (Log-Structured Merge-tree) SSTable Skipping:**
-   In LSM-tree engines (RocksDB, Cassandra), database writes are stored on disk in read-only files called SSTables. A single key lookup might normally require searching *every single SSTable file* on disk sequentially. By placing a separate in-memory Bloom filter in front of each SSTable, the engine can instantly skip 95%+ of the SSTable files, reducing the number of disk accesses to essentially a single disk read.
 
 ---
 
