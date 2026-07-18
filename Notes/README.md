@@ -35,3 +35,4 @@ This directory contains a collection of study notes on various computer science 
 ### 🛠️ Software Engineering Practices
 - **[DevOps](./DevOps.txt)**: Continuous Integration/Deployment and cultural practices.
 - **[Data Structures Notes](./DataStructuresNotes.txt)**: Theoretical summaries of core data structures.
+- **[Bloom Filter IP Check](./bloom_filter_ip_check.md)**: High-performance Bloom filter design for tracking IPv4/IPv6 addresses at line rate, optimized for hardware/software co-design.
