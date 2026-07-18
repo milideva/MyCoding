@@ -1,9 +1,9 @@
-# High-Performance Bloom Filter Design for IP Address Tracking
+# High-Performance Bloom Filter Design for IPv4 Address Tracking
 ## Optimized for NPU, ASIC, FPGA, and SmartNIC Architectures
 
 A Bloom filter is a space-efficient probabilistic data structure used to test whether an element is a member of a set. False positive matches are possible, but false negatives are not—a query returns either "Possibly in set" or "Definitely not in set."
 
-This document presents a comprehensive, hardware-optimized system design for a Bloom filter engineered to track $n = 1 \text{ million}$ unique IP addresses (both IPv4 and IPv6) with a target false positive rate of $p = 0.1\%$ ($1$ in $1000$), optimized for sub-nanosecond line-rate packet processing.
+This document presents a comprehensive, hardware-optimized system design for a Bloom filter engineered to track $n = 1 \text{ million}$ unique IPv4 addresses with a target false positive rate of $p = 0.1\%$ ($1$ in $1000$), optimized for sub-nanosecond line-rate packet processing.
 
 ---
 
@@ -34,7 +34,7 @@ By rounding the bit-array size $m$ up to the nearest power of two, we can elimin
 * Let $m = 2^{24} = 16,777,216 \text{ bits}$ (Exactly **2.0 Megabytes**).
 * Sizing up to $2^{24}$ increases memory usage by only **0.2 MB** (+11% relative to optimal), which is negligible for modern on-chip SRAM.
 * **The Modulo Trick:** Modulo by $2^{24}$ is replaced by a simple **bitwise AND** operation with a mask:
-  $$\text{index} = \text{hash}(\text{IP}) \ \& \ (2^{24} - 1)$$
+  $$\text{index} = \text{hash}(\text{IP}) \ \text{AND} \ (2^{24} - 1)$$
   In hardware, a bitwise AND requires zero clock cycles and zero active gate logic (it is simply a hardwired routing connection to ignore the upper bits of the 32-bit hash).
 
 ### 1.4 Improved Accuracy Analysis
@@ -51,7 +51,7 @@ At 100 Gbps, processing minimum-size Ethernet packets (84 bytes on the wire incl
 
 ```
                            +------------------------+
-                           | Incoming Packet Header |
+                           | Incoming IPv4 Header   |
                            +-----------+------------+
                                        |
                                        v
@@ -142,26 +142,23 @@ Where $i \in [0, k-1]$.
 2. **Pipelined Multiplier-Free Combinatorial Loop:**
    In hardware, we avoid the multiplier $i \cdot h_2(x)$ by using an accumulator register in a pipeline:
    * **Cycle 0:** $\text{Accumulator} = h_1(x)$
-   * **Cycle 1:** $\text{Bank}_0\_index = \text{Accumulator} \ \& \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
-   * **Cycle 2:** $\text{Bank}_1\_index = \text{Accumulator} \ \& \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
+   * **Cycle 1:** $\text{index}_0 = \text{Accumulator} \ \text{AND} \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
+   * **Cycle 2:** $\text{index}_1 = \text{Accumulator} \ \text{AND} \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
    * This pipeline yields one new bit address per clock cycle using only a single **adder** and **bitwise mask**.
 
 ---
 
-## 5. Unified IPv4 and IPv6 Support
+## 5. Optimized Hashing for 32-Bit Keys (IPv4)
 
-A robust line-card tracker must process both IPv4 (32-bit) and IPv6 (128-bit) headers seamlessly.
+Because IPv4 addresses are native 32-bit (4-byte) integers, hashing them is highly efficient and avoids any complex serialization or prefix mapping.
 
-### 5.1 Key Serialization
-To feed both IP versions into the same Bloom filter:
-* **IPv4 Key (32 bits):** To ensure uniform distribution and prevent collisions with IPv6 prefixes, map IPv4 addresses into an **IPv4-mapped IPv6 address** format (RFC 4291) or pad with a constant salt:
-  $$\text{Key} = \text{0x00000000000000000000FFFF} \ || \ \text{IPv4\_Address}$$
-* **IPv6 Key (128 bits):** Passed directly as a 16-byte array.
-
-### 5.2 Hashing 128-bit Keys with CRC32 Hardware Offload
-Since the input key can be up to 128 bits (16 bytes), we divide the key into two 64-bit segments and hash them using hardware-accelerated CRC32:
-* $h_1(\text{IP}) = \text{CRC32}(\text{IP}[0..63])$
-* $h_2(\text{IP}) = \text{CRC32}(\text{IP}[64..127])$
+### 5.1 Base Hash Generators
+To generate the two independent 32-bit base hashes $h_1(\text{IP})$ and $h_2(\text{IP})$ directly from a 32-bit IPv4 address:
+1. **First Hash ($h_1$):** Run a standard hardware CRC32 instruction on the raw 32-bit IP:
+   $$h_1(\text{IPv4}) = \text{CRC32}(\text{IPv4\_Address})$$
+2. **Second Hash ($h_2$):** Run a second CRC32 instruction using a hardware-friendly bitwise XOR salt (constant rotation):
+   $$h_2(\text{IPv4}) = \text{CRC32}(\text{IPv4\_Address} \ \oplus \ \text{0x55555555})$$
+   *Alternatively*, MurmurHash3 with a different seed can be used in software contexts. This ensures complete independence of $h_1$ and $h_2$ without any hardware penalty.
 
 ---
 
@@ -210,14 +207,14 @@ Time Interval: T_1 -> T_2                      |
 ## 7. Reference Implementations
 
 ### 7.1 Python Simulation
-This production-grade Python simulation showcases the power-of-two size optimization, combinatorial hashing, and support for IPv4 and IPv6.
+This production-grade Python simulation showcases the power-of-two size optimization, direct 32-bit IPv4 hashing, and combinatorial hashing.
 
 ```python
 import math
 import struct
 import binascii
 
-class IPBloomFilter:
+class IPv4BloomFilter:
     def __init__(self, capacity=1000000, target_fpr=0.001):
         self.n = capacity
         
@@ -235,7 +232,7 @@ class IPBloomFilter:
         # Initialize bit array (using bytearray for efficiency)
         self.bit_array = bytearray(self.m // 8)
         
-        print(f"Initialized Bloom Filter:")
+        print(f"Initialized IPv4 Bloom Filter:")
         print(f"  Target Capacity: {self.n:,} IPs")
         print(f"  Bit Array Size (m): {self.m:,} bits ({self.m / 8 / 1024 / 1024:.2f} MB)")
         print(f"  Optimal Hash Functions (k): {self.k}")
@@ -245,31 +242,27 @@ class IPBloomFilter:
         return (1 - math.exp(-self.k * self.n / self.m)) ** self.k
 
     def _serialize_ip(self, ip_str: str) -> bytes:
-        """Serializes both IPv4 and IPv6 into a uniform 16-byte key."""
-        if ":" in ip_str:
-            # IPv6 address parsing
-            import socket
-            return socket.inet_pton(socket.AF_INET6, ip_str)
-        else:
-            # IPv4 address parsing -> Map to IPv4-mapped IPv6 (RFC 4291)
-            import socket
-            ipv4_bytes = socket.inet_pton(socket.AF_INET, ip_str)
-            return b"\x00" * 10 + b"\xff\xff" + ipv4_bytes
+        """Serializes dotted IPv4 string directly into a 4-byte big-endian representation."""
+        import socket
+        return socket.inet_pton(socket.AF_INET, ip_str)
 
-    def _get_hashes(self, key_bytes: bytes) -> tuple:
-        """Generates two base 32-bit hashes using CRC32 from key halves."""
-        # Split 16-byte IP key into two 8-byte halves
-        half1 = key_bytes[:8]
-        half2 = key_bytes[8:]
+    def _get_hashes(self, ipv4_bytes: bytes) -> tuple:
+        """Generates two independent 32-bit base hashes from the 32-bit IPv4."""
+        # Base Hash 1: Direct CRC32 of IPv4 address
+        h1 = binascii.crc32(ipv4_bytes) & 0xffffffff
         
-        h1 = binascii.crc32(half1) & 0xffffffff
-        h2 = binascii.crc32(half2) & 0xffffffff
+        # Base Hash 2: CRC32 of IPv4 address salted/XORed with 0x55555555
+        # (simulates a different hardware-friendly polynomial/constant rotation)
+        ip_val = struct.unpack("!I", ipv4_bytes)[0]
+        salted_ip_bytes = struct.pack("!I", ip_val ^ 0x55555555)
+        h2 = binascii.crc32(salted_ip_bytes) & 0xffffffff
+        
         return h1, h2
 
     def add(self, ip_str: str):
-        """Inserts an IP address into the Bloom filter."""
-        key = self._serialize_ip(ip_str)
-        h1, h2 = self._get_hashes(key)
+        """Inserts an IPv4 address into the Bloom filter."""
+        ipv4_bytes = self._serialize_ip(ip_str)
+        h1, h2 = self._get_hashes(ipv4_bytes)
         
         # Combinatorial hashing loop
         for i in range(self.k):
@@ -279,9 +272,9 @@ class IPBloomFilter:
             self.bit_array[byte_idx] |= (1 << bit_offset)
 
     def contains(self, ip_str: str) -> bool:
-        """Queries if an IP address has been seen."""
-        key = self._serialize_ip(ip_str)
-        h1, h2 = self._get_hashes(key)
+        """Queries if an IPv4 address has been seen."""
+        ipv4_bytes = self._serialize_ip(ip_str)
+        h1, h2 = self._get_hashes(ipv4_bytes)
         
         for i in range(self.k):
             index = (h1 + i * h2) & self.mask
@@ -293,25 +286,25 @@ class IPBloomFilter:
 
 # --- Verification & Demo ---
 if __name__ == "__main__":
-    bf = IPBloomFilter()
+    bf = IPv4BloomFilter()
     
     # Test IPs
     ipv4_test = "192.168.1.1"
-    ipv6_test = "2001:db8::ff00:42:8329"
+    ipv4_test2 = "172.16.254.1"
     not_seen = "10.0.0.1"
     
     # Add IPs
     bf.add(ipv4_test)
-    bf.add(ipv6_test)
+    bf.add(ipv4_test2)
     
     # Check status
     assert bf.contains(ipv4_test) is True, "Error: IPv4 lookup failed!"
-    assert bf.contains(ipv6_test) is True, "Error: IPv6 lookup failed!"
+    assert bf.contains(ipv4_test2) is True, "Error: IPv4 lookup failed!"
     assert bf.contains(not_seen) is False, "Error: False positive on clean array!"
     
     print("\nVerification Successful!")
     print(f"  Checked '{ipv4_test}': {bf.contains(ipv4_test)}")
-    print(f"  Checked '{ipv6_test}': {bf.contains(ipv6_test)}")
+    print(f"  Checked '{ipv4_test2}': {bf.contains(ipv4_test2)}")
     print(f"  Checked '{not_seen}': {bf.contains(not_seen)}")
 ```
 
@@ -371,5 +364,5 @@ int main() {
 1. **ASIC Division Elimination:** Rounding $m$ up to $2^{24}$ changes costly division operations to a $0$-latency bitwise AND mask, while simultaneously reducing the false positive rate by **3x** (from $0.1\%$ to $0.034\%$).
 2. **SRAM Bank Partitioning:** Eliminates multi-port memory access overhead by splitting the filter into $k$ independent physical SRAM banks. Allows all bit checks to occur in parallel within a single clock cycle.
 3. **Blocked Bloom Filter (BBF):** Resolves cache-line misses on general-purpose CPUs and SmartNICs by packing evaluations strictly within a single 64-byte boundary.
-4. **Unified Protocol Support:** Uniformly converts IPv4 and IPv6 addresses into standard 128-bit blocks, processing them using standard hardware-accelerated CRC32-C.
+4. **Optimized 32-bit Key Processing:** Eliminates unified IP structure alignment overhead, using direct 32-bit hardware-accelerated instructions and simple bitwise salts to generate extremely fast base hashes.
 5. **Time-Aware Double Buffering:** Resolves memory saturation without the 4x overhead and CPU complexity of Counting Bloom Filters, guaranteeing $O(1)$ constant-time cleanups.
