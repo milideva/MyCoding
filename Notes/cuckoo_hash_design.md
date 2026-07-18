@@ -116,6 +116,59 @@ While lookups are instant and deterministic, insertions (and the recursive "cuck
 
 ---
 
+## 4.1 Concrete Walkthrough: Eviction & Dual-Mapping Collision Resolution
+
+To understand how the dual-table mapping prevents infinite loops or immediate collision re-evaluations during an eviction, let us trace a concrete example using two keys, `"cat"` and `"dog"`.
+
+### 1. Hash Mappings (Hypothetical Setup)
+Assume we have two independent hash functions ($h_1$ and $h_2$) mapping to two distinct memory regions: **Table A** and **Table B**. Because Table B uses a salted/XORed key ($key \oplus 0x55555555$) before hashing, the index a key receives in Table A is completely uncorrelated with the index it receives in Table B.
+
+Let's assume our hash functions yield the following bucket indices (out of the available $131,072$ buckets per table):
+
+| Key | $h_1(\text{Key}) \rightarrow \text{Table A Bucket}$ | $h_2(\text{Key}) \rightarrow \text{Table B Bucket}$ |
+| :--- | :---: | :---: |
+| `"cat"` | **Bucket 42** | Bucket 999 |
+| `"dog"` | **Bucket 42** | Bucket 555 |
+
+**The Conflict:** Both `"cat"` and `"dog"` map to the same bucket (**Bucket 42**) in Table A. However, their alternative locations in Table B (**999** vs. **555**) are completely different and uncorrelated.
+
+---
+
+### 2. Step-by-Step Eviction Walkthrough
+
+#### Step 1: `"cat"` is already in the table
+Initially, `"cat"` is inserted into the table. It successfully finds an empty slot inside **Table A, Bucket 42** and occupies it.
+
+#### Step 2: `"dog"` tries to insert
+We now attempt to insert `"dog"`. The algorithm computes:
+* $h_1(\text{"dog"}) = 42$
+* $h_2(\text{"dog"}) = 555$
+
+It checks **Table A, Bucket 42** and **Table B, Bucket 555**. For this walkthrough, let us assume both of these buckets are entirely full (all 4 slots in both buckets are occupied by other keys). `"cat"` happens to be occupying one of the slots in **Table A, Bucket 42**.
+
+#### Step 3: The Cuckoo Kick (Eviction)
+Because there are no free slots in either candidate bucket, `"dog"` must evict an existing key to make space. 
+1. The algorithm randomly selects one of the 8 candidate slots (4 from Table A, Bucket 42; 4 from Table B, Bucket 555). 
+2. It randomly selects the slot containing `"cat"` in **Table A, Bucket 42**.
+3. `"dog"` overwrites that slot and is now safely stored in **Table A, Bucket 42**.
+4. `"cat"` is kicked out and becomes the "floating" key searching for a home.
+
+#### Step 4: Finding a new slot for `"cat"`
+In the next iteration of the insertion loop, the algorithm resolves the placement of `"cat"`. It evaluates `"cat"`'s two valid locations:
+* **Option 1 (Table A):** $h_1(\text{"cat"}) = 42$
+* **Option 2 (Table B):** $h_2(\text{"cat"}) = 999$
+
+When the code checks these slots:
+1. It inspects **Table A, Bucket 42**. It sees that it is completely full (and indeed, `"dog"` is now sitting in the slot `"cat"` just vacated).
+2. Crucially, it inspects `"cat"`'s alternative location: **Table B, Bucket 999**.
+3. Because `"cat"`'s alternative bucket is **999** while `"dog"`'s alternative bucket is **555**, `"cat"` evaluates a completely different region of memory.
+4. If there is an empty slot in **Table B, Bucket 999**, `"cat"` slides right in, and the eviction chain terminates successfully.
+5. If **Table B, Bucket 999** is also full, `"cat"` will randomly kick out an occupant (e.g., `"bird"`). When `"bird"` is kicked out, the algorithm will compute $h_1(\text{"bird"})$ to move it to a completely different bucket in Table A, continuing the random walk.
+
+This continuous alternation between tables using unlinked indices breaks localized loops and guarantees high-density packing without localized deadlock.
+
+---
+
 ## 5. Reference Python Simulation
 
 This production-ready Python simulation implements the exact Bucketed Cuckoo Hashing layout described above, verifying that **1 million keys** can be successfully packed into the **1,048,576 slots** ($95.4\%$ load factor) using the random-walk eviction pipeline.
