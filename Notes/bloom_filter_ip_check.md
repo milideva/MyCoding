@@ -140,11 +140,10 @@ Where $i \in [0, k-1]$.
    * **CRC32-C (Castagnoli Polynomial):** Implemented in dedicated hardware instructions (`_mm_crc32_u64` on Intel/AMD or `__crc32d` on ARMv8). Consumes only 1 clock cycle.
    * **MurmurHash3 (32-bit):** Non-cryptographic, fast, outstanding distribution properties, and very simple logic (mostly shifts, multiplies, and XORs).
 2. **Pipelined Multiplier-Free Combinatorial Loop:**
-   In hardware, we avoid the multiplier $i \cdot h_2(x)$ by using an accumulator register in a pipeline:
-   * **Cycle 0:** $\text{Accumulator} = h_1(x)$
-   * **Cycle 1:** $\text{index}_0 = \text{Accumulator} \ \text{AND} \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
-   * **Cycle 2:** $\text{index}_1 = \text{Accumulator} \ \text{AND} \ \text{Mask}; \quad \text{Accumulator} = \text{Accumulator} + h_2(x)$
-   * This pipeline yields one new bit address per clock cycle using only a single **adder** and **bitwise mask**.
+   In hardware, we avoid the multiplier $i \cdot h_2(x)$ by using an accumulator register in a pipeline to yield one new bit address per clock cycle using only a single **adder** and **bitwise mask**:
+   * **Cycle 0:** `Accumulator = h_1(x)`
+   * **Cycle 1:** `index_0 = Accumulator AND Mask; Accumulator = Accumulator + h_2(x)`
+   * **Cycle 2:** `index_1 = Accumulator AND Mask; Accumulator = Accumulator + h_2(x)`
 
 ---
 
@@ -155,9 +154,9 @@ Because IPv4 addresses are native 32-bit (4-byte) integers, hashing them is high
 ### 5.1 Base Hash Generators
 To generate the two independent 32-bit base hashes $h_1(\text{IP})$ and $h_2(\text{IP})$ directly from a 32-bit IPv4 address:
 1. **First Hash ($h_1$):** Run a standard hardware CRC32 instruction on the raw 32-bit IP:
-   $$h_1(\text{IPv4}) = \text{CRC32}(\text{IPv4\_Address})$$
+   $$h_1(\text{IP}) = \text{CRC32}(\text{IP})$$
 2. **Second Hash ($h_2$):** Run a second CRC32 instruction using a hardware-friendly bitwise XOR salt (constant rotation):
-   $$h_2(\text{IPv4}) = \text{CRC32}(\text{IPv4\_Address} \ \oplus \ \text{0x55555555})$$
+   $$h_2(\text{IP}) = \text{CRC32}(\text{IP} \ \oplus \ \text{0x55555555})$$
    *Alternatively*, MurmurHash3 with a different seed can be used in software contexts. This ensures complete independence of $h_1$ and $h_2$ without any hardware penalty.
 
 ---
