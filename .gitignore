@@ -1,3 +1,7 @@
+# Compiled binaries and build artifacts
+a.out
 *.out
+
+# Editor and IDE configurations
 .editorconfig
 .vscode/
