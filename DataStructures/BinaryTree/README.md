@@ -66,9 +66,39 @@ Used when information is passed from the parent to children.
 Uses a queue to process nodes level by level.
 *   **Pattern:** Use a `for` loop inside the `while(!queue.empty())` to process exactly one level at a time.
 
-### D. Tree Reconstruction
-Rebuilding a tree from traversal sequences (e.g., Inorder + Preorder).
-*   **Key Insight:** Preorder/Postorder tells you the **Root**; Inorder tells you the **Boundaries** of left/right subtrees.
+### D. Tree Reconstruction & Serialization
+
+#### 1. Reconstruction WITHOUT Markers (Standard Traversals)
+To uniquely reconstruct a general binary tree without markers or null-node placeholders, we need **two traversals**, where at least one provides structural anchoring:
+*   **In-order + Pre-order or Post-order:** $\rightarrow$ **Unique Reconstruction**. (Pre-order or Post-order identifies the root node, and In-order uses that root node to split the sequence into left and right subtrees).
+*   **Pre-order + Post-order:** $\rightarrow$ **Ambiguous / Multiple Trees**. (Only works uniquely if the binary tree is **full**, where every node has either $0$ or $2$ children).
+
+#### 2. Reconstruction WITH Markers (Serialization)
+If the traversal is augmented with explicit markers/placeholders (`#` or `null`) representing empty (`nullptr`) child positions:
+*   **Pre-order + Markers:** $\rightarrow$ **Unique Reconstruction**. (Recursively deserialize from left to right, where the first node is always the root).
+*   **Post-order + Markers:** $\rightarrow$ **Unique Reconstruction**. (Recursively deserialize from right to left, processing in the order of `Root -> Right -> Left`).
+*   **In-order + Markers:** $\rightarrow$ **Ambiguous (Cannot uniquely reconstruct)**.
+
+##### Mathematical Proof by Counter-Example for In-order + Markers:
+Consider the following two structurally distinct binary trees:
+
+**Tree 1 (Root is 2, Left is 1, Right is Null):**
+```text
+    2
+   /
+  1
+```
+*   In-order traversal with markers: `[#, 1, #, 2, #]`
+
+**Tree 2 (Root is 1, Left is Null, Right is 2):**
+```text
+  1
+   \
+    2
+```
+*   In-order traversal with markers: `[#, 1, #, 2, #]`
+
+Since both structurally distinct trees produce the *exact same* serialized sequence `[#, 1, #, 2, #]`, unique reconstruction from an in-order traversal with markers is **mathematically impossible**.
 
 ### E. Monotonic Stack
 Optimized $O(N)$ approach for building a Maximum Binary Tree (LeetCode 654).

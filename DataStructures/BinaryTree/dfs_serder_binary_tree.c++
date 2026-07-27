@@ -1,11 +1,37 @@
 /**
- * Problem: Serialize and Deserialize Binary Tree
+ * Problem: Serialize and Deserialize Binary Tree (LeetCode 297)
  * Design an algorithm to serialize and deserialize a binary tree.
  * 
  * Strategy: DFS (Pre-order) with NULL Markers
  * - Serialization: Pre-order traversal, append "null" for nullptr, comma-delimited.
  * - Deserialization: Split string by comma into a queue/list, recursively 
  *   reconstruct using pre-order logic.
+ * 
+ * =========================================================================
+ * THEORETICAL ESSENTIALS OF TREE RECONSTRUCTION & SERIALIZATION
+ * =========================================================================
+ * To uniquely reconstruct a binary tree, we must have sufficient structural
+ * and topological context:
+ * 
+ * 1. RECONSTRUCTION WITHOUT MARKERS (Standard Traversals):
+ *    - In-order + Pre-order or Post-order -> UNIQUE Reconstruction.
+ *    - Pre-order + Post-order -> AMBIGUOUS (Only works uniquely if the tree is
+ *      Full, i.e., every node has 0 or 2 children).
+ * 
+ * 2. RECONSTRUCTION WITH MARKERS (Serialization):
+ *    - Pre-order + Markers -> UNIQUE Reconstruction (Implemented here, left-to-right).
+ *    - Post-order + Markers -> UNIQUE Reconstruction (Right-to-left traversal).
+ *    - In-order + Markers -> AMBIGUOUS (Impossible to uniquely reconstruct!).
+ * 
+ * Counter-Example Proof (In-order + Markers fails):
+ * Tree A (Root 2, Left 1, Right Null):       Tree B (Root 1, Left Null, Right 2):
+ *         2                                           1
+ *        /                                             \
+ *       1                                               2
+ * Both produce the exact same serialized In-order sequence with markers:
+ * [#, 1, #, 2, #]
+ * Hence, unique reconstruction from In-order + Markers is mathematically impossible.
+ * =========================================================================
  * 
  * Time Complexity: O(N)
  * Space Complexity: O(N)
