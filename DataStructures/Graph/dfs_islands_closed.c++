@@ -3,14 +3,14 @@
  * Given a 2D grid of 0s (land) and 1s (water), return the number of closed 
  * islands. A closed island is completely surrounded by water (0s).
  * 
- * Strategy: DFS with boundary tracking
+ * Strategy: DFS with boundary tracking using an explicit visited matrix
  * - Iterate through the grid. For each unvisited land (0), start a DFS.
- * - During DFS, mark land as visited (or flip to 1).
+ * - During DFS, mark land as visited in a separate visited matrix.
  * - If any part of the island is on the grid boundary, it's not closed.
  * - Return count of islands that never touched the boundary.
  * 
  * Time Complexity: O(M * N)
- * Space Complexity: O(M * N) - Recursion stack.
+ * Space Complexity: O(M * N) - Visited matrix and recursion stack.
  */
 
 #include <iostream>
@@ -21,41 +21,54 @@ using namespace std;
 class Solution {
     bool isClosed;
 
-    void dfs(vector<vector<int>>& grid, int r, int c) {
+    void dfs(const vector<vector<int>>& grid, vector<vector<bool>>& visited, int r, int c) {
         int m = grid.size();
         int n = grid[0].size();
 
-        if (r < 0 || r >= m || c < 0 || c >= n || grid[r][c] == 1) return;
+        // Out of bounds, water (1), or already visited
+        if (r < 0 || r >= m || c < 0 || c >= n || grid[r][c] == 1 || visited[r][c]) {
+            return;
+        }
 
-        // If we hit the boundary, the island is not closed
+        // Mark current land cell as visited
+        visited[r][c] = true;
+
+        // If land touches the boundary, mark island as non-closed
         if (r == 0 || r == m - 1 || c == 0 || c == n - 1) {
             isClosed = false;
         }
 
-        grid[r][c] = 1; // Mark as visited
-
-        dfs(grid, r + 1, c);
-        dfs(grid, r - 1, c);
-        dfs(grid, r, c + 1);
-        dfs(grid, r, c - 1);
+        // Continue traversal in all 4 directions
+        dfs(grid, visited, r + 1, c);
+        dfs(grid, visited, r - 1, c);
+        dfs(grid, visited, r, c + 1);
+        dfs(grid, visited, r, c - 1);
     }
 
 public:
-    int closedIsland(vector<vector<int>>& grid) {
+    int closedIsland(const vector<vector<int>>& grid) {
         if (grid.empty()) return 0;
+
         int m = grid.size();
         int n = grid[0].size();
         int count = 0;
 
+        // Separate visited array initialized to false
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 0) {
+                // Unvisited land found
+                if (grid[i][j] == 0 && !visited[i][j]) {
                     isClosed = true;
-                    dfs(grid, i, j);
-                    if (isClosed) count++;
+                    dfs(grid, visited, i, j);
+                    if (isClosed) {
+                        count++;
+                    }
                 }
             }
         }
+
         return count;
     }
 };
