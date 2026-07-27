@@ -5,7 +5,6 @@ from pprint import pprint
 def shuffle (arr) :
     n = len(arr)
     for i in range(0, n):
-        j = randint(0, n-1)
         j = randint(i, n-1)
         arr[i], arr[j] = arr[j], arr[i]
     return arr
