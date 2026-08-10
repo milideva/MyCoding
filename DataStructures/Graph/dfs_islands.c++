@@ -18,13 +18,17 @@
 using namespace std;
 
 class Solution {
+    int nr; // #rows
+    int nc; // #cols
+    vector <vector <bool>> visited;
+
     void dfs(vector<vector<char>>& grid, int r, int c) {
-        int m = grid.size();
-        int n = grid[0].size();
 
-        if (r < 0 || r >= m || c < 0 || c >= n || grid[r][c] == '0') return;
+        if (r < 0 || r >= nr || c < 0 || c >= nc || visited[r][c]) return;
 
-        grid[r][c] = '0'; // Mark as visited
+        if (grid[r][c] == '0') return;
+
+        visited[r][c] = true;
 
         dfs(grid, r + 1, c);
         dfs(grid, r - 1, c);
@@ -35,13 +39,16 @@ class Solution {
 public:
     int numIslands(vector<vector<char>>& grid) {
         if (grid.empty()) return 0;
-        int m = grid.size();
-        int n = grid[0].size();
+        nr = grid.size();
+        nc = grid[0].size();
+
+        visited.assign(nr, vector<bool> (nc, false));
+
         int count = 0;
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == '1') {
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                if (grid[i][j] == '1' and !visited[i][j]) {
                     dfs(grid, i, j);
                     count++;
                 }
