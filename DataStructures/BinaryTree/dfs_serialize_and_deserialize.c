@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /*
-  Problem: Serialize and Deserialize BST (C version)
+  Problem: Serialize and Deserialize Binary Tree (C version)
 
   Algorithm: Pre-order Traversal
   1. Serialization: Store nodes in pre-order. Use a marker (e.g., -1) 
