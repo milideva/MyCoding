@@ -29,7 +29,40 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
+class SolutionDFS {
+    // DFS Approach
+    // Time Complexity: O(N) where N is the number of nodes in the tree
+    // Space Complexity: O(H) where H is the height of the tree (due to recursion stack)
+    // Cons: Inefficient as it can not exit early when the first leaf node is found, and it traverses all paths.
+
+    int minDepth_ = INT_MAX;
+    void getMinDepth(TreeNode *root, int depth) {
+        if (!root) return ;
+        depth++;
+        if (root->left)
+            getMinDepth(root->left, depth);
+
+        if (!root->left and !root->right) {
+            minDepth_ = min(depth, minDepth_);
+        }
+        if (root->right)
+            getMinDepth(root->right, depth);
+
+    }
+public:
+    int minDepth(TreeNode* root) {
+       if (!root) return 0;
+       getMinDepth(root, 0);
+       return minDepth_;
+    }
+};
+
 class Solution {
+    // BFS Approach
+    // Time Complexity: O(N) where N is the number of nodes in the tree
+    // Space Complexity: O(W) where W is the maximum width of the tree (due to the queue)
+    // Pros: Efficient as it can exit early when the first leaf node is found, and it traverses only the necessary paths.
+    // Cons: Queue can take up to N/2 nodes at the bottom level in the worst case, leading to higher space usage
 public:
     int minDepth(TreeNode* root) {
         if (!root) return 0;
