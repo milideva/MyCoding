@@ -1,7 +1,6 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <random>
+// Compilation: g++ -std=c++26 -Wall DataStructures/LinkedList/singly_linked_list_ops.c++ -o /tmp/singly_linked_list_ops_test && /tmp/singly_linked_list_ops_test
+
+#include <print>
 
 using namespace std;
 
@@ -9,7 +8,7 @@ using namespace std;
   Problem: Singly Linked List Operations (C++ Class Implementation)
 
   Problem Description:
-  A C++ implementation of a Singly Linked List class with common 
+  A C++26 implementation of a Singly Linked List class with common 
   functionalities:
   - `insertSorted`: Maintaining a sorted list.
   - `insertAtBeginning`: O(1) head insertion.
@@ -17,8 +16,6 @@ using namespace std;
   - `reverseLinkedList`: In-place iterative reversal.
   - `oddEvenList` (LeetCode 328): Grouping all odd-indexed nodes together 
     followed by the even-indexed nodes.
-  - `setRandom`: Randomly assigning 'random' pointers for practice 
-    with complex structures.
 
   Complexity Analysis:
   - Insertion (Sorted): O(N)
@@ -33,40 +30,42 @@ using namespace std;
     memory cleanup (via destructors).
 */
 
-struct Node {
+// Definition for singly-linked list from LeetCode.
+struct ListNode {
     int val;
-    Node *next;
-    Node *random;
-    Node (int v) : val(v), next(nullptr), random(nullptr) {}
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
 class SinglyLinkedList {
-    Node *head;
+    ListNode *head;
 public:
     SinglyLinkedList (): head(nullptr) {}
     ~SinglyLinkedList () {
-        Node *curr = head;
+        ListNode *curr = head;
         while (curr) {
-            Node *next = curr->next;
+            ListNode *next = curr->next;
             delete curr;
             curr = next;
         }
     }
     
     void insertAtBeginning (int val) {
-        Node *newNode = new Node(val);
+        ListNode *newNode = new ListNode(val);
         newNode->next = head;
         head = newNode;
     }
     
     void insertSorted (int val) {
-        Node *newNode = new Node(val);
+        ListNode *newNode = new ListNode(val);
         if (!head || head->val >= val) {
             newNode->next = head;
             head = newNode;
             return;
         }
-        Node *curr = head;
+        ListNode *curr = head;
         while (curr->next && curr->next->val < val) {
             curr = curr->next;
         }
@@ -74,8 +73,8 @@ public:
         curr->next = newNode;
     }
     
-    Node* middleOfLinkedList () {
-        Node *slow = head, *fast = head;
+    ListNode* middleOfLinkedList () {
+        ListNode *slow = head, *fast = head;
         while (fast && fast->next) {
             fast = fast->next->next;
             slow = slow->next;
@@ -84,9 +83,9 @@ public:
     }
     
     void reverseLinkedList () {
-        Node *curr = head, *prev = nullptr;
+        ListNode *curr = head, *prev = nullptr;
         while (curr) {
-            Node *next = curr->next;
+            ListNode *next = curr->next;
             curr->next = prev;
             prev = curr;
             curr = next;
@@ -112,9 +111,9 @@ public:
     void oddEvenList () {
         if (!head || !head->next) return;
 
-        Node *odd = head;
-        Node *even = head->next;
-        Node *evenHead = even;
+        ListNode *odd = head;
+        ListNode *even = head->next;
+        ListNode *evenHead = even;
         while (even && even->next) {
             odd->next = even->next;
             odd = odd->next;
@@ -127,37 +126,17 @@ public:
     }
     
     void display () const {
-        Node* temp = head;
+        ListNode* temp = head;
         while (temp != nullptr) {
-            cout << temp->val;
-            if (temp->random) cout << " R{" << temp->random->val << "}";   
-            cout << " -> ";
+            print("{} -> ", temp->val);
             temp = temp->next;
         }
-        cout << "nullptr" << endl;
-    }
-
-    void setRandom () {
-        if (!head) return;
-        vector<Node*> nodes;
-        Node* curr = head;
-        while (curr) {
-            nodes.push_back(curr);
-            curr = curr->next;
-        }
-        random_device rd;
-        mt19937 g(rd());
-        shuffle(nodes.begin(), nodes.end(), g);
-        curr = head;
-        for (size_t i = 0; i < nodes.size(); ++i) {
-            curr->random = nodes[i];
-            curr = curr->next;
-        }
+        println("nullptr");
     }
 };
 
 void test() {
-    cout << "Testing C++ Singly Linked List" << endl;
+    println("Testing C++ Singly Linked List");
     SinglyLinkedList list;
     list.insertSorted(3);
     list.insertSorted(1);
@@ -165,15 +144,15 @@ void test() {
     list.insertSorted(2);
     list.display();
 
-    Node* mid = list.middleOfLinkedList();
-    if (mid) cout << "Middle: " << mid->val << endl;
+    ListNode* mid = list.middleOfLinkedList();
+    if (mid) println("Middle: {}", mid->val);
 
     list.reverseLinkedList();
-    cout << "Reversed: ";
+    print("Reversed: ");
     list.display();
 
     list.oddEvenList();
-    cout << "After Odd-Even grouping: ";
+    print("After Odd-Even grouping: ");
     list.display();
 }
 
