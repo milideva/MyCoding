@@ -75,7 +75,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
 
 using namespace std;
 
@@ -131,14 +130,12 @@ public:
     }
 
 private:
-    unordered_map <TreeNode *, int> top2NodeSum;
     int cnt = 0;
 
     void countPathsFromNode (TreeNode* node, long long currSum, int targetSum)  {
         if (!node) return;
 
         currSum += node->val;
-        //top2NodeSum[node] = currSum;
 
         if (currSum == targetSum) {
             cnt++;
