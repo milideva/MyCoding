@@ -61,20 +61,29 @@
  *   The path does not need to start or end at the root or a leaf, but it must 
  *   go downwards (i.e., traveling only from parent nodes to child nodes).
  * 
- * - **Strategy (Double DFS):**
- *   - For every node, run a helper DFS `countPathsFromNode` to count all downward 
- *     paths starting from that node that sum to `targetSum`.
- *   - Recurse on the left and right children with the same `targetSum` to 
- *     consider them as starting points for other downward paths.
+ * This file contains two implementations:
  * 
- * - **Complexity:**
- *   - Time Complexity: O(N log N) for balanced trees, O(N^2) in the worst case (skewed tree).
- *   - Space Complexity: O(H) recursion stack space.
+ * A. Standard Double DFS Approach (`pathSumIII`):
+ *   - **Strategy:** Run a helper DFS `countPathsFromNode` to find all downward 
+ *     paths starting from each node, and recurse on left/right children.
+ *   - **Complexity:**
+ *     - Time Complexity: O(N log N) on average for a balanced tree, O(N^2) in the worst case (skewed tree).
+ *     - Space Complexity: O(H) recursion stack space.
+ * 
+ * B. Optimal Prefix Sum + Backtracking Approach (`pathSumIII_efficient`):
+ *   - **Strategy:** Keep track of the running prefix sum `currSum` along the path.
+ *     We maintain a hash map of prefix sum frequencies encountered so far.
+ *     At each node, we look up `currSum - targetSum` in the map; if it exists, 
+ *     it means a sub-path sums to `targetSum`. Backtrack upon returning.
+ *   - **Complexity:**
+ *     - Time Complexity: O(N) since each node is visited exactly once, and map lookups are O(1).
+ *     - Space Complexity: O(N) to store the prefix sums in the hash map, plus O(H) for the recursion stack.
  */
 
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -158,6 +167,44 @@ public:
         traverseAndCount(root, targetSum);
         return cnt;
     }
+
+private:
+    unordered_map<long long, int> prefixSumMap;
+    int numPaths = 0;
+
+    void countPathsFromNodeEfficient(TreeNode* node, long long currSum, int targetSum) {
+        if (!node) return;
+
+        // Update running prefix sum for current path
+        currSum += node->val;
+
+        // Check if a complement prefix sum exists that forms targetSum
+        if (prefixSumMap.count(currSum - targetSum)) {
+            numPaths += prefixSumMap[currSum - targetSum];
+        }
+
+        prefixSumMap[currSum]++;
+
+        countPathsFromNodeEfficient(node->left, currSum, targetSum);
+        countPathsFromNodeEfficient(node->right, currSum, targetSum);
+
+        // Backtrack: remove current node's prefix sum before returning to parent
+        prefixSumMap[currSum]--;
+    }
+
+public:
+    // Path Sum III - Highly Efficient O(N) Version (Prefix Sum + Backtracking)
+    int pathSumIII_efficient(TreeNode* root, int targetSum) {
+        if (!root) return 0;
+        
+        // Reset state variables to ensure reentrancy across multiple test cases in main()
+        numPaths = 0;
+        prefixSumMap.clear();
+        
+        prefixSumMap[0] = 1;
+        countPathsFromNodeEfficient(root, 0, targetSum);
+        return numPaths;
+    }
 };
 
 // =========================================================================
@@ -210,6 +257,16 @@ void runTest(const string& label, TreeNode* root, int targetSum, bool expectedHa
     cout << "  Path Sum III (Count):   " << pathsIIIResult
          << " (Expected: " << expectedPathsIII << ") ";
     if (pathsIIIResult == expectedPathsIII) {
+        cout << "[PASS]" << endl;
+    } else {
+        cout << "[FAIL]" << endl;
+    }
+
+    // Test Path Sum III (Efficient)
+    int pathsIIIEfficientResult = sol.pathSumIII_efficient(root, targetSum);
+    cout << "  Path Sum III Efficient: " << pathsIIIEfficientResult
+         << " (Expected: " << expectedPathsIII << ") ";
+    if (pathsIIIEfficientResult == expectedPathsIII) {
         cout << "[PASS]" << endl;
     } else {
         cout << "[FAIL]" << endl;
