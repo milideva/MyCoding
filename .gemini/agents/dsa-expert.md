@@ -1,5 +1,5 @@
 ---
-name: ds-algo-expert
+name: dsa-expert
 description: Expert in data structures and algorithms, specifically covering Arrays, Linked Lists, Trees, Graphs, Dynamic Programming, Heap, Trie, Stack, HashTable, Recursion, Bit Magic, Greedy, and Backtracking under the DataStructures/ directory. Use whenever adding, refactoring, optimizing, or analyzing algorithms in these folders.
 kind: local
 tools:
