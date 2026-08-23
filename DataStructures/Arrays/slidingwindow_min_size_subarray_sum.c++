@@ -1,5 +1,7 @@
+// Compilation: g++ -std=c++26 -Wall DataStructures/Arrays/slidingwindow_min_size_subarray_sum.c++ -o /tmp/slidingwindow_min_size_subarray_sum_test && /tmp/slidingwindow_min_size_subarray_sum_test
+
 #include <vector>
-#include <iostream>
+#include <print>
 #include <algorithm>
 
 using namespace std;
@@ -19,20 +21,21 @@ using namespace std;
   Explanation: The subarray [4,3] has the minimal length.
 
   Algorithm: Sliding Window
-  1. Use two pointers, `l` (left) and `r` (right), representing the 
-     window boundaries.
-  2. Iterate through the array with the `r` pointer, adding 
-     `nums[r]` to the `currentSum`.
-  3. While `currentSum >= target`:
-     - Update `minLen = min(minLen, r - l + 1)`.
-     - Subtract `nums[l]` from `currentSum` and increment `l` to 
-       shrink the window.
-  4. Repeat until the end of the array.
+  1. Initialization: Start with two pointers, `l` (left) and `r` (right),
+     both initialized to index `0` at the start of the array. They represent 
+     the sliding window boundaries.
+  2. Window Expansion (r): Iterate through the array by moving `r` from `0` to `N-1`.
+     Add `nums[r]` to the running `currentSum` to expand the window's right boundary.
+  3. Window Shrinking (l): While `currentSum >= target` (constraint is satisfied):
+     - Record/Update the minimum length found so far: `minLen = min(minLen, r - l + 1)`.
+     - Shrink the window from the left by subtracting `nums[l]` from `currentSum`
+       and incrementing `l` (moves the left boundary rightward).
+  4. Repeat until `r` reaches the end of the array.
 
   Complexity Analysis:
   - Time Complexity: O(N)
-    Reason: Each element is visited at most twice (once by `r` and 
-    once by `l`).
+    Reason: Each element is visited at most twice (once when expanded by `r` and 
+    once when shrunk by `l`).
   - Space Complexity: O(1) auxiliary space.
 
   Alternative Approaches:
@@ -71,10 +74,10 @@ public:
 };
 
 void test(const string& label, vector<int> nums, int target, int expected) {
-    cout << "Testing: " << label << " (Target: " << target << ")" << endl;
+    println("Testing: {} (Target: {})", label, target);
     Solution sol;
     int result = sol.minSubArrayLen(target, nums);
-    cout << "  Result: " << result << " (Expected: " << expected << ")" << endl;
+    println("  Result: {} (Expected: {})", result, expected);
 }
 
 int main() {
