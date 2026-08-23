@@ -164,24 +164,55 @@ TreeNode* cloneTree(TreeNode* root) {
 }
 
 /**
- * APPLICATION 2 (In-order): Validating if a Binary Tree is a valid BST
+ * APPLICATION 2 (BST Validation): Proving if a Binary Tree is a valid BST
  * 
- * Why In-order?
- * An in-order traversal of a valid BST must visit nodes in strictly ascending 
- * order. We can validate this by tracking the range of valid values [minVal, maxVal]
- * recursively, or comparing each visited node to the previous one.
+ * We can validate a BST using two main tree traversal strategies:
+ * 
+ * 1. PRE-ORDER APPROACH (Top-Down Range Validation):
+ *    - Process root first: The current node's value must lie strictly within 
+ *      the bounds [minVal, maxVal] inherited from ancestors.
+ *    - Recurse left with upper bound root->val, and recurse right with lower bound root->val.
+ *    - Why Pre-order? We make bounds checking decisions on the parent node before recursing on children.
  */
-bool isValidBST(TreeNode* root, long long minVal = LLONG_MIN, long long maxVal = LLONG_MAX) {
+bool isValidBSTPreOrder(TreeNode* root, long long minVal = LLONG_MIN, long long maxVal = LLONG_MAX) {
     if (!root) return true;
 
-    // The current node's value must lie strictly within the bounds passed from ancestors
     if (root->val <= minVal || root->val >= maxVal) {
         return false;
     }
 
-    // Left child must be smaller than root->val, Right child must be larger than root->val
-    return isValidBST(root->left, minVal, root->val) && 
-           isValidBST(root->right, root->val, maxVal);
+    return isValidBSTPreOrder(root->left, minVal, root->val) && 
+           isValidBSTPreOrder(root->right, root->val, maxVal);
+}
+
+/**
+ * 2. IN-ORDER APPROACH (Left-to-Right Sorted Validation):
+ *    - Perform a standard in-order traversal (Left -> Root -> Right).
+ *    - Track the previously visited node. Every visited node's value must be 
+ *      strictly greater than the previous node's value.
+ *    - Why In-order? An in-order traversal of a valid BST must visit nodes 
+ *      in strictly ascending order.
+ */
+bool isValidBSTInOrder(TreeNode* root, TreeNode*& prev) {
+    if (!root) return true;
+
+    // Recurse left
+    if (!isValidBSTInOrder(root->left, prev)) return false;
+
+    // Process root
+    if (prev && root->val <= prev->val) {
+        return false;
+    }
+    prev = root;
+
+    // Recurse right
+    return isValidBSTInOrder(root->right, prev);
+}
+
+// Wrapper for BST validation (defaults to the true in-order approach)
+bool isValidBST(TreeNode* root) {
+    TreeNode* prev = nullptr;
+    return isValidBSTInOrder(root, prev);
 }
 
 /**
