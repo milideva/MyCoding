@@ -28,3 +28,6 @@ This is a private and external GitHub repository (`MyCoding`), **NOT** a google3
 - **No Google3 Toolchain:** Do not invoke Google3-specific commands or APIs (such as `g4`, `hg`, `jj`, `blaze`, `get_current_workspace`, `build_cleaner`, etc.).
 - **Standard Local Tooling Only:** For compilation, test runs, and static analysis, use standard, non-sandboxed local commands (e.g., `g++`, `gcc`, `make`, `python3`) directly inside this workspace directory.
 
+### Mandatory Coding & Documentation Standards:
+- **Mandatory Complexity Analysis:** Every newly created or modified algorithm file must explicitly include clear, detailed comments describing the algorithm's **Time Complexity** and **Space Complexity** (including best, average, and worst-case scenarios where applicable) in the file header or immediately above the relevant function. Add this complexity analysis every single time.
+
