@@ -21,7 +21,7 @@
  * - **Strategy:**
  *   - Base Case: If the node is null, return false (no path).
  *   - If the current node is a leaf (no left and right children) and its value 
- *     equals the remaining targetSum, we found a valid path $\rightarrow$ return true.
+ *     equals the remaining targetSum, we found a valid path -> return true.
  *   - Otherwise, recursively check the left and right subtrees with the 
  *     reduced targetSum: `targetSum - root->val`.
  * 
