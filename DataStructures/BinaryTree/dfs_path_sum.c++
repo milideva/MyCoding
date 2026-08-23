@@ -1,14 +1,15 @@
 /**
  * =========================================================================
- * PATH SUM I & II: ROOT-TO-LEAF DFS APPLICATIONS
+ * PATH SUM I, II & III: DFS APPLICATIONS ON BINARY TREES
  * =========================================================================
  * 
  * This file contains optimal implementations and test cases for:
  * 1. LeetCode 112: Path Sum (Boolean existence check)
  * 2. LeetCode 113: Path Sum II (Retrieving all matching paths)
+ * 3. LeetCode 437: Path Sum III (Counting downward paths)
  * 
- * Both problems use Depth-First Search (DFS) / Backtracking to traverse 
- * root-to-leaf paths and compare path sums against a target.
+ * These problems use Depth-First Search (DFS) to traverse paths and compare 
+ * path sums against a target.
  * 
  * -------------------------------------------------------------------------
  * 1. PATH SUM I (LeetCode 112)
@@ -50,11 +51,31 @@
  *     In the worst case (skewed tree), copying paths can take up to O(N) for 
  *     each matching path.
  *   - Space Complexity: O(H) recursion stack space and current path storage.
+ * 
+ * -------------------------------------------------------------------------
+ * 3. PATH SUM III (LeetCode 437)
+ * -------------------------------------------------------------------------
+ * - **Problem Description:**
+ *   Given the root of a binary tree and an integer targetSum, return the 
+ *   number of paths where the sum of the values along the path equals targetSum.
+ *   The path does not need to start or end at the root or a leaf, but it must 
+ *   go downwards (i.e., traveling only from parent nodes to child nodes).
+ * 
+ * - **Strategy (Double DFS):**
+ *   - For every node, run a helper DFS `countPathsFromNode` to count all downward 
+ *     paths starting from that node that sum to `targetSum`.
+ *   - Recurse on the left and right children with the same `targetSum` to 
+ *     consider them as starting points for other downward paths.
+ * 
+ * - **Complexity:**
+ *   - Time Complexity: O(N log N) for balanced trees, O(N^2) in the worst case (skewed tree).
+ *   - Space Complexity: O(H) recursion stack space.
  */
 
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -108,6 +129,38 @@ public:
         findPaths(root, targetSum, currentPath, result);
         return result;
     }
+
+private:
+    unordered_map <TreeNode *, int> top2NodeSum;
+    int cnt = 0;
+
+    void countPathsFromNode (TreeNode* node, long long currSum, int targetSum)  {
+        if (!node) return;
+
+        currSum += node->val;
+        //top2NodeSum[node] = currSum;
+
+        if (currSum == targetSum) {
+            cnt++;
+        }
+        countPathsFromNode(node->left, currSum, targetSum);
+        countPathsFromNode(node->right, currSum, targetSum);
+    }
+
+    void traverseAndCount(TreeNode* node, int targetSum) {
+        if (!node) return;
+        countPathsFromNode(node, 0, targetSum);
+        traverseAndCount(node->left, targetSum);
+        traverseAndCount(node->right, targetSum);
+    }
+
+public:
+    // Path Sum III (Downward paths count, does not need to start at root/end at leaf)
+    int pathSumIII(TreeNode* root, int targetSum) {
+        cnt = 0; // Reset count for each test case run to be reentrant
+        traverseAndCount(root, targetSum);
+        return cnt;
+    }
 };
 
 // =========================================================================
@@ -131,7 +184,7 @@ void printPaths(const vector<vector<int>>& paths) {
     cout << "}";
 }
 
-void runTest(const string& label, TreeNode* root, int targetSum, bool expectedHasPath, const vector<vector<int>>& expectedPaths) {
+void runTest(const string& label, TreeNode* root, int targetSum, bool expectedHasPath, const vector<vector<int>>& expectedPaths, int expectedPathsIII) {
     cout << "Testing: " << label << " (Target Sum = " << targetSum << ")" << endl;
     Solution sol;
     
@@ -154,12 +207,22 @@ void runTest(const string& label, TreeNode* root, int targetSum, bool expectedHa
     } else {
         cout << "[FAIL]" << endl;
     }
+
+    // Test Path Sum III
+    int pathsIIIResult = sol.pathSumIII(root, targetSum);
+    cout << "  Path Sum III (Count):   " << pathsIIIResult
+         << " (Expected: " << expectedPathsIII << ") ";
+    if (pathsIIIResult == expectedPathsIII) {
+        cout << "[PASS]" << endl;
+    } else {
+        cout << "[FAIL]" << endl;
+    }
     cout << endl;
 }
 
 int main() {
     cout << "=========================================================" << endl;
-    cout << "             RUNNING PATH SUM I & II TESTS               " << endl;
+    cout << "           RUNNING PATH SUM I, II & III TESTS            " << endl;
     cout << "=========================================================" << endl;
 
     /*
@@ -186,19 +249,19 @@ int main() {
     root->right->right->right = new TreeNode(1);
 
     // Test 1: Target sum 22 should exist (paths [5, 4, 11, 2] and [5, 8, 4, 5])
-    runTest("Example Tree - Target 22", root, 22, true, {{5, 4, 11, 2}, {5, 8, 4, 5}});
+    runTest("Example Tree - Target 22", root, 22, true, {{5, 4, 11, 2}, {5, 8, 4, 5}}, 3);
 
     // Test 2: Target sum 26 should exist (path [5, 8, 13])
-    runTest("Example Tree - Target 26", root, 26, true, {{5, 8, 13}});
+    runTest("Example Tree - Target 26", root, 26, true, {{5, 8, 13}}, 1);
 
     // Test 3: Target sum 18 should exist (path [5, 8, 5] is not leaf, [5, 8, 4, 1] is leaf sum 18)
-    runTest("Example Tree - Target 18", root, 18, true, {{5, 8, 4, 1}});
+    runTest("Example Tree - Target 18", root, 18, true, {{5, 8, 4, 1}}, 2);
 
     // Test 4: Target sum 5 should not exist (5 is not a leaf node)
-    runTest("Example Tree - Target 5", root, 5, false, {});
+    runTest("Example Tree - Target 5", root, 5, false, {}, 3);
 
     // Test 5: Empty Tree
-    runTest("Empty Tree - Target 0", nullptr, 0, false, {});
+    runTest("Empty Tree - Target 0", nullptr, 0, false, {}, 0);
 
     // Clean up memory
     // Since we're doing local verification we'll do manual deletion
