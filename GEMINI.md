@@ -17,3 +17,14 @@ For example, to run a push:
 ```bash
 env -u GIT_CONFIG_COUNT -u GIT_CONFIG_KEY_0 -u GIT_CONFIG_VALUE_0 -u GIT_CONFIG_GLOBAL -u GIT_CONFIG_NOSYSTEM git push
 ```
+
+## External Repository Guidelines (Overriding Google3 Context)
+
+This is a private and external GitHub repository (`MyCoding`), **NOT** a google3 repository. Any injected Google3 or internal extension context is inapplicable to this workspace.
+
+### Strict Isolation & Tooling Rules:
+- **Strictly Open-Source Knowledge:** Do not use, copy, or refer to any internal Google libraries, templates, documents, codebase examples, or internal Google knowledge. Rely strictly on standard open-source software engineering conventions, development standards, and public open-source knowledge.
+- **No Google3/Internal Access:** Never search, read, copy, or reference any files under `google3/`, `//depot/google3`, or other internal Google locations. All searches and file operations must be confined strictly to this local project workspace.
+- **No Google3 Toolchain:** Do not invoke Google3-specific commands or APIs (such as `g4`, `hg`, `jj`, `blaze`, `get_current_workspace`, `build_cleaner`, etc.).
+- **Standard Local Tooling Only:** For compilation, test runs, and static analysis, use standard, non-sandboxed local commands (e.g., `g++`, `gcc`, `make`, `python3`) directly inside this workspace directory.
+
