@@ -25,6 +25,9 @@ using namespace std;
   3. For each incoming value in the stream:
      - Push the value into the min-heap.
      - If the heap size exceeds `k`, pop the smallest element.
+     - *Optimization Note:* If the heap is already full (size is k), we could optimize 
+       and skip pushing elements entirely if the incoming value is <= minHeap.top(). 
+       This avoids redundant O(log K) heap operations.
   4. This ensures that the heap always contains the `k` largest values 
      seen so far, and `heap.top()` is exactly the `k`-th largest.
 
@@ -53,6 +56,12 @@ public:
         }
     }
     
+    // Adds a new value to the stream and returns the kth largest.
+    // Optimization Note: To keep the code extremely simple and highly readable,
+    // we push every element and pop if needed. In a production environment, we could
+    // optimize this to O(1) time when val <= minHeap.top() by checking:
+    //   if (minHeap.size() < k) { minHeap.push(val); }
+    //   else if (val > minHeap.top()) { minHeap.pop(); minHeap.push(val); }
     int add(int val) {
         minHeap.push(val);
         if (minHeap.size() > k) {
