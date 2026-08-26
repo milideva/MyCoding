@@ -54,13 +54,27 @@ struct ListNode {
     ListNode() : val(0), next(nullptr) {}
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
+
+    // Overload > to compare values directly
+    bool operator>(const ListNode& other) const {
+        return val > other.val;
+    }
 };
+
+// Specializing std::greater for ListNode* to use our overloaded operator>
+namespace std {
+template <>
+struct greater<ListNode*> {
+    bool operator()(const ListNode* a, const ListNode* b) const {
+        return *a > *b;
+    }
+};
+}
 
 class Solution {
 public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        auto compare = [](ListNode* a, ListNode* b) { return a->val > b->val; };
-        priority_queue<ListNode*, vector<ListNode*>, decltype(compare)> minHeap(compare);
+        priority_queue<ListNode*, vector<ListNode*>, greater<ListNode*>> minHeap;
 
         for (auto node : lists) {
             if (node) minHeap.push(node);
