@@ -8,8 +8,15 @@
  * - For each level, check if both target nodes exist.
  * - Also check if they share the same parent.
  * 
- * Time Complexity: O(N)
- * Space Complexity: O(W)
+ * Complexity Analysis:
+ * - Time Complexity:
+ *   - Best Case: O(N) where N is the number of nodes in the tree.
+ *   - Average Case: O(N).
+ *   - Worst Case: O(N).
+ *   Reason: In the worst case we must traverse all nodes in the tree level-by-level.
+ * - Space Complexity:
+ *   - Worst Case: O(W) queue space, where W is the maximum width of the tree 
+ *     at any level (which can be up to N/2 for a full binary tree).
  */
 
 #include <iostream>
@@ -30,7 +37,7 @@ struct TreeNode {
 bool isCousins(TreeNode* root, int x, int y) {
     if (!root) return false;
 
-    queue<pair<TreeNode*, TreeNode*>> q; // {node, parent}
+    queue <pair <TreeNode*, TreeNode*> > q; // {node, parent}
     q.push({root, nullptr});
 
     while (!q.empty()) {
