@@ -61,20 +61,16 @@ struct ListNode {
     }
 };
 
-// Specializing std::greater for ListNode* to use our overloaded operator>
-namespace std {
-template <>
-struct greater<ListNode*> {
+struct CompareNode {
     bool operator()(const ListNode* a, const ListNode* b) const {
-        return *a > *b;
+        return a->val > b->val;
     }
 };
-}
 
 class Solution {
 public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        priority_queue<ListNode*, vector<ListNode*>, greater<ListNode*>> minHeap;
+        priority_queue<ListNode*, vector<ListNode*>, CompareNode> minHeap;
 
         for (auto node : lists) {
             if (node) minHeap.push(node);
