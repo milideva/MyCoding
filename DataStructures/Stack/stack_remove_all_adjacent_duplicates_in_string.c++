@@ -18,7 +18,7 @@ using namespace std;
   Output: "ca"
   Explanation: "abbaca" -> "aaca" -> "ca"
 
-  Algorithm: Using std::stack<char>
+  Algorithm 1: Using std::stack<char> (Version 1)
   1. Use a standard `std::stack<char> stk` to keep track of processed characters.
   2. For each character `c` in the input string `s`:
      - If `stk` is not empty and the top of `stk` is equal to `c`:
@@ -28,17 +28,27 @@ using namespace std;
   3. Reconstruct the result string by popping elements from `stk` and then 
      reversing the final string to restore the original chronological order.
 
-  Complexity Analysis:
+  Algorithm 2: Using std::string directly as a Stack (Version 2 - Optimized)
+  1. Use a string `res` to simulate a stack directly.
+  2. For each character `c` in the input string `s`:
+     - If `res` is not empty and the last character of `res` is equal to `c`:
+       - Pop the last character from `res`.
+     - Else:
+       - Push `c` onto `res`.
+  3. This completely avoids extra stack memory overhead and string reversal.
+
+  Complexity Analysis (For Both):
   - Time Complexity:
     - Best, Average, Worst Case: O(N)
-    Reason: We iterate through the input string once (pushing/popping at most 
-    once), and then reverse the reconstructed string of length at most N.
+    Reason: We iterate through the input string once, performing constant-time O(1) 
+    stack operations at each step.
   - Space Complexity:
     - O(N) to store the characters inside the stack and the output string.
 */
 
 class Solution {
 public:
+    // Version 1: Using std::stack<char>
     string removeDuplicates(string s) {
         stack<char> stk;
         for (char c : s) {
@@ -57,14 +67,34 @@ public:
         reverse(res.begin(), res.end());
         return res;
     }
+
+    // Version 2: Using std::string directly as a stack (Optimized)
+    string removeDuplicates_2(string s) {
+        string res = "";
+        for (char c : s) {
+            if (!res.empty() && res.back() == c) {
+                res.pop_back();
+            } else {
+                res.push_back(c);
+            }
+        }
+        return res;
+    }
 };
 
 void test(string s, string expected) {
     Solution sol;
-    string result = sol.removeDuplicates(s);
-    cout << "Input: \"" << s << "\" -> Output: \"" << result << "\"";
-    if (result == expected) cout << " [PASS]";
-    else cout << " [FAIL] Expected: \"" << expected << "\"";
+    string result1 = sol.removeDuplicates(s);
+    string result2 = sol.removeDuplicates_2(s);
+    
+    cout << "Input: \"" << s << "\"" << endl;
+    cout << "  Version 1 (std::stack):   \"" << result1 << "\"";
+    if (result1 == expected) cout << " [PASS]" << endl;
+    else cout << " [FAIL] Expected: \"" << expected << "\"" << endl;
+
+    cout << "  Version 2 (std::string):  \"" << result2 << "\"";
+    if (result2 == expected) cout << " [PASS]" << endl;
+    else cout << " [FAIL] Expected: \"" << expected << "\"" << endl;
     cout << endl;
 }
 
