@@ -98,11 +98,11 @@ typedef struct {
 } BloomFilter;
 
 BloomFilter* bloomAlloc(size_t numBits, int numHashFuncs, hash_func_t funcs[]) {
-    BloomFilter* bf = (BloomFilter*)malloc(sizeof(BloomFilter));
+    BloomFilter* bf = malloc(sizeof(BloomFilter));
     bf->numBits = numBits;
-    bf->bits = (uint8_t*)calloc((numBits + 7) / 8, sizeof(uint8_t));
+    bf->bits = calloc((numBits + 7) / 8, sizeof(uint8_t));
     bf->numHashFuncs = numHashFuncs;
-    bf->hashFuncs = (hash_func_t*)malloc(numHashFuncs * sizeof(hash_func_t));
+    bf->hashFuncs = malloc(numHashFuncs * sizeof(hash_func_t));
     memcpy(bf->hashFuncs, funcs, numHashFuncs * sizeof(hash_func_t));
     return bf;
 }
