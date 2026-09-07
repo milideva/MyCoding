@@ -34,19 +34,15 @@ struct TreeNode {
 };
 
 class Solution {
+public:
     // Running time O(N), where N is the number of nodes in the tree.
     // Space complexity O(H), where H is the height of the tree.
-    bool isValidBST(TreeNode* root, long long minVal, long long maxVal) {
+    bool isValidBST(TreeNode* root, long long minVal = LLONG_MIN, long long maxVal = LLONG_MAX) {
         if (!root) return true;
         // Note that we use strict inequalities (<= and >=) to ensure that duplicates are not allowed in the BST.
         if (root->val <= minVal || root->val >= maxVal) return false;
         return isValidBST(root->left, minVal, root->val) &&
                isValidBST(root->right, root->val, maxVal);
-    }
-
-public:
-    bool isValidBST(TreeNode* root) {
-        return isValidBST(root, LLONG_MIN, LLONG_MAX);
     }
 
     void destroy(TreeNode* root) {
