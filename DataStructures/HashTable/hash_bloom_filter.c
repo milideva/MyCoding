@@ -25,10 +25,67 @@
        definitely NOT in the set.
      - If ALL bits are 1, the element MIGHT be in the set.
 
+  -------------------------------------------------------------------------
+  PRACTICAL SIZING FOR IPV4 ADDRESS BLOOM FILTERS:
+  -------------------------------------------------------------------------
+  To design an IPv4 Bloom filter in practice, the bit array size (m) and 
+  the number of hash functions (k) are mathematically calculated using:
+  - n: Expected number of unique elements (IPs) to insert.
+  - p: Acceptable false-positive error rate (e.g., 1% or 0.1%).
+
+  Sizing Formulas:
+  - m = - (n * ln(p)) / (ln(2)^2) ≈ -2.08 * n * ln(p) (Required bits)
+  - k = (m / n) * ln(2) ≈ 0.7 * (m / n)               (Optimal hash functions)
+
+  Sizing Table for IPv4 Address Databases:
+  +-----------------------+-----------------------+---------------------+-------------------+----------------------------+
+  | Expected Unique IPs(n)| False-Positive Rate(p)| Required Bits (m)   | Required Memory   | Optimal Hash Functions (k) |
+  +-----------------------+-----------------------+---------------------+-------------------+----------------------------+
+  | 10,000                | 1% (0.01)             | 95,850 bits         | 1.17 KB           | 7                          |
+  | 10,000                | 0.1% (0.001)          | 143,776 bits        | 1.75 KB           | 10                         |
+  | 100,000               | 1% (0.01)             | 958,505 bits        | 117 KB            | 7                          |
+  | 100,000               | 0.1% (0.001)          | 1,437,760 bits      | 175.5 KB          | 10                         |
+  | 1,000,000             | 1% (0.01)             | 9,585,058 bits      | 1.14 MB           | 7                          |
+  | 1,000,000             | 0.1% (0.001)          | 14,377,604 bits     | 1.71 MB           | 10                         |
+  +-----------------------+-----------------------+---------------------+-------------------+----------------------------+
+
+  Key Sizing Takeaways:
+  - In practice, we need roughly 9.6 bits per element for a 1% false positive rate 
+    and 14.4 bits per element for a 0.1% false positive rate.
+  - Filtering 1 Million IPs with a highly accurate 0.1% error rate requires only 
+    1.71 MB of RAM, which easily fits inside a CPU's L2/L3 cache!
+
+  -------------------------------------------------------------------------
+  PRACTICAL IPV4 DESIGN OPTIMIZATIONS:
+  -------------------------------------------------------------------------
+  1. Store IPs as uint32_t (Not Strings):
+     - Comparing/hashing IP strings (e.g., "192.168.1.1") is slow and takes up 
+       to 15 bytes.
+     - Converting IPs to standard 32-bit integers (e.g., 192.168.1.1 is 0xC0A80101) 
+       using inet_pton() allows hashing extremely fast 4-byte primitives.
+
+  2. Fast Double Hashing (Kirsch-Mitzenmacher Optimization):
+     - Computing k independent cryptographic hashes is highly CPU-intensive.
+     - We can instead generate any number of virtual hash values using only 
+       TWO base hash functions (hash1 and hash2) via the linear combination:
+       hash_i(x) = (hash1(x) + i * hash2(x)) % m
+     - This evaluates 'k' hashes in O(1) time using simple additions.
+
+  3. Use MurmurHash3:
+     - Basic string hashes (like djb2/sdbm) have higher collision rates on 
+       structured binary data like uint32_t IP integers.
+     - MurmurHash3 (32-bit) is the industry standard for Bloom filters as it 
+       is extremely fast and distributes bits with near-cryptographic uniformity.
+
+  -------------------------------------------------------------------------
   Complexity Analysis:
-  - Add: O(k) where k is the number of hash functions.
-  - Query: O(k).
-  - Space Complexity: O(m) bits.
+  -------------------------------------------------------------------------
+  - Time Complexity:
+    - Add: O(k) where k is the number of hash functions.
+    - Query: O(k).
+    Reason: We compute k hash positions and read/write the bit positions in O(1) time.
+  - Space Complexity:
+    - O(m) bits to store the filter (where m is the size of the bit array).
 */
 
 typedef uint32_t (*hash_func_t)(const char*);
