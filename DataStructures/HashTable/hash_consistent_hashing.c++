@@ -84,3 +84,29 @@ int main() {
     test();
     return 0;
 }
+
+/*
+  -------------------------------------------------------------------------
+  OBSERVED PROBLEM: Hotspotting & Unbalanced Distribution
+  -------------------------------------------------------------------------
+  When running this code, we observe the following execution output:
+
+  Testing Consistent Hashing
+    Key "user1" -> NodeC
+    Key "user2" -> NodeA
+    Key "user3" -> NodeA
+    Key "data_point_1" -> NodeA
+
+  Removing NodeB...
+    Key "user1" -> NodeC
+    Key "user2" -> NodeA
+    Key "user3" -> NodeA
+    Key "data_point_1" -> NodeA
+
+  Notice that NodeB received exactly 0 keys. This is because with only 3 nodes 
+  mapped onto the ring once (1 hash per physical node), the ring partitions 
+  are highly unequal, leading to severe hotspotting and poor load balance.
+  
+  This limitation is solved in `hash_consistent_hashing_2.c++` by introducing 
+  Virtual Nodes (Vnodes).
+*/
