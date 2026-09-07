@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <stack>
 #include <algorithm>
 
 using namespace std;
@@ -17,34 +18,43 @@ using namespace std;
   Output: "ca"
   Explanation: "abbaca" -> "aaca" -> "ca"
 
-  Algorithm: String as a Stack
-  1. Use a string `res` to simulate a stack.
+  Algorithm: Using std::stack<char>
+  1. Use a standard `std::stack<char> stk` to keep track of processed characters.
   2. For each character `c` in the input string `s`:
-     - If `res` is not empty and the last character of `res` is 
-       equal to `c`:
-       - Pop the last character from `res`.
+     - If `stk` is not empty and the top of `stk` is equal to `c`:
+       - Pop the matching character from `stk`.
      - Else:
-       - Push `c` onto `res`.
-  3. Return `res`.
+       - Push `c` onto `stk`.
+  3. Reconstruct the result string by popping elements from `stk` and then 
+     reversing the final string to restore the original chronological order.
 
   Complexity Analysis:
-  - Time Complexity: O(N)
-    Reason: We iterate through the string once. Each character is 
-    added and removed from the "stack" at most once.
-  - Space Complexity: O(N) for the result string.
+  - Time Complexity:
+    - Best, Average, Worst Case: O(N)
+    Reason: We iterate through the input string once (pushing/popping at most 
+    once), and then reverse the reconstructed string of length at most N.
+  - Space Complexity:
+    - O(N) to store the characters inside the stack and the output string.
 */
 
 class Solution {
 public:
     string removeDuplicates(string s) {
-        string res = "";
+        stack<char> stk;
         for (char c : s) {
-            if (!res.empty() && res.back() == c) {
-                res.pop_back();
+            if (!stk.empty() && stk.top() == c) {
+                stk.pop();
             } else {
-                res.push_back(c);
+                stk.push(c);
             }
         }
+
+        string res = "";
+        while (!stk.empty()) {
+            res.push_back(stk.top());
+            stk.pop();
+        }
+        reverse(res.begin(), res.end());
         return res;
     }
 };
