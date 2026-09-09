@@ -11,3 +11,4 @@ This directory contains resources and notes for designing scalable and reliable 
 
 ## 🛠️ Implementations
 - **[Timer Implementation](./timer.c)**: A basic C implementation of a timer mechanism.
+- **[Rate Limiter Implementation](./rate_limiter.c++)**: A thread-safe Sliding Window Log Rate Limiter implemented in C++.
