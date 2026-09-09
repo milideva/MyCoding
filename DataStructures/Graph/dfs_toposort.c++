@@ -3,6 +3,39 @@
  * @brief Topological Sort and Cycle Detection implementation using Depth-First Search (DFS) on Directed Graphs.
  *
  * ============================================================================
+ * Key Terminology & Course Prerequisites Mapping:
+ * ============================================================================
+ * - V: The total number of vertices (nodes) in the graph. The vertices are
+ *      assumed to be 0-indexed integers from 0 to V-1.
+ * - adj: The Adjacency List of the graph, represented as a vector of vectors:
+ *        `adj[u]` contains all neighbor vertices `v` such that there exists
+ *        a directed edge from `u` to `v` (u -> v).
+ *
+ * - Real-World Interpretation (Course Prerequisites Example):
+ *   Let's map V = 4 to a computer science curriculum:
+ *     - Course 0: Intro to Programming (Prerequisite for Data Structures & Architecture)
+ *     - Course 1: Data Structures (Prerequisite for Operating Systems)
+ *     - Course 2: Computer Architecture (Prerequisite for Operating Systems)
+ *     - Course 3: Operating Systems (Requires both Data Structures & Architecture)
+ *
+ *   This forms the following Directed Acyclic Graph (DAG):
+ *
+ *          [0: Intro to Prog]
+ *              /          \
+ *             v            v
+ *      [1: Data Struct]   [2: Comp Arch]
+ *             \            /
+ *              v          v
+ *          [3: Operating Systems]
+ *
+ *   We represent this dependency using directed edges where (u -> v) means 
+ *   "u must be taken before v" (u is a prerequisite for v):
+ *     - adj[0] = {1, 2}  (Intro to Programming is a prerequisite for Data Struct & Comp Arch)
+ *     - adj[1] = {3}     (Data Structures is a prerequisite for Operating Systems)
+ *     - adj[2] = {3}     (Computer Architecture is a prerequisite for Operating Systems)
+ *     - adj[3] = {}      (Operating Systems has no courses depending on it)
+ *
+ * ============================================================================
  * Complexity Analysis:
  * ============================================================================
  * Time Complexity (All Methods):
@@ -141,6 +174,10 @@ public:
      *     Utilizes boolean visited array (O(V)), linear stack (O(V)), output 
      *     vector (O(V)), and recursion stack (O(V)).
      * ============================================================================
+     * 
+     * @param V The total number of vertices (nodes) in the graph, numbered from 0 to V-1.
+     * @param adj The Adjacency List representing the graph, where adj[u] contains all neighbor
+     *            vertices v such that there is a directed edge from u to v (u -> v).
      */
     vector<int> topoSort(int V, const vector<vector<int>>& adj) {
         vector<bool> visited(V, false);
@@ -179,6 +216,10 @@ public:
      *     Uses visited array (O(V)), recStack recursion-state tracker (O(V)), 
      *     and recursion stack (O(V)).
      * ============================================================================
+     * 
+     * @param V The total number of vertices (nodes) in the graph, numbered from 0 to V-1.
+     * @param adj The Adjacency List representing the graph, where adj[u] contains all neighbor
+     *            vertices v such that there is a directed edge from u to v (u -> v).
      */
     bool isCyclic(int V, const vector<vector<int>>& adj) {
         vector<bool> visited(V, false);
@@ -211,6 +252,9 @@ public:
      *     and recursion stack (O(V)).
      * ============================================================================
      * 
+     * @param V The total number of vertices (nodes) in the graph, numbered from 0 to V-1.
+     * @param adj The Adjacency List representing the graph, where adj[u] contains all neighbor
+     *            vertices v such that there is a directed edge from u to v (u -> v).
      * @return vector<int> The topological ordering of the vertices, or an empty vector
      *                     if a cycle is detected (which means no valid sort exists).
      */
@@ -244,7 +288,10 @@ int main() {
     int V_dag = 4;
     vector<vector<int>> adj_dag(V_dag);
     
-    // Graph representation: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3
+    // Graph representation: 
+    // 0 (Intro to Prog) is prerequisite for 1 (Data Struct) and 2 (Comp Arch)
+    // 1 (Data Struct) is prerequisite for 3 (Operating Systems)
+    // 2 (Comp Arch) is prerequisite for 3 (Operating Systems)
     adj_dag[0].push_back(1);
     adj_dag[0].push_back(2);
     adj_dag[1].push_back(3);
@@ -270,7 +317,8 @@ int main() {
     int V_cycle = 4;
     vector<vector<int>> adj_cycle(V_cycle);
 
-    // Graph representation with a cycle: 0 -> 1, 1 -> 2, 2 -> 3, 3 -> 1
+    // Graph representation with a cycle: 
+    // 0 -> 1, 1 -> 2, 2 -> 3, 3 -> 1 (Prerequisite loop: 1 -> 2 -> 3 -> 1)
     adj_cycle[0].push_back(1);
     adj_cycle[1].push_back(2);
     adj_cycle[2].push_back(3);
