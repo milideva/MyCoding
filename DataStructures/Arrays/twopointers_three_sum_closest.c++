@@ -44,7 +44,9 @@ public:
     int threeSumClosest(vector<int>& nums, int target) {
         int n = nums.size();
         sort(nums.begin(), nums.end());
-        long closestSum = 1e9; // Large enough to not overflow on subtraction
+        
+        // Initialize with the first valid triplet sum to avoid magic numbers and overflow
+        int closestSum = nums[0] + nums[1] + nums[2];
 
         for (int i = 0; i < n - 2; ++i) {
             int l = i + 1;
@@ -53,7 +55,7 @@ public:
                 int sum = nums[i] + nums[l] + nums[r];
                 if (sum == target) return sum;
 
-                if (abs(1L * target - sum) < abs(1L * target - closestSum)) {
+                if (abs(target - sum) < abs(target - closestSum)) {
                     closestSum = sum;
                 }
 
@@ -64,7 +66,7 @@ public:
                 }
             }
         }
-        return (int)closestSum;
+        return closestSum;
     }
 };
 
