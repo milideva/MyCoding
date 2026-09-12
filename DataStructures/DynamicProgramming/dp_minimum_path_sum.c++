@@ -79,12 +79,33 @@ public:
     2. dfs(grid, 1, 2, ...) [Right to (1,2)]
 
   As the grid dimensions (M, N) increase, this duplication scales exponentially.
-  The total number of paths to explore is:
+  The total number of paths to explore is given by the combination formula:
       Total Paths = C(M + N - 2, M - 1)
   
-  For a standard LeetCode grid of 200 x 200, this is C(398, 199) ≈ 2 * 10^118 operations.
-  This exceeds LeetCode's typical 10^8 operations (2-second limit), running into a 
-  Time Limit Exceeded (TLE) error.
+  What does C(n, k) mean?
+  - 'C' stands for Combination (pronounced "n choose k"), which represents the number of ways 
+    to choose k items from a set of n distinct items where the order of selection does not matter.
+  - Formula: C(n, k) = n! / (k! * (n - k)!)
+
+  Why does this formula represent the number of grid paths?
+  - To reach the bottom-right cell (M-1, N-1) from the top-left (0,0), any valid path must make:
+    * Exactly (M - 1) steps Down
+    * Exactly (N - 1) steps Right
+  - Therefore, every single valid path has a total length of exactly:
+    Total Steps = (M - 1) + (N - 1) = M + N - 2 steps.
+  - A unique path is fully defined by choosing which of these (M + N - 2) total steps are the 
+    Down steps. Once you choose those (M - 1) slots, the remaining slots are forced to be Right steps.
+  - Thus, the number of unique paths is exactly: C(M + N - 2, M - 1)
+
+  Walkthrough Example on a 3x3 Grid:
+  - Total Steps = 3 + 3 - 2 = 4 steps.
+  - We must choose exactly 2 of those steps to be Down steps.
+  - Total Paths = C(4, 2) = 4! / (2! * 2!) = 24 / 4 = 6 unique paths.
+
+  For a standard LeetCode grid of 200 x 200:
+  - Total Paths = C(398, 199) ≈ 2 * 10^118 operations.
+  - This far exceeds LeetCode's typical 10^8 operations limit (2-second execution limit), 
+    resulting in a Time Limit Exceeded (TLE) error.
 
   Complexity Analysis:
   - Time Complexity: O(2^(M + N)) worst-case. More precisely, O(C(M + N - 2, M - 1)) as it explores every path.
