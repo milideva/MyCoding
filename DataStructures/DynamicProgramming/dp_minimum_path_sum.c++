@@ -22,7 +22,47 @@ using namespace std;
 
   Complexity Analysis:
   - Time Complexity: O(M * N)
-  - Space Complexity: O(N) or O(M * N).
+  - Space Complexity: O(N) (Optimized from O(M * N) 2-D DP)
+
+  Space Optimization Explanation (Why 1-D DP instead of 2-D DP?):
+  -------------------------------------------------------------
+  In a standard 2-D DP, the state recurrence is:
+      dp[i][j] = grid[i][j] + min(dp[i - 1][j], dp[i][j - 1])
+
+  To compute dp[i][j], we only need:
+    1. dp[i - 1][j] (the cell directly ABOVE, in the previous row)
+    2. dp[i][j - 1] (the cell directly to the LEFT, in the current row)
+  We never access rows before i - 1. Thus, keeping all previous rows in memory is redundant.
+
+  How 1-D DP reuses memory via in-place overwrites:
+  - We allocate a single 1-D array `dp` of size N (columns) initialized for row 0.
+  - As we iterate through rows (i = 1 to M - 1) and columns (j = 1 to N - 1) left-to-right:
+    We compute:
+        dp[j] = grid[i][j] + min(dp[j], dp[j - 1])
+
+    Before we overwrite `dp[j]` with this new value:
+    1. `dp[j]` still holds the value from the previous row `i - 1` at column `j` (the cell directly ABOVE).
+    2. `dp[j - 1]` has already been updated for the current row `i` at column `j - 1` (the cell directly to the LEFT).
+    
+    Therefore:
+    - `dp[j]` behaves exactly as `dp[i-1][j]`
+    - `dp[j-1]` behaves exactly as `dp[i][j-1]`
+
+  Memory Layout During Iteration:
+  - Suppose we are currently updating column `j` on row `i`.
+  - The elements to the left of `j` are already updated to the current row `i`'s values.
+  - The element at `j` and to its right still contain row `i - 1`'s values:
+
+      col 0       col 1      ...    col j-1     col j      col j+1
+    +-----------+-----------+--------+-----------+-----------+-----------+
+dp: |  current  |  current  |  ...   |   LEFT    |   ABOVE   |   ABOVE   |
+    +-----------+-----------+--------+-----------+-----------+-----------+
+                                           ^           ^
+                                           |           |
+                                        dp[j-1]      dp[j]
+
+  - We compute `grid[i][j] + min(dp[j], dp[j-1])` and overwrite `dp[j]` with the new `current` value.
+  - This reduces the auxiliary space complexity from O(M * N) to O(N).
 */
 
 class Solution {
