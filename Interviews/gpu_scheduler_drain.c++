@@ -40,9 +40,9 @@ using namespace std;
   ==============================================================================
   Mathematical Connection to the Bin Packing Problem
   ==============================================================================
-  The `can_drain_node` function is a direct variation of the classic **Bin Packing 
-  Problem** (specifically, the decision version of Bin Packing with unequal, 
-  fixed bin capacities), which is a famous **NP-hard** problem.
+  The `can_drain_node` function is a direct variation of the classic Bin Packing 
+  Problem (specifically, the decision version of Bin Packing with unequal, 
+  fixed bin capacities), which is a famous NP-hard problem.
 
   Mapping:
   - Bins -----------------> Candidate remaining nodes (each with a fixed remaining 
@@ -58,7 +58,7 @@ using namespace std;
   
   To optimize this, we sort the evicted pods in DESCENDING order of GPU requirements 
   before running our backtracking search. In bin-packing theory, this is the 
-  **First-Fit Decreasing (FFD)** heuristic.
+  First-Fit Decreasing (FFD) heuristic.
   - Why it works: Large pods are much harder to place than small pods. If a large 
     pod cannot fit into any node, we fail and backtrack immediately. This "fail-fast" 
     behavior prunes massive sections of the recursion tree early, preventing 
