@@ -27,18 +27,54 @@ using namespace std;
 
   Complexity Analysis:
   - Time Complexity: O(4^N / sqrt(N))
-    Reason: The total number of valid parentheses combinations is given by the N-th Catalan Number:
-    C_N = (1 / (N + 1)) * (2N choose N).
-    Using Stirling's approximation, the asymptotic behavior of the Catalan number is:
-    C_N ≈ 4^N / (N * sqrt(pi * N)) = Θ(4^N / N^(3/2))
-    Since each path takes O(N) operations to build and append to results, the total time complexity is:
-    Time = O(N * C_N) = O(N * (4^N / N^(3/2))) = O(4^N / sqrt(N))
-    This makes the analysis in the comments absolutely correct!
+  - Space Complexity: O(N)
 
+  What are "Catalan Numbers" and why are they relevant here?
+  ---------------------------------------------------------
+  1. What is the question we are asking?
+     To find the running time of an algorithm that generates all valid combinations, we must 
+     know: "How many valid configurations are we printing for N pairs of parentheses?"
+     Let's manually count the output size for different N:
+     - N = 1 pair:  1 valid string:  ()
+     - N = 2 pairs: 2 valid strings: (()), ()()
+     - N = 3 pairs: 5 valid strings: ((())), (()()), (())(), ()(()), ()()()
+     - N = 4 pairs: 14 valid strings.
+     - N = 5 pairs: 42 valid strings.
+     This sequence of counts is: 1, 2, 5, 14, 42, 132, 429, ...
+
+  2. The Catalan Sequence:
+     In mathematics, this exact sequence is called the "Catalan Numbers" (denoted as C_N). 
+     By definition, the N-th Catalan Number is the exact number of valid parentheses sequences 
+     you can form with N pairs of brackets.
+
+  3. How does this define our Time Complexity?
+     Since our backtracking algorithm generates every single valid combination, the number of 
+     leaf nodes in our recursion tree is exactly C_N.
+     For each of these C_N combinations, we spend O(N) work to build/append the string.
+     Therefore: Total Time = O(N * C_N).
+
+  4. Where does the "4" in O(4^N / sqrt(N)) come from?
+     Mathematically, the Catalan numbers can be calculated using the combination formula:
+         C_N = (1 / (N + 1)) * (2N choose N)
+
+     The central binomial coefficient (2N choose N) represents the single largest element in 
+     row 2N of Pascal's Triangle. Summing all elements in row 2N of Pascal's Triangle gives:
+         Sum = 2^(2N) = (2^2)^N = 4^N
+     Since (2N choose N) is the dominant term, it is bounded by this total sum 4^N.
+
+     Using Stirling's Approximation (n! ≈ sqrt(2 * pi * n) * (n/e)^n), mathematicians 
+     proved that the asymptotic growth rate of C_N is:
+         C_N ≈ 4^N / (N * sqrt(pi * N)) = Θ(4^N / N^(3/2))
+
+     Plugging this growth rate back into our Time Complexity:
+         Time Complexity = O(N * C_N) = O(N * (4^N / N^(3/2))) = O(4^N / sqrt(N))
+
+  Space Complexity Explanation:
   - Space Complexity: O(N)
     Reason: The maximum depth of the recursion stack is 2 * N, requiring O(N) call frames. 
     In the explicit backtracking implementation, we reuse a single string of size O(N), 
-    while the implicit version creates string copies at each recursion frame of size up to O(N) (peak memory remains O(N)).
+    while the implicit version creates string copies at each recursion frame of size up to O(N) 
+    (the peak auxiliary memory remains O(N)).
 */
 
 class Solution {
