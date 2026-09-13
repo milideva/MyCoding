@@ -94,6 +94,7 @@ struct Node {
     int id;
     int total_gpus;
     int used_gpus;
+    std::vector<Pod> pods; // Active workloads on this node
 
     int available_gpus() const {
         return total_gpus - used_gpus;
@@ -102,8 +103,7 @@ struct Node {
 
 class GPUScheduler {
 private:
-    std::unordered_map<int, Node> nodes;
-    std::unordered_map<int, std::vector<Pod>> node_pods; // node_id -> list of running pods
+    std::unordered_map<int, Node> nodes; // Sole source of truth!
 
     // Helper function for backtracking placement during drain
     bool can_place_pods(size_t pod_index, 
@@ -135,8 +135,7 @@ private:
 
 public:
     void add_node(int node_id, int total_gpus) {
-        nodes[node_id] = {node_id, total_gpus, 0};
-        node_pods[node_id] = {};
+        nodes[node_id] = {node_id, total_gpus, 0, {}};
     }
 
     // Return list of Node IDs that can accommodate a new pod
@@ -156,7 +155,7 @@ public:
         if (nodes[node_id].available_gpus() < pod.gpus_required) return false;
 
         nodes[node_id].used_gpus += pod.gpus_required;
-        node_pods[node_id].push_back(pod);
+        nodes[node_id].pods.push_back(pod); // Store pod directly inside the Node
         return true;
     }
 
@@ -164,7 +163,7 @@ public:
     bool can_drain_node(int drain_node_id) {
         if (nodes.find(drain_node_id) == nodes.end()) return false;
 
-        std::vector<Pod> pods_to_place = node_pods[drain_node_id];
+        std::vector<Pod> pods_to_place = nodes[drain_node_id].pods; // Retrieve pods directly from Node
         if (pods_to_place.empty()) return true; // Nothing to move
 
         // Sort pods descending by required GPUs to prune the search space faster
