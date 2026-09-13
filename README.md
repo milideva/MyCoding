@@ -44,7 +44,7 @@ Notes on building scalable distributed systems.
 - [Memory](./Memory): Notes on memory management and architecture.
 
 ### 🤝 Interview Preparation
-- [Interviews](./Interviews): Study topics, negotiation tips, and practice resources.
+- [InterviewResources](./InterviewResources): Study topics, negotiation tips, and practice resources.
 
 ---
 
