@@ -53,7 +53,7 @@ using namespace std;
 
   Algorithmic Optimization (First-Fit Decreasing Heuristic):
   Since this problem is NP-complete, there is no polynomial-time solution. We 
-  must use Backtracking to explore the state space of O(M^P) placements, where M is 
+  must use Backtracking to explore the state space of O(N^P) placements, where N is 
   the number of candidate nodes and P is the number of evicted pods.
   
   To optimize this, we sort the evicted pods in DESCENDING order of GPU requirements 
@@ -68,15 +68,15 @@ using namespace std;
   Complexity Analysis:
   ==============================================================================
   1. `get_eligible_nodes`:
-     - Time Complexity: O(M) where M is the number of nodes in the cluster. We 
+     - Time Complexity: O(N) where N is the number of nodes in the cluster. We 
        iterate through all nodes once.
-     - Space Complexity: O(M) worst-case to return eligible node IDs.
+     - Space Complexity: O(N) worst-case to return eligible node IDs.
 
   2. `can_drain_node` (Backtracking + First-Fit Decreasing):
-     - Time Complexity: O(M^P) worst-case, where M is candidate nodes and P is 
+     - Time Complexity: O(N^P) worst-case, where N is candidate nodes and P is 
        evicted pods. In practice, the FFD heuristic prunes the search space 
        such that average execution is highly efficient.
-     - Space Complexity: O(P + M) due to the recursive stack depth bounded by P 
+     - Space Complexity: O(P + N) due to the recursive stack depth bounded by P 
        and local node state copies stored in candidate list.
 
   3. `add_node` & `schedule_pod`:
