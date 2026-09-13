@@ -7,16 +7,16 @@ using namespace std;
 
 /*
   ==============================================================================
-  Together AI - Software Engineer Interview Question: 
+  Software Engineer Interview Question: 
   Multi-Tenant GPU Cluster Scheduler with Node Eviction (Drain)
   ==============================================================================
 
-  Company Context (Together AI):
-  Together AI builds high-performance cloud infrastructure and orchestration for 
-  large-scale AI training and inference. In their distributed GPU clusters, 
-  managing GPU resources, allocating workloads to nodes, and safely evicting nodes 
-  for cluster maintenance (draining) without disrupting other tenants' workloads 
-  is a fundamental infrastructure requirement.
+  System Context:
+  In large-scale high-performance cloud infrastructure and orchestration systems 
+  for distributed AI training and inference, managing GPU resources, allocating 
+  workloads to nodes, and safely evicting nodes for cluster maintenance (draining) 
+  without disrupting other tenants' workloads is a fundamental infrastructure 
+  requirement.
 
   Problem Description:
   You are designing a custom scheduling agent for a multi-tenant GPU cluster. 
