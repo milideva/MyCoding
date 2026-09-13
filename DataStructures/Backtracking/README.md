@@ -53,4 +53,4 @@ The process of cutting off branches in the search tree that cannot possibly lead
 ## 🔗 Useful Resources
 - [GeeksforGeeks: Backtracking Algorithms](https://www.geeksforgeeks.org/backtracking-algorithms/)
 - [LeetCode Explore: Recursion II (Backtracking)](https://leetcode.com/explore/learn/card/recursion-ii/)
-- [Backtracking Visualization](https://www.cs.usfca.edu/~galles/visualization/RecursiveBacktrack.html)
+- [Interactive Backtracking Visualizer](https://algorithm-visualizer.org/)
