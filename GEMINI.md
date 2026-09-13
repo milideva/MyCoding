@@ -31,3 +31,8 @@ This is a private and external GitHub repository (`MyCoding`), **NOT** a google3
 ### Mandatory Coding & Documentation Standards:
 - **Mandatory Complexity Analysis:** Every newly created or modified algorithm file must explicitly include clear, detailed comments describing the algorithm's **Time Complexity** and **Space Complexity** (including best, average, and worst-case scenarios where applicable) in the file header or immediately above the relevant function. Add this complexity analysis every single time.
 
+### Interaction & Execution Rules:
+- **Strict Google3/Internal Isolation:** Absolutely do not look inside google3, internal databases, or Google-internal documentation. Treat this workspace strictly as an isolated, standard open-source environment.
+- **Autonomous Verification Workflow:** Skip asking the user for permission to compile, run tests, or update test files. Do **NOT** prompt the user to ask if you should run tests, and skip explaining/informing the user before executing build/test/compile/format/lint commands. Execute these actions silently and autonomously, then report the finalized outcomes.
+- **No Filler Communications:** Do not explain standard terminal commands before running them. Keep conversation brief and focused on technical decisions and final results.
+
