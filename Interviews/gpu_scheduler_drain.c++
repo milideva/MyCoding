@@ -188,27 +188,44 @@ int main() {
     GPUScheduler scheduler;
 
     // Cluster setup: 3 nodes with 8 GPUs each
-    scheduler.add_node(1, 8);
-    scheduler.add_node(2, 8);
-    scheduler.add_node(3, 8);
+    const int node_id_1 = 1;
+    const int node_id_2 = 2;
+    const int node_id_3 = 3;
+    const int node_num_gpus = 8;
+
+    scheduler.add_node(node_id_1, node_num_gpus);
+    scheduler.add_node(node_id_2, node_num_gpus);
+    scheduler.add_node(node_id_3, node_num_gpus);
 
     // Populate Node 1 (Node to drain)
-    scheduler.schedule_pod(1, {101, 4});
-    scheduler.schedule_pod(1, {102, 3});
+    const int pod_id_101 = 101;
+    const int pod_101_num_gpus = 4;
+    scheduler.schedule_pod(node_id_1, {pod_id_101, pod_101_num_gpus});
+
+    const int pod_id_102 = 102;
+    const int pod_102_num_gpus = 3;
+    scheduler.schedule_pod(node_id_1, {pod_id_102, pod_102_num_gpus});
 
     // Populate Node 2 and Node 3 with existing workloads
-    scheduler.schedule_pod(2, {201, 5}); // 3 GPUs remaining on Node 2
-    scheduler.schedule_pod(3, {301, 4}); // 4 GPUs remaining on Node 3
+    const int pod_id_201 = 201;
+    const int pod_201_num_gpus = 5;
+    scheduler.schedule_pod(node_id_2, {pod_id_201, pod_201_num_gpus}); // 3 GPUs remaining on Node 2
+
+    const int pod_id_301 = 301;
+    const int pod_301_num_gpus = 4;
+    scheduler.schedule_pod(node_id_3, {pod_id_301, pod_301_num_gpus}); // 4 GPUs remaining on Node 3
 
     // Check eligible nodes for a new 4-GPU request
-    std::vector<int> eligible = scheduler.get_eligible_nodes(4);
-    std::cout << "Eligible nodes for 4-GPU pod: ";
+    const int request_num_gpus = 4;
+    std::vector<int> eligible = scheduler.get_eligible_nodes(request_num_gpus);
+    std::cout << "Eligible nodes for " << request_num_gpus << "-GPU pod: ";
     for (int id : eligible) std::cout << id << " ";
     std::cout << "\n";
 
     // Check if Node 1 can be drained
-    bool can_drain = scheduler.can_drain_node(1);
-    std::cout << "Can drain Node 1? " << (can_drain ? "Yes" : "No") << " (Expected: Yes - 4 goes to Node 3, 3 goes to Node 2)\n";
+    bool can_drain = scheduler.can_drain_node(node_id_1);
+    std::cout << "Can drain Node " << node_id_1 << "? " << (can_drain ? "Yes" : "No") 
+              << " (Expected: Yes - Pod 101 goes to Node 3, Pod 102 goes to Node 2)\n";
 
     return 0;
 }
