@@ -65,6 +65,53 @@ using namespace std;
     exponential backtracking.
 
   ==============================================================================
+  Why Do We Need Backtracking? Why Pure Recursion (No Backtracking) Fails:
+  ==============================================================================
+  Recursion is merely the mechanism of traversing down a decision tree, but 
+  Backtracking is the act of restoring state when a path hits a dead end. Without 
+  restoring state, a wrong choice made early on permanently locks resources.
+
+  Concrete Failure Scenario with Pure Recursion:
+  - We have two evicted pods to place:
+    1. Pod A (requests 3 GPUs)
+    2. Pod B (requests 4 GPUs)
+  - We have two available remaining nodes in the cluster:
+    * Node 1 (has 4 GPUs available)
+    * Node 2 (has 3 GPUs available)
+
+  - Step 1: Place Pod A (3 GPUs).
+    * A naive recursive search checks Node 1 first. Since Node 1 has 4 GPUs, Pod A fits!
+    * We deduct 3 GPUs from Node 1. Node 1 now has 1 GPU remaining.
+  - Step 2: Place Pod B (4 GPUs).
+    * The recursion moves to Pod B. It checks Node 1 (1 GPU left) -> doesn't fit.
+    * It checks Node 2 (3 GPUs left) -> doesn't fit.
+    * This recursive branch fails and returns `false`.
+
+  - Step 3 (Where Pure Recursion vs. Backtracking diverges):
+    * If we used pure recursion (without state restoration), the algorithm would return `false`. 
+      Node 1 remains locked with only 1 GPU available. The algorithm exits and incorrectly 
+      claims draining is impossible, even though we could have placed Pod A on Node 2 and Pod B on Node 1.
+    * With Backtracking (the "un-choose" step), when Pod B returns `false`, Level 0 catches the 
+      failure, undoes Pod A's allocation on Node 1 (adds 3 GPUs back), and proceeds to try the next 
+      eligible node for Pod A (Node 2). This allows Pod A to be placed on Node 2 and Pod B on Node 1, 
+      correctly returning `true`!
+
+  How we avoid choosing the same choice again after unchoosing?
+  ------------------------------------------------------------
+  We prevent repeating a failed choice through two structural properties of the algorithm:
+  1. Loop State Progress (Horizontal traversal):
+     Within a single recursive stack frame (representing a single pod placement decision), 
+     we use a `for` loop to iterate through the list of remaining candidate nodes:
+         for (auto& node : candidate_nodes) { ... }
+     When we choose candidate_nodes[0], recurse, and subsequently backtrack (un-choose), 
+     the `for` loop naturally increments to the next index, trying candidate_nodes[1]. 
+     The loop index itself acts as our memory to prevent repeating the same choice.
+  2. Index State Progress (Vertical traversal):
+     When recursing, we advance the `pod_index` argument (`pod_index + 1`). This ensures 
+     we are moving forward to the next pod in the eviction list, preventing the algorithm 
+     from attempting to re-place the same pod within the current path.
+
+  ==============================================================================
   Complexity Analysis:
   ==============================================================================
   1. `get_eligible_nodes`:

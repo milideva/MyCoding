@@ -33,6 +33,7 @@ This is a private and external GitHub repository (`MyCoding`), **NOT** a google3
 
 ### Interaction & Execution Rules:
 - **Strict Google3/Internal Isolation:** Absolutely do not look inside google3, internal databases, or Google-internal documentation. Treat this workspace strictly as an isolated, standard open-source environment.
-- **Autonomous Verification Workflow:** Skip asking the user for permission to compile, run tests, or update test files. Do **NOT** prompt the user to ask if you should run tests, and skip explaining/informing the user before executing build/test/compile/format/lint commands. Execute these actions silently and autonomously, then report the finalized outcomes.
-- **No Filler Communications:** Do not explain standard terminal commands before running them. Keep conversation brief and focused on technical decisions and final results.
+- **Autonomous Editing & Verification:** You are fully authorized to make code modifications, compile, build, format, and execute verification tests autonomously and silently behind the scenes. Do **NOT** ask the user for permission or prompt them before running build/test/compile/format/lint commands. Do not explain standard terminal commands before running them. Just report the finalized outcome.
+- **Mandatory Commit Gate:** Before staging, committing, or pushing any changes to the remote repository, you **MUST** stop and ask the user for confirmation. Present a clear, concise summary of the changes and propose a draft commit message. Never commit or push autonomously.
+- **No Filler Communications:** Keep conversation brief and focused on technical decisions, design choices, and final results.
 
