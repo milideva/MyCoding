@@ -102,21 +102,21 @@ private:
      *     Depth of recursion tree matches number of vertices in a linear graph.
      * ============================================================================
      */
-    bool isCyclicDFS(int i, vector<bool>& visited, vector<bool>& recStack, const vector<vector<int>>& adj) {
+    bool isCyclicDFS(int i, vector<bool>& visited, vector<bool>& visitedPath, const vector<vector<int>>& adj) {
         visited[i] = true;
-        recStack[i] = true;
+        visitedPath[i] = true;
 
         for (int neighbor : adj[i]) {
             if (!visited[neighbor]) {
-                if (isCyclicDFS(neighbor, visited, recStack, adj)) {
+                if (isCyclicDFS(neighbor, visited, visitedPath, adj)) {
                     return true;
                 }
-            } else if (recStack[neighbor]) {
+            } else if (visitedPath[neighbor]) {
                 return true;
             }
         }
 
-        recStack[i] = false;
+        visitedPath[i] = false;
         return false;
     }
 
@@ -204,6 +204,39 @@ public:
      * @brief Public method to check if the graph contains any cycle.
      * 
      * ============================================================================
+     * Why Directed Graph Cycle Detection Differs from Undirected Graph:
+     * ============================================================================
+     * 1. Path Dependency (Directed vs. Undirected):
+     *    - Undirected Graphs: A cycle exists if we visit an already-visited vertex
+     *      that is NOT the immediate parent of the current vertex in the DFS tree. 
+     *      Since edges are bidirectional, we only need to avoid walking back across
+     *      the edge we just traversed (parent).
+     *    - Directed Graphs: Simply hitting an already-visited vertex does NOT imply
+     *      a cycle. For example, in a "diamond" graph (1 -> 2 -> 4, 1 -> 3 -> 4), 
+     *      when traversing from 3 to 4, we find 4 already visited, but there is no 
+     *      cycle. A cycle only exists if we encounter a node that is currently in the 
+     *      active DFS recursion path (a back-edge).
+     * 
+     * ============================================================================
+     * Comparison of Cycle Detection Methods:
+     * ============================================================================
+     * +------------------------+-------------------+------------------+-----------------------------+
+     * | Method                 | Supported Graphs  | Time Complexity  | Space Complexity / Pros/Cons|
+     * +------------------------+-------------------+------------------+-----------------------------+
+     * | DFS with Path-Tracking | Directed/Undirected| O(V + E)        | O(V)                        |
+     * | (visitedPath/coloring) |                   |                  | + Intuitive, handles DAG    |
+     * |                        |                   |                  | - Risk of Stack Overflow    |
+     * +------------------------+-------------------+------------------+-----------------------------+
+     * | Kahn's Algorithm       | Directed Only     | O(V + E)         | O(V)                        |
+     * | (BFS-based In-degrees) |                   |                  | + Iterative, gives TopoSort |
+     * |                        |                   |                  | - Requires in-degree tracking|
+     * +------------------------+-------------------+------------------+-----------------------------+
+     * | Disjoint Set Union     | Undirected Only   | O(E * alpha(V))  | O(V)                        |
+     * | (DSU / Union-Find)     |                   |                  | + Best for dynamic graphs   |
+     * |                        |                   |                  | - Bad for directed graphs   |
+     * +------------------------+-------------------+------------------+-----------------------------+
+     * 
+     * ============================================================================
      * Complexity Analysis:
      * ============================================================================
      * Time Complexity:
@@ -213,7 +246,7 @@ public:
      *   - Best-Case: O(V + E)
      * Space Complexity:
      *   - Worst-Case: O(V)
-     *     Uses visited array (O(V)), recStack recursion-state tracker (O(V)), 
+     *     Uses visited array (O(V)), visitedPath recursion-state tracker (O(V)), 
      *     and recursion stack (O(V)).
      * ============================================================================
      * 
@@ -223,11 +256,11 @@ public:
      */
     bool isCyclic(int V, const vector<vector<int>>& adj) {
         vector<bool> visited(V, false);
-        vector<bool> recStack(V, false);
+        vector<bool> visitedPath(V, false);
 
         for (int i = 0; i < V; i++) {
             if (!visited[i]) {
-                if (isCyclicDFS(i, visited, recStack, adj)) {
+                if (isCyclicDFS(i, visited, visitedPath, adj)) {
                     return true;
                 }
             }
