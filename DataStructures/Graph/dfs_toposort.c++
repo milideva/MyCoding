@@ -269,6 +269,79 @@ public:
     }
 
     /**
+     * @brief Helper function to detect cycles using 3-state (coloring) DFS.
+     * 
+     * State values:
+     *   - 0: Unvisited (White)
+     *   - 1: Visiting/Active Path (Gray)
+     *   - 2: Fully Visited (Black)
+     * 
+     * ============================================================================
+     * Complexity Analysis:
+     * ============================================================================
+     * Time Complexity:
+     *   - Worst-Case: O(V + E)
+     *     Traverses each vertex and directed edge at most once.
+     * Space Complexity:
+     *   - Worst-Case: O(V)
+     *     Depth of recursion tree matches number of vertices in a linear graph.
+     * ============================================================================
+     */
+    bool isCyclic_3color_DFS(int i, vector<int>& state, const vector<vector<int>>& adj) {
+        state[i] = 1; // Mark as 'Visiting' (Gray)
+        
+        for (int neighbor : adj[i]) {
+            if (state[neighbor] == 0) { // Unvisited (White)
+                if (isCyclic_3color_DFS(neighbor, state, adj)) {
+                    return true;
+                }
+            } else if (state[neighbor] == 1) { // Visiting/Active Path (Gray) - cycle detected!
+                return true;
+            }
+        }
+        
+        state[i] = 2; // Mark as 'Fully Visited' (Black)
+        return false;
+    }
+
+public:
+    /**
+     * @brief Public method to check if the graph contains any cycle using the 3-state coloring approach.
+     * 
+     * This method is an optimization over the 2-array approach as it collapses
+     * the 'visited' and 'visitedPath' arrays into a single state vector of integers.
+     * 
+     * ============================================================================
+     * Complexity Analysis:
+     * ============================================================================
+     * Time Complexity:
+     *   - Worst-Case: O(V + E)
+     *     Checks cycle status for all vertices and edges.
+     *   - Average-Case: O(V + E)
+     *   - Best-Case: O(V + E)
+     * Space Complexity:
+     *   - Worst-Case: O(V)
+     *     Uses single state array (O(V)) and recursion stack (O(V)).
+     * ============================================================================
+     * 
+     * @param V The total number of vertices (nodes) in the graph, numbered from 0 to V-1.
+     * @param adj The Adjacency List representing the graph, where adj[u] contains all neighbor
+     *            vertices v such that there is a directed edge from u to v (u -> v).
+     */
+    bool isCyclic_3color(int V, const vector<vector<int>>& adj) {
+        vector<int> state(V, 0); // 0 = Unvisited, 1 = Visiting, 2 = Visited
+
+        for (int i = 0; i < V; i++) {
+            if (state[i] == 0) {
+                if (isCyclic_3color_DFS(i, state, adj)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * @brief Public method to perform topological sort with integrated cycle detection in a single pass.
      * 
      * ============================================================================
@@ -388,6 +461,23 @@ int main() {
         cout << "Success: Cycle correctly detected, and empty list returned." << endl;
     } else {
         cout << "Error: Falsely completed topological sort on a cyclic graph!" << endl;
+    }
+
+    cout << endl;
+
+    cout << "=== Test Series 3: Pure 3-Color Cycle Detection ===" << endl;
+    cout << "--- DAG Test (3-Color) ---" << endl;
+    if (sol.isCyclic_3color(V_dag, adj_dag)) {
+        cout << "Error: Cycle detected in a DAG using 3-Color!" << endl;
+    } else {
+        cout << "Success: No cycles detected in the DAG using 3-Color." << endl;
+    }
+
+    cout << "--- Cyclic Graph Test (3-Color) ---" << endl;
+    if (sol.isCyclic_3color(V_cycle, adj_cycle)) {
+        cout << "Success: Cycle correctly detected in the cyclic graph using 3-Color!" << endl;
+    } else {
+        cout << "Error: Failed to detect cycle in the cyclic graph using 3-Color!" << endl;
     }
 
     return 0;
