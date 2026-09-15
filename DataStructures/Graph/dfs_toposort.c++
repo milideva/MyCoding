@@ -63,6 +63,13 @@
 
 using namespace std;
 
+// State representation for 3-state (coloring) graph traversal
+enum class NodeState {
+    UNVISITED = 0, // White / Unvisited
+    VISITING = 1,  // Gray / Currently in DFS recursion path
+    VISITED = 2    // Black / Fully processed (no cycles possible from here)
+};
+
 class Solution {
 private:
     /**
@@ -94,11 +101,6 @@ private:
     /**
      * @brief Helper function to perform 3-state (coloring) DFS to sort and detect cycles simultaneously.
      * 
-     * State values:
-     *   - 0: Unvisited (White)
-     *   - 1: Visiting (Gray - currently in DFS call stack)
-     *   - 2: Fully Visited (Black - processed and pushed to topological stack)
-     * 
      * ============================================================================
      * Complexity Analysis:
      * ============================================================================
@@ -110,20 +112,20 @@ private:
      *     Depth of recursion tree matches number of vertices in a linear graph.
      * ============================================================================
      */
-    bool dfs_cycle_detect(int i, vector<int>& state, stack<int>& stk, const vector<vector<int>>& adj) {
-        state[i] = 1; // Mark as 'Visiting'
+    bool dfs_cycle_detect(int i, vector<NodeState>& state, stack<int>& stk, const vector<vector<int>>& adj) {
+        state[i] = NodeState::VISITING; // Mark as 'Visiting'
         
         for (int neighbor : adj[i]) {
-            if (state[neighbor] == 0) { // Unvisited
+            if (state[neighbor] == NodeState::UNVISITED) { // Unvisited
                 if (!dfs_cycle_detect(neighbor, state, stk, adj)) {
                     return false; // Propagate cycle discovery up
                 }
-            } else if (state[neighbor] == 1) { // Visiting (back-edge found!)
+            } else if (state[neighbor] == NodeState::VISITING) { // Visiting (back-edge found!)
                 return false;
             }
         }
         
-        state[i] = 2; // Mark as 'Fully Visited'
+        state[i] = NodeState::VISITED; // Mark as 'Fully Visited'
         stk.push(i);
         return true;
     }
@@ -191,12 +193,12 @@ public:
      *                     if a cycle is detected (which means no valid sort exists).
      */
     vector<int> topoSortWithCycleDetection(int V, const vector<vector<int>>& adj) {
-        vector<int> state(V, 0); // 0 = Unvisited, 1 = Visiting, 2 = Visited
+        vector<NodeState> state(V, NodeState::UNVISITED); // Collapsed 3-state tracking
         stack<int> stk;
         vector<int> result;
 
         for (int i = 0; i < V; i++) {
-            if (state[i] == 0) {
+            if (state[i] == NodeState::UNVISITED) {
                 if (!dfs_cycle_detect(i, state, stk, adj)) {
                     return {}; // Cycle detected, return empty vector
                 }

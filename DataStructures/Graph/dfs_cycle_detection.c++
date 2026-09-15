@@ -69,6 +69,13 @@
 
 using namespace std;
 
+// State representation for 3-state (coloring) graph traversal
+enum class NodeState {
+    UNVISITED = 0, // White / Unvisited
+    VISITING = 1,  // Gray / Currently in DFS recursion path
+    VISITED = 2    // Black / Fully processed (no cycles possible from here)
+};
+
 class CycleDetector {
 private:
     /**
@@ -106,11 +113,6 @@ private:
     /**
      * @brief Helper function to detect cycles using 3-state (coloring) DFS.
      * 
-     * State values:
-     *   - 0: Unvisited (White)
-     *   - 1: Visiting/Active Path (Gray)
-     *   - 2: Fully Visited (Black)
-     * 
      * ============================================================================
      * Complexity Analysis:
      * ============================================================================
@@ -122,20 +124,20 @@ private:
      *     Depth of recursion tree matches number of vertices in a linear graph.
      * ============================================================================
      */
-    bool isCyclic_3color_DFS(int i, vector<int>& state, const vector<vector<int>>& adj) {
-        state[i] = 1; // Mark as 'Visiting' (Gray)
+    bool isCyclic_3color_DFS(int i, vector<NodeState>& state, const vector<vector<int>>& adj) {
+        state[i] = NodeState::VISITING; // Mark as 'Visiting' (Gray)
         
         for (int neighbor : adj[i]) {
-            if (state[neighbor] == 0) { // Unvisited (White)
+            if (state[neighbor] == NodeState::UNVISITED) { // Unvisited (White)
                 if (isCyclic_3color_DFS(neighbor, state, adj)) {
                     return true;
                 }
-            } else if (state[neighbor] == 1) { // Visiting/Active Path (Gray) - cycle detected!
+            } else if (state[neighbor] == NodeState::VISITING) { // Visiting/Active Path (Gray) - cycle detected!
                 return true;
             }
         }
         
-        state[i] = 2; // Mark as 'Fully Visited' (Black)
+        state[i] = NodeState::VISITED; // Mark as 'Fully Visited' (Black)
         return false;
     }
 
@@ -173,7 +175,7 @@ public:
      * @brief Public method to check if the graph contains any cycle using the 3-state coloring approach.
      * 
      * This method is an optimization over the 2-array approach as it collapses
-     * the 'visited' and 'visitedPath' arrays into a single state vector of integers.
+     * the 'visited' and 'visitedPath' arrays into a single state vector of NodeState.
      * 
      * ============================================================================
      * Complexity Analysis:
@@ -187,10 +189,10 @@ public:
      * ============================================================================
      */
     bool isCyclic_3color(int V, const vector<vector<int>>& adj) {
-        vector<int> state(V, 0); // 0 = Unvisited, 1 = Visiting, 2 = Visited
+        vector<NodeState> state(V, NodeState::UNVISITED);
 
         for (int i = 0; i < V; i++) {
-            if (state[i] == 0) {
+            if (state[i] == NodeState::UNVISITED) {
                 if (isCyclic_3color_DFS(i, state, adj)) {
                     return true;
                 }
