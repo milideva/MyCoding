@@ -150,7 +150,8 @@ struct Node {
 
 class GPUScheduler {
 private:
-    std::unordered_map<int, Node> nodes; // Sole source of truth!
+    std::unordered_map<int, Node> nodes; // Sole source of truth for Nodes!
+    std::unordered_map<int, Pod> pods;   // Sole source of truth for Pod registrations!
 
     // Helper function for backtracking placement during drain
     bool can_place_pods(size_t pod_index, 
@@ -185,6 +186,12 @@ public:
         nodes[node_id] = {node_id, total_gpus, 0, {}};
     }
 
+    bool add_pod(int pod_id, int gpus_required) {
+        if (pods.find(pod_id) != pods.end()) return false; // Already registered
+        pods[pod_id] = {pod_id, gpus_required};
+        return true;
+    }
+
     // Return list of Node IDs that can accommodate a new pod
     std::vector<int> get_eligible_nodes(int gpus_required) const {
         std::vector<int> eligible_nodes;
@@ -196,9 +203,12 @@ public:
         return eligible_nodes;
     }
 
-    // Schedule a pod onto a specific node
-    bool schedule_pod(int node_id, const Pod& pod) {
+    // Schedule a registered pod onto a specific node
+    bool schedule_pod(int node_id, int pod_id) {
         if (nodes.find(node_id) == nodes.end()) return false;
+        if (pods.find(pod_id) == pods.end()) return false; // Pod must be registered first
+
+        const auto& pod = pods[pod_id];
         if (nodes[node_id].available_gpus() < pod.gpus_required) return false;
 
         nodes[node_id].used_gpus += pod.gpus_required;
@@ -243,23 +253,28 @@ int main() {
     scheduler.add_node(node_id_2, node_num_gpus);
     scheduler.add_node(node_id_3, node_num_gpus);
 
-    // Populate Node 1 (Node to drain)
+    // Register Pod definitions
     const int pod_id_101 = 101;
     const int pod_101_num_gpus = 4;
-    scheduler.schedule_pod(node_id_1, {pod_id_101, pod_101_num_gpus});
+    scheduler.add_pod(pod_id_101, pod_101_num_gpus);
 
     const int pod_id_102 = 102;
     const int pod_102_num_gpus = 3;
-    scheduler.schedule_pod(node_id_1, {pod_id_102, pod_102_num_gpus});
+    scheduler.add_pod(pod_id_102, pod_102_num_gpus);
 
-    // Populate Node 2 and Node 3 with existing workloads
     const int pod_id_201 = 201;
     const int pod_201_num_gpus = 5;
-    scheduler.schedule_pod(node_id_2, {pod_id_201, pod_201_num_gpus}); // 3 GPUs remaining on Node 2
+    scheduler.add_pod(pod_id_201, pod_201_num_gpus);
 
     const int pod_id_301 = 301;
     const int pod_301_num_gpus = 4;
-    scheduler.schedule_pod(node_id_3, {pod_id_301, pod_301_num_gpus}); // 4 GPUs remaining on Node 3
+    scheduler.add_pod(pod_id_301, pod_301_num_gpus);
+
+    // Schedule Pods on respective Nodes
+    scheduler.schedule_pod(node_id_1, pod_id_101);
+    scheduler.schedule_pod(node_id_1, pod_id_102);
+    scheduler.schedule_pod(node_id_2, pod_id_201); // 3 GPUs remaining on Node 2
+    scheduler.schedule_pod(node_id_3, pod_id_301); // 4 GPUs remaining on Node 3
 
     // Check eligible nodes for a new 4-GPU request
     const int request_num_gpus = 4;
