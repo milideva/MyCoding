@@ -141,7 +141,7 @@ struct Node {
     int id;
     int total_gpus;
     int used_gpus;
-    std::vector<Pod> pods; // Active workloads on this node
+    std::vector<int> pod_ids; // Active workloads (by ID) on this node
 
     int available_gpus() const {
         return total_gpus - used_gpus;
@@ -212,7 +212,7 @@ public:
         if (nodes[node_id].available_gpus() < pod.gpus_required) return false;
 
         nodes[node_id].used_gpus += pod.gpus_required;
-        nodes[node_id].pods.push_back(pod); // Store pod directly inside the Node
+        nodes[node_id].pod_ids.push_back(pod_id); // Store only the Pod ID inside the Node
         return true;
     }
 
@@ -220,7 +220,12 @@ public:
     bool can_drain_node(int drain_node_id) {
         if (nodes.find(drain_node_id) == nodes.end()) return false;
 
-        std::vector<Pod> pods_to_place = nodes[drain_node_id].pods; // Retrieve pods directly from Node
+        // Reconstruct Pod objects to place from scheduled pod_ids on the drain node
+        std::vector<Pod> pods_to_place;
+        for (int pod_id : nodes[drain_node_id].pod_ids) {
+            pods_to_place.push_back(pods[pod_id]);
+        }
+
         if (pods_to_place.empty()) return true; // Nothing to move
 
         // Sort pods descending by required GPUs to prune the search space faster
