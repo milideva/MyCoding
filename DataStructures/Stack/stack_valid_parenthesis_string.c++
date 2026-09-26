@@ -61,14 +61,17 @@ class Solution {
 public:
     // Method 1: Two Stacks (Requested Stack Implementation)
     bool checkValidString(string s) {
+        // We track the indices/positions of '(' and '*' instead of the characters themselves.
+        // This is crucial because a remaining '(' can only be matched by a '*' if the '*'
+        // appears AFTER the '(' in the string (i.e., star_index > open_index).
         stack<int> open_stk;
         stack<int> star_stk;
 
         for (int i = 0; i < (int)s.length(); i++) {
             if (s[i] == '(') {
-                open_stk.push(i);
+                open_stk.push(i); // Track index of the '(' position
             } else if (s[i] == '*') {
-                star_stk.push(i);
+                star_stk.push(i); // Track index of the '*' position
             } else { // s[i] == ')'
                 if (!open_stk.empty()) {
                     open_stk.pop();
