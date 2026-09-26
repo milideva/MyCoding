@@ -57,29 +57,43 @@ struct TreeNode {
 
 
 class Solution {
-    TreeNode *first = nullptr;
-    TreeNode *last = nullptr;
-    void inOrder (TreeNode *root) {
+    TreeNode *head = nullptr; // Points to the smallest node (start of the sorted list)
+    TreeNode *prev = nullptr; // Points to the previously visited node (predecessor in sorted list)
+
+    void inOrder(TreeNode *root) {
         if (!root) return;
+        
+        // 1. Traverse left subtree
         inOrder(root->left);
-        if (last == nullptr) {
-            first = root;
+        
+        // 2. Process current node
+        if (prev == nullptr) {
+            // The leftmost node is the head of the sorted doubly linked list
+            head = root;
         } else {
-            last->right = root;
-            root->left = last;
+            // Link previous node (predecessor) to current (successor/next link)
+            prev->right = root;
+            // Link current node back to previous (predecessor/prev link)
+            root->left = prev;
         }
-        last = root;
+        // Mark current node as 'prev' (predecessor) for the next node in the traversal
+        prev = root;
+        
+        // 3. Traverse right subtree
         inOrder(root->right);
     }
     
 public:
     TreeNode* treeToDoublyList(TreeNode* root) {
         if (root == nullptr) return root;
-        inOrder(root);
-        last->right = first;
-        first->left = last;
         
-        return first;
+        inOrder(root);
+        
+        // Close the circular doubly linked list (link head and tail)
+        prev->right = head; // tail->next = head
+        head->left = prev;  // head->prev = tail
+        
+        return head;
     }
 };
 
@@ -144,8 +158,54 @@ int main () {
   
   TreeNode *head = sol.treeToDoublyList(root);
 
-  cout << "Head: " << head->val << endl;
-  cout << "Tail: " << head->left->val << endl;
+  cout << "\n--- Verifying Doubly Linked Circular List ---" << endl;
+  
+  // 1. Verify forward traversal
+  int expected[] = { -10, 5, 10, 56, 60, 100, 233, 300, 500, 600, 700, 800, 900, 1000, 2333 };
+  int num_elements = sizeof(expected) / sizeof(expected[0]);
+  
+  bool forward_pass = true;
+  TreeNode* curr = head;
+  vector<int> forward_got;
+  for (int i = 0; i < num_elements; ++i) {
+      if (!curr) {
+          forward_pass = false;
+          break;
+      }
+      forward_got.push_back(curr->val);
+      if (curr->val != expected[i]) {
+          forward_pass = false;
+      }
+      curr = curr->right;
+  }
+  
+  cout << "Forward Traversal: Expected: ";
+  for (int x : expected) cout << x << " ";
+  cout << "\nForward Traversal: Got:      ";
+  for (int x : forward_got) cout << x << " ";
+  cout << "\nStatus: " << (forward_pass ? "PASS" : "FAIL") << endl;
+
+  // 2. Verify backward traversal (circular connection)
+  bool backward_pass = true;
+  curr = head->left; // Start at tail
+  vector<int> backward_got;
+  for (int i = num_elements - 1; i >= 0; --i) {
+      if (!curr) {
+          backward_pass = false;
+          break;
+      }
+      backward_got.push_back(curr->val);
+      if (curr->val != expected[i]) {
+          backward_pass = false;
+      }
+      curr = curr->left;
+  }
+
+  cout << "\nBackward Traversal: Expected: ";
+  for (int i = num_elements - 1; i >= 0; --i) cout << expected[i] << " ";
+  cout << "\nBackward Traversal: Got:      ";
+  for (int x : backward_got) cout << x << " ";
+  cout << "\nStatus: " << (backward_pass ? "PASS" : "FAIL") << endl;
 
   return 0;
 }
